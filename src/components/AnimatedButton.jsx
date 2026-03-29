@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, CheckCircle2 } from 'lucide-react';
+import MagneticEffect from './MagneticEffect';
 
 const AnimatedButton = ({ 
   to, 
@@ -32,7 +33,8 @@ const AnimatedButton = ({
   };
 
   return (
-    <button 
+    <MagneticEffect strength={0.2}>
+      <button 
       className={`${className} ${status !== 'idle' ? 'animating' : ''}`}
       style={{
         ...style,
@@ -85,10 +87,11 @@ const AnimatedButton = ({
           justifyContent: 'center',
           animation: 'spring-pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
         }}>
-          <CheckCircle2 size={24} style={{ fill: 'rgba(255,255,255,0.2)', stroke: '#fff' }} strokeWidth={2.5} />
+          <CheckCircle2 size={24} style={{ color: 'currentColor', fill: 'currentColor', fillOpacity: 0.2 }} strokeWidth={2.5} />
         </div>
       )}
-    </button>
+      </button>
+    </MagneticEffect>
   );
 };
 

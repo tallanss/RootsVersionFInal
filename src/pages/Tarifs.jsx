@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { CheckCircle2, ArrowRight, Tag, Star, Phone, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import AnimatedButton from '../components/AnimatedButton';
+import FadeIn from '../components/FadeIn';
 
 const Tarifs = () => {
   const [selectedPlanId, setSelectedPlanId] = useState(null); // id: 0 (Essentiel), 1 (Premium)
@@ -102,11 +103,17 @@ const Tarifs = () => {
 
       {/* HEADER */}
       <section className="container" style={{ padding: '32px 20px 24px' }}>
-        <div className="section-tag" data-aos="fade-down"><Tag size={14} /> Tarifs</div>
-        <h1 className="section-title" style={{ fontSize: '32px' }} data-aos="fade-right">Qualité parfaite, budget aussi !</h1>
-        <p className="section-subtitle" data-aos="fade-up" data-aos-delay="200">
+        <FadeIn direction="down" duration={0.8}>
+        <div className="section-tag"><Tag size={14} /> Tarifs</div>
+        </FadeIn>
+        <FadeIn direction="right" duration={0.8} delay={0.1}>
+        <h1 className="section-title" style={{ fontSize: '32px' }}>Qualité parfaite, budget aussi !</h1>
+        </FadeIn>
+        <FadeIn direction="up" delay={0.2} duration={0.8}>
+        <p className="section-subtitle">
           Les meilleures offres de photobooth du marché. Haut de gamme, service professionnel, prix imbattable.
         </p>
+        </FadeIn>
       </section>
 
       {/* PRICING CARDS */}
@@ -152,7 +159,7 @@ const Tarifs = () => {
             );
 
             return (
-              <div data-aos="fade-up" data-aos-delay={i * 150} key={i}>
+              <FadeIn direction="up" delay={i * 0.15} key={i}>
                 {plan.featured ? (
                   <div className="animated-border-wrapper">
                     <div className={`pricing-card featured ${isSelected(i) ? 'selected' : ''}`}>{cardContent}</div>
@@ -160,7 +167,7 @@ const Tarifs = () => {
                 ) : (
                   <div className={`pricing-card ${isSelected(i) ? 'selected' : ''}`}>{cardContent}</div>
                 )}
-              </div>
+              </FadeIn>
             );
           })}
         </div>
@@ -168,7 +175,8 @@ const Tarifs = () => {
 
       {/* OPTIONS SECTION */}
       {selectedPlanId !== null && plans[selectedPlanId].isCustom !== true && (
-        <section className="container" style={{ padding: '0 20px 40px' }} data-aos="fade-up">
+        <FadeIn direction="up">
+        <section className="container" style={{ padding: '0 20px 40px' }}>
           <div style={{ padding: '24px', background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-light)' }}>
             <h2 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '8px', textAlign: 'center' }}>2. Personnalisez votre expérience</h2>
             <p style={{ fontSize: '14px', color: 'var(--text-muted)', textAlign: 'center', marginBottom: '24px' }}>Ajoutez des extras pour rendre votre fête encore plus mémorable.</p>
@@ -216,6 +224,7 @@ const Tarifs = () => {
             </div>
           </div>
         </section>
+        </FadeIn>
       )}
 
       {/* STICKY SUMMARY BAR */}
@@ -237,8 +246,8 @@ const Tarifs = () => {
       )}
 
       {/* TRUST */}
-
-      <section className="container" style={{ padding: '0 20px 32px' }} data-aos="fade-up" data-aos-delay="400">
+      <FadeIn direction="up" delay={0.4}>
+      <section className="container" style={{ padding: '0 20px 32px' }}>
         <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', border: '1px solid var(--border-light)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
             <Star size={18} fill="#fbbf24" color="#fbbf24" />
@@ -249,9 +258,11 @@ const Tarifs = () => {
           </p>
         </div>
       </section>
+      </FadeIn>
 
       {/* CTA */}
-      <section className="container" style={{ padding: '0 20px 48px' }} data-aos="fade-up" data-aos-delay="600">
+      <FadeIn direction="up" delay={0.6}>
+      <section className="container" style={{ padding: '0 20px 48px' }}>
         <div className="cta-section">
           <h2>Besoin d'un devis personnalisé ?</h2>
           <p>Décrivez votre événement et recevez une proposition adaptée sous 24h.</p>
@@ -261,6 +272,7 @@ const Tarifs = () => {
           </AnimatedButton>
         </div>
       </section>
+      </FadeIn>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera } from 'lucide-react';
+import { Camera, Heart, Calendar, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AnimatedButton from './AnimatedButton';
 
@@ -55,11 +55,26 @@ const Header = () => {
           </span>
         </Link>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 20 }}>
-          <Link to="/galerie" style={{ color: 'var(--text-main)', textDecoration: 'none', fontSize: '13px', fontWeight: 600, opacity: isScrolled ? 1 : 0.8 }}>
-            Galerie
-          </Link>
-          <AnimatedButton to="/contact" style={{ width: 'auto', fontSize: '13px', padding: '8px 16px', whiteSpace: 'nowrap', flexShrink: 0, minHeight: '36px' }}>
-            Devis Gratuit
+          <AnimatedButton 
+            to="/contact" 
+            style={{ 
+              width: 'auto', 
+              fontSize: '13px', 
+              padding: '8px 18px', 
+              whiteSpace: 'nowrap', 
+              flexShrink: 0, 
+              minHeight: '40px',
+              borderRadius: 'var(--radius-full)',
+              boxShadow: '0 0 20px rgba(16, 185, 129, 0.25)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontWeight: 700
+            }}
+          >
+            <Calendar size={16} /> 
+            Réservez
+            <ChevronRight size={14} style={{ opacity: 0.7 }} />
           </AnimatedButton>
         </div>
       </header>

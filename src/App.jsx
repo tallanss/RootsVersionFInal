@@ -1,6 +1,4 @@
 import React, { useEffect } from 'react';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Photobooth from './pages/Photobooth';
@@ -9,16 +7,17 @@ import Contact from './pages/Contact';
 import Gallery from './pages/Gallery';
 import Admin from './pages/Admin';
 import Legal from './pages/Legal';
+import SaveTheDate from './pages/SaveTheDate';
 import BottomNav from './components/BottomNav';
+import Footer from './components/Footer';
 import Header from './components/Header';
-import WhatsAppButton from './components/WhatsAppButton';
+import ContactButton from './components/WhatsAppButton';
 import CookieBanner from './components/CookieBanner';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => { 
     window.scrollTo(0, 0); 
-    AOS.refresh();
   }, [pathname]);
   return null;
 }
@@ -35,6 +34,7 @@ function AnimatedRoutes() {
         <Route path="/galerie" element={<Gallery />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/mentions-legales" element={<Legal />} />
+        <Route path="/save-the-date" element={<SaveTheDate />} />
       </Routes>
     </div>
   );
@@ -42,7 +42,6 @@ function AnimatedRoutes() {
 
 function App() {
   useEffect(() => {
-    AOS.init({ duration: 800, once: true });
     const handlePointerMove = (e) => {
       document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
       document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
@@ -58,11 +57,12 @@ function App() {
       <div className="mouse-glow"></div>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', background: 'var(--bg-app)' }}>
         <Header />
-        <main style={{ flexGrow: 1, position: 'relative', paddingBottom: '100px' }}>
+        <main style={{ flexGrow: 1, position: 'relative' }}>
           <AnimatedRoutes />
         </main>
+        <Footer />
         <BottomNav />
-        <WhatsAppButton />
+        <ContactButton />
         <CookieBanner />
       </div>
     </Router>

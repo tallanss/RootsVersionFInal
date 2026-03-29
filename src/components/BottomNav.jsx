@@ -1,8 +1,9 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Home, Camera, Tag, MessageCircle, Image } from 'lucide-react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Home, Camera, Tag, Heart, Image } from 'lucide-react';
 
 const BottomNav = () => {
+  const location = useLocation();
   const navStyle = (isActive) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -34,9 +35,9 @@ const BottomNav = () => {
           <Image size={22} strokeWidth={2.5} />
           <span style={{ fontSize: '10px', fontWeight: 600 }}>Galerie</span>
         </NavLink>
-        <NavLink to="/contact" style={({ isActive }) => navStyle(isActive)}>
-          <MessageCircle size={22} strokeWidth={2.5} />
-          <span style={{ fontSize: '10px', fontWeight: 600 }}>Contact</span>
+        <NavLink to="/save-the-date" style={({ isActive }) => navStyle(isActive)}>
+          <Heart size={22} strokeWidth={2.5} fill={location.pathname === '/save-the-date' ? 'var(--primary)' : 'transparent'} />
+          <span style={{ fontSize: '10px', fontWeight: 600 }}>Invite</span>
         </NavLink>
       </div>
       <div style={{ height: 'var(--safe-area-bottom)' }} />

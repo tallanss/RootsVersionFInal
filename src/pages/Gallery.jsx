@@ -3,6 +3,7 @@ import { Camera, Filter, X, Calendar, MapPin } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
 import Lightbox from '../components/Lightbox';
+import FadeIn from '../components/FadeIn';
 import { useContent } from '../context/ContentContext';
 
 const CATEGORIES = ["Tous", "Mariage", "Corporate", "Anniversaire", "Gala"];
@@ -49,12 +50,10 @@ const Gallery = () => {
       <section className="container" style={{ padding: '0 20px 48px' }}>
         <div className="gallery-masonry">
           {filteredData.map((item, index) => (
+            <FadeIn direction="up" delay={index * 0.05} key={item.id}>
             <div 
-              key={item.id} 
               className="masonry-item"
               onClick={() => setLightboxIndex(index)}
-              data-aos="fade-up"
-              data-aos-delay={index * 50}
             >
               <PremiumImage src={item.image} alt={item.title} />
               <div className="masonry-overlay">
@@ -70,6 +69,7 @@ const Gallery = () => {
                 </div>
               </div>
             </div>
+            </FadeIn>
           ))}
         </div>
 

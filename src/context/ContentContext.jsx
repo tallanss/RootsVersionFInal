@@ -5,7 +5,7 @@ const ContentContext = createContext();
 const DEFAULT_CONTENT = {
   hero: {
     title: "Vivez l'instant",
-    subtitle: "Location Photobooth Premium",
+    subtitle: "Location Photobooth à partir de 189 euros",
     desc: "Sublimez vos événements au Havre, Rouen et Dieppe avec notre borne photo miroir haut de gamme."
   },
   scrolly: {
@@ -68,7 +68,14 @@ const DEFAULT_CONTENT = {
 export const ContentProvider = ({ children }) => {
   const [content, setContent] = useState(() => {
     const saved = localStorage.getItem('photo_roots_content');
-    return saved ? JSON.parse(saved) : DEFAULT_CONTENT;
+    const parsed = saved ? JSON.parse(saved) : DEFAULT_CONTENT;
+    
+    // Auto-sync new default hero subtitle if it matches the old one
+    if (parsed.hero && (parsed.hero.subtitle === "Location Photobooth Premium" || parsed.hero.subtitle === "location photobooth, a partir de 189 euros")) {
+      parsed.hero.subtitle = DEFAULT_CONTENT.hero.subtitle;
+    }
+    
+    return parsed;
   });
 
   const updateContent = (newContent) => {

@@ -6,6 +6,7 @@ import SwipeCarousel from '../components/SwipeCarousel';
 import Lightbox from '../components/Lightbox';
 import PremiumImage from '../components/PremiumImage';
 import AnimatedButton from '../components/AnimatedButton';
+import FadeIn from '../components/FadeIn';
 import { useContent } from '../context/ContentContext';
 import { Helmet } from 'react-helmet-async';
 
@@ -71,47 +72,54 @@ const Home = () => {
           <Sparkles size={14} />
           <span>N°1 en Seine-Maritime</span>
         </div>
-        <h1 className="hero-title" data-aos="fade-down" data-aos-duration="1000">
+        <FadeIn direction="down" duration={1} delay={0}>
+        <h1 className="hero-title">
           {content.hero.title}<br />
           <span className="highlight">{content.hero.subtitle}</span>
         </h1>
-        <p className="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
+        </FadeIn>
+        <FadeIn direction="up" delay={0.2}>
+        <p className="hero-subtitle">
           {content.hero.desc}
         </p>
-        <div data-aos="fade-up" data-aos-delay="400">
+        </FadeIn>
+        <FadeIn direction="up" delay={0.4}>
           <AnimatedButton to="/contact">
             Réserver maintenant
             <ArrowRight size={18} />
           </AnimatedButton>
-        </div>
-        <div className="hero-image" data-aos="zoom-in" data-aos-delay="600" data-aos-duration="1200">
+        </FadeIn>
+        <FadeIn direction="up" delay={0.6} duration={1.2}>
+        <div className="hero-image">
           <PremiumImage
             src="/hero-premium.png"
-            alt="Location photobooth premium pour mariage et événements à Le Havre, Rouen"
+            alt="Location Photobooth à partir de 189 euros pour mariage et événements à Le Havre, Rouen"
           />
         </div>
+        </FadeIn>
       </section>
 
       {/* ===== TRUST BAR ===== */}
       <section className="container" style={{ paddingBottom: '16px' }}>
         <div className="stats-bar">
-          <div className="stat-item" data-aos="fade-up">
+          <FadeIn delay={0}><div className="stat-item">
             <div className="stat-number">100+</div>
             <div className="stat-label">Événements</div>
-          </div>
-          <div className="stat-item" data-aos="fade-up">
+          </div></FadeIn>
+          <FadeIn delay={0.2}><div className="stat-item">
             <div className="stat-number">500+</div>
             <div className="stat-label">Clients</div>
-          </div>
-          <div className="stat-item" data-aos="fade-up">
+          </div></FadeIn>
+          <FadeIn delay={0.4}><div className="stat-item">
             <div className="stat-number">1000+</div>
             <div className="stat-label">Sourires</div>
-          </div>
+          </div></FadeIn>
         </div>
       </section>
 
       {/* ===== SERVICES ===== */}
-      <section className="container" style={{ padding: '32px 24px' }} id="services" data-aos="fade-up">
+      <FadeIn direction="up">
+      <section className="container" style={{ padding: '32px 24px' }} id="services">
         <div className="section-tag">
           <Camera size={14} />
           Nos Services
@@ -157,6 +165,7 @@ const Home = () => {
           </Link>
         </div>
       </section>
+      </FadeIn>
 
       {/* ===== COMMENT ÇA MARCHE ===== */}
       <section className="container" style={{ padding: '32px 24px' }} id="process">
@@ -254,7 +263,8 @@ const Home = () => {
       </section>
 
       {/* ===== GALERIE AVEC LIGHTBOX ===== */}
-      <section className="container" style={{ padding: '16px 24px' }} data-aos="fade-up">
+      <FadeIn direction="up">
+      <section className="container" style={{ padding: '16px 24px' }}>
         <div className="gallery-grid">
           {GALLERY_IMAGES.map((img, i) => (
             <div
@@ -273,6 +283,7 @@ const Home = () => {
           ))}
         </div>
       </section>
+      </FadeIn>
 
       {/* Lightbox */}
       {lightboxIndex !== null && (
@@ -284,7 +295,8 @@ const Home = () => {
       )}
 
       {/* ===== TESTIMONIALS CAROUSEL ===== */}
-      <section className="container" style={{ padding: '32px 24px' }} id="avis" data-aos="fade-up">
+      <FadeIn direction="up">
+      <section className="container" style={{ padding: '32px 24px' }} id="avis">
         <div className="section-tag">
           <Star size={14} />
           Avis Clients
@@ -336,9 +348,11 @@ const Home = () => {
           </div>
         </SwipeCarousel>
       </section>
+      </FadeIn>
 
       {/* ===== PRICING PREVIEW ===== */}
-      <section className="container" style={{ padding: '32px 24px' }} id="tarifs" data-aos="fade-up">
+      <FadeIn direction="up">
+      <section className="container" style={{ padding: '32px 24px' }} id="tarifs">
         <div className="section-tag">
           <Tag size={14} />
           Tarifs
@@ -381,9 +395,11 @@ const Home = () => {
           </Link>
         </div>
       </section>
+      </FadeIn>
 
       {/* ===== GALLERY TEASER ===== */}
-      <section className="container" style={{ padding: '48px 24px' }} data-aos="fade-up">
+      <FadeIn direction="up">
+      <section className="container" style={{ padding: '48px 24px' }}>
         <div className="section-tag"><Image size={14} /> Souvenirs</div>
         <h2 className="section-title">Derniers Événements</h2>
         <p className="section-subtitle">Aperçu des moments capturés récemment par nos clients.</p>
@@ -402,9 +418,11 @@ const Home = () => {
           </AnimatedButton>
         </div>
       </section>
+      </FadeIn>
 
       {/* ===== FAQ ===== */}
-      <section className="container" style={{ padding: '32px 24px' }} id="faq" data-aos="fade-up">
+      <FadeIn direction="up">
+      <section className="container" style={{ padding: '32px 24px' }} id="faq">
         <h2 className="section-title">Questions fréquentes</h2>
         <p className="section-subtitle">Tout ce que vous devez savoir avant de réserver.</p>
 
@@ -422,6 +440,7 @@ const Home = () => {
           ))}
         </div>
       </section>
+      </FadeIn>
 
       {/* ===== FINAL CTA ===== */}
       <section className="container" style={{ padding: '32px 20px 48px' }}>

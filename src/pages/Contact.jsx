@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Clock, CheckCircle2, Send, ChevronLeft, ChevronRight, Calendar, CalendarCheck, Loader2, Sun, Moon, AlertCircle, Lock } from 'lucide-react';
 import { processBooking, formatDateFR, fetchBusySlots } from '../services/emailService';
@@ -243,23 +244,72 @@ const Contact = () => {
             </div>
 
             {/* Loading Overlay */}
-            <div style={{ position: 'relative' }}>
-              {loadingSlots && (
-                <div style={{ position: 'absolute', inset: 0, background: 'var(--bg-card)', backdropFilter: 'blur(2px)', zIndex: 10, display: 'flex', flexDirection: 'column', padding: '16px 20px', gap: '12px', justifyContent: 'center' }}>
-                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                    {[1, 2, 3, 4, 5, 6, 7].map(i => <div key={i} className="skeleton" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />)}
-                  </div>
-                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                    {[1, 2, 3, 4, 5, 6, 7].map(i => <div key={i} className="skeleton" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />)}
-                  </div>
-                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                    {[1, 2, 3, 4, 5, 6, 7].map(i => <div key={i} className="skeleton" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />)}
-                  </div>
-                  <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-                    {[1, 2, 3, 4, 5, 6, 7].map(i => <div key={i} className="skeleton" style={{ width: '32px', height: '32px', borderRadius: '50%' }} />)}
-                  </div>
-                </div>
-              )}
+            <div style={{ position: 'relative', minHeight: '300px' }}>
+              <AnimatePresence>
+                {loadingSlots && (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.6, ease: "easeInOut" }}
+                    style={{ 
+                      position: 'absolute', 
+                      inset: 0, 
+                      background: 'rgba(255, 255, 255, 0.7)', 
+                      backdropFilter: 'blur(8px)', 
+                      zIndex: 20, 
+                      display: 'flex', 
+                      flexDirection: 'column', 
+                      padding: '44px 12px 16px',
+                      borderRadius: 'var(--radius-lg)',
+                      overflow: 'hidden'
+                    }}
+                  >
+                    {/* Scanner Line Effect */}
+                    <div className="scanner-line" />
+                    
+                    {/* Skeleton Grid matching the real one */}
+                    <div style={{ 
+                      display: 'grid', 
+                      gridTemplateColumns: 'repeat(7, 1fr)', 
+                      gap: '4px'
+                    }}>
+                      {[...Array(28)].map((_, i) => (
+                        <motion.div 
+                          key={i}
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: i * 0.01 }}
+                          className="skeleton" 
+                          style={{ 
+                            width: '100%', 
+                            aspectRatio: '1', 
+                            borderRadius: '50%',
+                            opacity: 0.2 + (Math.random() * 0.3) // Variety
+                          }} 
+                        />
+                      ))}
+                    </div>
+
+                    <div style={{ 
+                      position: 'absolute', 
+                      top: '50%', 
+                      left: '50%', 
+                      transform: 'translate(-50%, -50%)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      gap: '12px',
+                      zIndex: 30
+                    }}>
+                      <Loader2 size={32} className="shimmer-spinner" style={{ color: 'var(--primary)' }} />
+                      <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary)', letterSpacing: '2px', textTransform: 'uppercase' }}>
+                        Initialisation...
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
             {/* Day headers */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '12px 12px 4px' }}>
