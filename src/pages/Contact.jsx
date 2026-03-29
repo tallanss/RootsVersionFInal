@@ -7,6 +7,8 @@ import { isConfigured } from '../config/emailjs';
 import Confetti from '../components/Confetti';
 import { Helmet } from 'react-helmet-async';
 
+import { useContent } from '../context/ContentContext';
+
 const SLOT_LABELS = {
   afternoon: { label: 'Après-midi', time: '14h — 18h', icon: Sun },
   evening: { label: 'Soirée', time: '19h — 23h', icon: Moon },
@@ -18,9 +20,9 @@ const FORMULAS = [
   { id: 'sur-mesure', name: 'Sur-Mesure', price: 'Sur devis', desc: 'Durée illimitée' },
 ];
 
-const EVENT_TYPES = ['Mariage', 'Anniversaire', 'Entreprise', 'Baptême', 'Autre'];
-
 const Contact = () => {
+  const { content, updateContent } = useContent();
+  const eventTypes = content.formOptions?.eventTypes || ['Mariage', 'Anniversaire', 'Entreprise', 'Baptême', 'Autre'];
   const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -117,6 +119,23 @@ const Contact = () => {
 
     setLoading(false);
     if (res.success) {
+      // Sync with CMS Messages Center
+      const newMessage = {
+        id: Date.now(),
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        date: formatDateFR(selectedDate),
+        subject: `${formData.eventType} (${SLOT_LABELS[selectedSlot]?.label})`,
+        formula: booking.formula,
+        fullMessage: formData.message,
+        status: "Nouveau",
+        createdAt: new Date().toISOString()
+      };
+      
+      const newMessages = [newMessage, ...(content.messages || [])];
+      updateContent({ ...content, messages: newMessages });
+      
       setResult(res);
       setStep(4);
     } else {
@@ -435,7 +454,7 @@ const Contact = () => {
               <label className="form-label" htmlFor="eventType">Type d'événement *</label>
               <select className="form-select" id="eventType" name="eventType" value={formData.eventType} onChange={handleChange} required>
                 <option value="">Sélectionnez...</option>
-                {EVENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
+                {eventTypes.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div className="form-group">

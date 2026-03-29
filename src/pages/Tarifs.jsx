@@ -4,8 +4,10 @@ import { CheckCircle2, ArrowRight, Tag, Star, Phone, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import AnimatedButton from '../components/AnimatedButton';
 import FadeIn from '../components/FadeIn';
+import { useContent } from '../context/ContentContext';
 
 const Tarifs = () => {
+  const { content } = useContent();
   const [selectedPlanId, setSelectedPlanId] = useState(null); // id: 0 (Essentiel), 1 (Premium)
   const [selectedOptions, setSelectedOptions] = useState([]);
 
@@ -21,8 +23,8 @@ const Tarifs = () => {
   const plans = [
     {
       name: 'Essentiel',
-      price: '189',
-      desc: 'Parfait pour les petits événements et les fêtes entre amis.',
+      price: content.pricing.essentiel.price,
+      desc: content.pricing.essentiel.subtitle,
       features: [
         '2 heures d\'animation',
         'Photos illimitées',
@@ -35,8 +37,8 @@ const Tarifs = () => {
     },
     {
       name: 'Premium',
-      price: '289',
-      desc: 'Notre formule la plus populaire pour les mariages et grands événements.',
+      price: content.pricing.premium.price,
+      desc: content.pricing.premium.subtitle,
       features: [
         '3 heures d\'animation',
         'Photos illimitées',
@@ -52,9 +54,9 @@ const Tarifs = () => {
     },
     {
       name: 'Sur-Mesure',
-      price: 'Sur devis',
+      price: content.pricing.custom.price,
       isCustom: true,
-      desc: 'Pour les événements d\'exception qui méritent une prestation unique.',
+      desc: content.pricing.custom.subtitle,
       features: [
         'Durée illimitée',
         'Tout le Premium inclus',

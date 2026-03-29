@@ -14,6 +14,8 @@ import Header from './components/Header';
 import ContactButton from './components/WhatsAppButton';
 import CookieBanner from './components/CookieBanner';
 
+import { useContent } from './context/ContentContext';
+
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => { 
@@ -22,20 +24,58 @@ function ScrollToTop() {
   return null;
 }
 
-function AnimatedRoutes() {
+function PageContent() {
   const location = useLocation();
+  const { content } = useContent();
+  
+  // Inject Theme Colors
+  useEffect(() => {
+    if (content.theme) {
+      document.documentElement.style.setProperty('--primary', content.theme.primary);
+      document.documentElement.style.setProperty('--accent', content.theme.accent);
+      document.body.style.backgroundColor = content.theme.background || '#f7f9f8';
+      
+      // Generate slightly darker/lighter variants
+      const hexToRgb = (hex) => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : null;
+      };
+      
+      const rgb = hexToRgb(content.theme.primary);
+      if (rgb) {
+        document.documentElement.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+      }
+    }
+  }, [content.theme]);
+
+  // Handle BottomNav and ContactButton visibility
+  const showGlobalUI = !location.pathname.startsWith('/admin');
+
   return (
-    <div key={location.pathname} className="page-transition">
-      <Routes location={location}>
-        <Route path="/" element={<Home />} />
-        <Route path="/photobooth" element={<Photobooth />} />
-        <Route path="/tarifs" element={<Tarifs />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/galerie" element={<Gallery />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/mentions-legales" element={<Legal />} />
-        <Route path="/save-the-date" element={<SaveTheDate />} />
-      </Routes>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
+      <Header />
+      <main style={{ flexGrow: 1, position: 'relative' }}>
+        <div key={location.pathname} className="page-transition">
+          <Routes location={location}>
+            <Route path="/" element={<Home />} />
+            <Route path="/photobooth" element={<Photobooth />} />
+            <Route path="/tarifs" element={<Tarifs />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/galerie" element={<Gallery />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/mentions-legales" element={<Legal />} />
+            <Route path="/save-the-date" element={<SaveTheDate />} />
+          </Routes>
+        </div>
+      </main>
+      <Footer />
+      {showGlobalUI && <BottomNav />}
+      {showGlobalUI && <ContactButton />}
+      <CookieBanner />
     </div>
   );
 }
@@ -55,16 +95,7 @@ function App() {
       <ScrollToTop />
       <div className="ambient-orbs"></div>
       <div className="mouse-glow"></div>
-      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', background: 'var(--bg-app)' }}>
-        <Header />
-        <main style={{ flexGrow: 1, position: 'relative' }}>
-          <AnimatedRoutes />
-        </main>
-        <Footer />
-        <BottomNav />
-        <ContactButton />
-        <CookieBanner />
-      </div>
+      <PageContent />
     </Router>
   );
 }

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Heart, Calendar, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import AnimatedButton from './AnimatedButton';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,29 +56,31 @@ const Header = () => {
             Photo<span style={{ color: 'var(--primary)' }}>Roots</span>
           </span>
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 20 }}>
-          <AnimatedButton 
-            to="/contact" 
-            style={{ 
-              width: 'auto', 
-              fontSize: '13px', 
-              padding: '8px 18px', 
-              whiteSpace: 'nowrap', 
-              flexShrink: 0, 
-              minHeight: '40px',
-              borderRadius: 'var(--radius-full)',
-              boxShadow: '0 0 20px rgba(16, 185, 129, 0.25)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              fontWeight: 700
-            }}
-          >
-            <Calendar size={16} /> 
-            Réservez
-            <ChevronRight size={14} style={{ opacity: 0.7 }} />
-          </AnimatedButton>
-        </div>
+        {!isAdmin && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 20 }}>
+            <AnimatedButton 
+              to="/contact" 
+              style={{ 
+                width: 'auto', 
+                fontSize: '13px', 
+                padding: '8px 18px', 
+                whiteSpace: 'nowrap', 
+                flexShrink: 0, 
+                minHeight: '40px',
+                borderRadius: 'var(--radius-full)',
+                boxShadow: '0 0 20px rgba(16, 185, 129, 0.25)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                fontWeight: 700
+              }}
+            >
+              <Calendar size={16} /> 
+              Réservez
+              <ChevronRight size={14} style={{ opacity: 0.7 }} />
+            </AnimatedButton>
+          </div>
+        )}
       </header>
       </div>
     </>

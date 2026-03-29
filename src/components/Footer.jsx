@@ -73,8 +73,9 @@ const Footer = () => {
         <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
           © {currentYear} PhotoRoots. Tous droits réservés.
         </div>
-        <div style={{ display: 'flex', gap: '20px', fontSize: '13px' }}>
+        <div style={{ display: 'flex', gap: '20px', fontSize: '13px', alignItems: 'center' }}>
           <Link to="/mentions-legales" style={linkStyle}>Mentions Légales</Link>
+          <Link to="/admin" style={{ ...linkStyle, opacity: 0.6, fontSize: '11px', border: '1px solid var(--border-light)', padding: '2px 8px', borderRadius: '4px' }}>Admin</Link>
           <span style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
             Fait avec <Heart size={12} style={{ color: '#ef4444', fill: '#ef4444' }} /> en Normandie
           </span>

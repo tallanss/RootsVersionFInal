@@ -13,56 +13,30 @@ const DEFAULT_CONTENT = {
     step2: { title: "On s'occupe de tout", desc: "Livraison, installation discrète et gestion de la lumière. Notre technicien configure le photobooth clé en main." },
     step3: { title: "Vivez l'instant !", desc: "Lumières, sourires, poses improbables et impressions glacées instantanées en qualité studio professionnel." }
   },
-  gallery: [
-    {
-      id: 1,
-      title: "Mariage de Sarah & Tom",
-      location: "Château de Galleville",
-      category: "Mariage",
-      image: "/events/wedding-1.png",
-      date: "Juin 2025"
-    },
-    {
-      id: 2,
-      title: "Gala Annuel CCI Rouen",
-      location: "Palais des Consuls",
-      category: "Corporate",
-      image: "/events/corporate-1.png",
-      date: "Septembre 2025"
-    },
-    {
-      id: 3,
-      title: "10 ans de Léa",
-      location: "Le Havre",
-      category: "Anniversaire",
-      image: "/events/birthday-1.png",
-      date: "Octobre 2025"
-    },
-    {
-      id: 4,
-      title: "Soirée Black Tie",
-      location: "Casino de Dieppe",
-      category: "Gala",
-      image: "/events/gala-1.png",
-      date: "Décembre 2025"
-    },
-    {
-      id: 5,
-      title: "Mariage Bohème",
-      location: "Étretat",
-      category: "Mariage",
-      image: "/events/boho-1.png",
-      date: "Juillet 2025"
-    },
-    {
-      id: 6,
-      title: "Lancement de Marque",
-      location: "Concept Store Rouen",
-      category: "Corporate",
-      image: "/events/party-1.png",
-      date: "Novembre 2025"
-    }
-  ]
+  gallery: [],
+  pricing: {
+    essentiel: { price: "189", subtitle: "Parfait pour les petits événements et les fêtes entre amis." },
+    premium: { price: "289", subtitle: "Notre formule la plus populaire pour les mariages et grands événements." },
+    custom: { price: "Sur devis", subtitle: "Pour les événements d'exception qui méritent une prestation unique." }
+  },
+  theme: {
+    primary: "#16a34a",
+    accent: "#22c55e",
+    background: "#f7f9f8"
+  },
+  seo: {
+    title: "PhotoRoots | Location Photobooth Miroir Luxe Le Havre & Rouen",
+    description: "Sublimez vos événements avec notre borne photo miroir haut de gamme. Mariage, Corporate, Anniversaire en Normandie.",
+  },
+  messages: [],
+  formOptions: {
+    eventTypes: ['Mariage', 'Anniversaire', 'Entreprise', 'Baptême', 'Autre']
+  },
+  analytics: {
+    monthlyBookings: [],
+    totalInquiries: 0,
+    estimatedRevenue: 0
+  }
 };
 
 export const ContentProvider = ({ children }) => {
@@ -74,6 +48,18 @@ export const ContentProvider = ({ children }) => {
     if (parsed.hero && (parsed.hero.subtitle === "Location Photobooth Premium" || parsed.hero.subtitle === "location photobooth, a partir de 189 euros")) {
       parsed.hero.subtitle = DEFAULT_CONTENT.hero.subtitle;
     }
+
+    // Migration for pricing if missing
+    if (!parsed.pricing) {
+      parsed.pricing = DEFAULT_CONTENT.pricing;
+    }
+
+    // Migration for new pro features
+    if (!parsed.theme) parsed.theme = DEFAULT_CONTENT.theme;
+    if (!parsed.seo) parsed.seo = DEFAULT_CONTENT.seo;
+    if (!parsed.messages) parsed.messages = DEFAULT_CONTENT.messages;
+    if (!parsed.formOptions) parsed.formOptions = DEFAULT_CONTENT.formOptions;
+    if (!parsed.analytics) parsed.analytics = DEFAULT_CONTENT.analytics;
     
     return parsed;
   });
