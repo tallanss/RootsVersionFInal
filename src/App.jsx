@@ -1,38 +1,69 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
-import Booking from './pages/Booking';
-import Creator from './pages/Creator';
-import Profile from './pages/Profile';
+import Photobooth from './pages/Photobooth';
+import Tarifs from './pages/Tarifs';
+import Contact from './pages/Contact';
+import Gallery from './pages/Gallery';
+import Admin from './pages/Admin';
+import Legal from './pages/Legal';
 import BottomNav from './components/BottomNav';
 import Header from './components/Header';
+import WhatsAppButton from './components/WhatsAppButton';
+import CookieBanner from './components/CookieBanner';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { 
+    window.scrollTo(0, 0); 
+    AOS.refresh();
+  }, [pathname]);
+  return null;
+}
+
+function AnimatedRoutes() {
+  const location = useLocation();
+  return (
+    <div key={location.pathname} className="page-transition">
+      <Routes location={location}>
+        <Route path="/" element={<Home />} />
+        <Route path="/photobooth" element={<Photobooth />} />
+        <Route path="/tarifs" element={<Tarifs />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/galerie" element={<Gallery />} />
+        <Route path="/admin" element={<Admin />} />
+        <Route path="/mentions-legales" element={<Legal />} />
+      </Routes>
+    </div>
+  );
+}
 
 function App() {
+  useEffect(() => {
+    AOS.init({ duration: 800, once: true });
+    const handlePointerMove = (e) => {
+      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+    };
+    window.addEventListener('pointermove', handlePointerMove);
+    return () => window.removeEventListener('pointermove', handlePointerMove);
+  }, []);
+
   return (
     <Router>
-      <div className="flex flex-col min-h-screen relative overflow-x-hidden bg-bg-app">
-
-        {/* 2030 Spatial Aurora Background */}
-        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0 fixed">
-          <div style={{ position: 'absolute', top: '-25%', right: '-25%', width: '80vw', height: '80vw', maxWidth: '600px', maxHeight: '600px', borderRadius: '50%', filter: 'blur(100px)', opacity: 0.25, transform: 'translate(-40px, 40px)', background: 'var(--accent)' }} />
-          <div style={{ position: 'absolute', top: '33%', left: '-25%', width: '60vw', height: '60vw', maxWidth: '500px', maxHeight: '500px', borderRadius: '50%', filter: 'blur(100px)', opacity: 0.15, transform: 'translate(80px, 0) rotate(45deg)', background: '#2E93FF' }} />
-          <div style={{ position: 'absolute', bottom: '-25%', right: '25%', width: '70vw', height: '70vw', maxWidth: '550px', maxHeight: '550px', borderRadius: '50%', filter: 'blur(100px)', opacity: 0.15, background: '#A12EFF' }} />
-        </div>
-
-        <Header className="z-50 relative" />
-
-        {/* Main Content Area */}
-        <main className="flex-grow animate-in relative z-10 text-text-main pb-24">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/booking" element={<Booking />} />
-            <Route path="/creator" element={<Creator />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
+      <ScrollToTop />
+      <div className="ambient-orbs"></div>
+      <div className="mouse-glow"></div>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative', background: 'var(--bg-app)' }}>
+        <Header />
+        <main style={{ flexGrow: 1, position: 'relative', paddingBottom: '100px' }}>
+          <AnimatedRoutes />
         </main>
-
-        {/* Bottom Navigation */}
-        <BottomNav className="z-50 relative" />
+        <BottomNav />
+        <WhatsAppButton />
+        <CookieBanner />
       </div>
     </Router>
   );

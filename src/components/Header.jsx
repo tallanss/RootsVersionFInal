@@ -1,22 +1,70 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Camera } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import AnimatedButton from './AnimatedButton';
 
 const Header = () => {
-    return (
-        <header className="sticky top-0 left-0 right-0 ios-header z-50 px-6 py-4 flex justify-between items-center">
-            <Link to="/" className="flex items-center space-x-2 text-white" style={{ textShadow: '0 0 10px rgba(255,255,255,0.4)' }}>
-                <Camera size={24} className="text-white" />
-                <span className="font-bold text-xl tracking-tight">roots<span style={{ color: 'var(--accent)' }}>.</span></span>
-            </Link>
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
-            <div className="flex items-center space-x-1">
-                <div className="w-8 h-8 rounded-full border flex items-center justify-center overflow-hidden" style={{ borderColor: 'var(--accent)', boxShadow: '0 0 10px rgba(255,46,147,0.5)', background: 'rgba(255,255,255,0.1)' }}>
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Jean" style={{ filter: 'brightness(1.5)' }} alt="User" />
-                </div>
-            </div>
-        </header>
-    );
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+      
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      setScrollProgress(scrolled);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Init on mount
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <>
+      {/* Spacer to replace the header in document flow since it is fixed */}
+      <div style={{ height: '56px' }} />
+      <div style={{ 
+        position: 'fixed', 
+        top: isScrolled ? '12px' : '0', 
+        left: 0, right: 0,
+        zIndex: 50, 
+        transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        padding: isScrolled ? '0 16px' : '0',
+        pointerEvents: 'none' /* let clicks pass through wrapper */
+      }}>
+      <header className={`ios-header ${isScrolled ? 'scrolled' : ''}`} style={{ padding: '10px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px', pointerEvents: 'auto', position: 'relative', overflow: 'hidden' }}>
+        
+        {/* Reading Progress Bar */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          height: '2px',
+          background: 'linear-gradient(90deg, #10b981, #34d399)',
+          width: `${scrollProgress}%`,
+          transition: 'width 0.1s ease-out',
+          zIndex: 10
+        }} />
+
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, flexShrink: 0, textDecoration: 'none', zIndex: 20 }}>
+          <Camera size={20} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+          <span style={{ fontWeight: 800, fontSize: '16px', letterSpacing: '-0.02em', color: 'var(--text-main)', whiteSpace: 'nowrap' }}>
+            Photo<span style={{ color: 'var(--primary)' }}>Roots</span>
+          </span>
+        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 20 }}>
+          <Link to="/galerie" style={{ color: 'var(--text-main)', textDecoration: 'none', fontSize: '13px', fontWeight: 600, opacity: isScrolled ? 1 : 0.8 }}>
+            Galerie
+          </Link>
+          <AnimatedButton to="/contact" style={{ width: 'auto', fontSize: '13px', padding: '8px 16px', whiteSpace: 'nowrap', flexShrink: 0, minHeight: '36px' }}>
+            Devis Gratuit
+          </AnimatedButton>
+        </div>
+      </header>
+      </div>
+    </>
+  );
 };
-
 export default Header;
