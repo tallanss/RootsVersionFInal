@@ -6,9 +6,11 @@ import AnimatedButton from '../components/AnimatedButton';
 import FadeIn from '../components/FadeIn';
 import { useContent } from '../context/ContentContext';
 import EditableBlock from '../components/admin/EditableBlock';
+import { useAdmin } from '../context/AdminContext';
 
 const Tarifs = () => {
   const { content, updateContent } = useContent();
+  const { isAdminMode } = useAdmin();
   const [selectedPlanId, setSelectedPlanId] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState([]);
 
@@ -244,26 +246,28 @@ const Tarifs = () => {
                           ))}
                           
                           {/* Add feature buttons */}
-                          <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                            <button 
-                              className="btn-admin-add" 
-                              style={{ flex: 1, fontSize: '10px', padding: '4px' }}
-                              onClick={() => {
-                                const newPlans = [...plans];
-                                newPlans[i].features.push('Nouvel avantage');
-                                updateContent({ ...content, pricing_plans: newPlans });
-                              }}
-                            >+ Avantage</button>
-                            <button 
-                              className="btn-admin-add" 
-                              style={{ flex: 1, fontSize: '10px', padding: '4px' }}
-                              onClick={() => {
-                                const newPlans = [...plans];
-                                newPlans[i].excluded.push('Nouvelle exclusion');
-                                updateContent({ ...content, pricing_plans: newPlans });
-                              }}
-                            >+ Exclusion</button>
-                          </div>
+                          {isAdminMode && (
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                              <button
+                                className="btn-admin-add"
+                                style={{ flex: 1, fontSize: '10px', padding: '4px' }}
+                                onClick={() => {
+                                  const newPlans = [...plans];
+                                  newPlans[i].features.push('Nouvel avantage');
+                                  updateContent({ ...content, pricing_plans: newPlans });
+                                }}
+                              >+ Avantage</button>
+                              <button
+                                className="btn-admin-add"
+                                style={{ flex: 1, fontSize: '10px', padding: '4px' }}
+                                onClick={() => {
+                                  const newPlans = [...plans];
+                                  newPlans[i].excluded.push('Nouvelle exclusion');
+                                  updateContent({ ...content, pricing_plans: newPlans });
+                                }}
+                              >+ Exclusion</button>
+                            </div>
+                          )}
                         </ul>
 
                         <button 
@@ -375,26 +379,28 @@ const Tarifs = () => {
                         ))}
 
                         {/* Add feature buttons */}
-                        <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                          <button 
-                            className="btn-admin-add" 
-                            style={{ flex: 1, fontSize: '10px', padding: '4px' }}
-                            onClick={() => {
-                              const newPlans = [...plans];
-                              newPlans[i].features.push('Nouvel avantage');
-                              updateContent({ ...content, pricing_plans: newPlans });
-                            }}
-                          >+ Avantage</button>
-                          <button 
-                            className="btn-admin-add" 
-                            style={{ flex: 1, fontSize: '10px', padding: '4px' }}
-                            onClick={() => {
-                              const newPlans = [...plans];
-                              newPlans[i].excluded.push('Nouvelle exclusion');
-                              updateContent({ ...content, pricing_plans: newPlans });
-                            }}
-                          >+ Exclusion</button>
-                        </div>
+                        {isAdminMode && (
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                            <button
+                              className="btn-admin-add"
+                              style={{ flex: 1, fontSize: '10px', padding: '4px' }}
+                              onClick={() => {
+                                const newPlans = [...plans];
+                                newPlans[i].features.push('Nouvel avantage');
+                                updateContent({ ...content, pricing_plans: newPlans });
+                              }}
+                            >+ Avantage</button>
+                            <button
+                              className="btn-admin-add"
+                              style={{ flex: 1, fontSize: '10px', padding: '4px' }}
+                              onClick={() => {
+                                const newPlans = [...plans];
+                                newPlans[i].excluded.push('Nouvelle exclusion');
+                                updateContent({ ...content, pricing_plans: newPlans });
+                              }}
+                            >+ Exclusion</button>
+                          </div>
+                        )}
                       </ul>
 
                       <button 

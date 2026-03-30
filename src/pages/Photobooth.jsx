@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
 import EditableBlock from '../components/admin/EditableBlock';
 import { useContent } from '../context/ContentContext';
+import { useAdmin } from '../context/AdminContext';
 
 const DEFAULT_SPECS = [
   { id: 'camera', icon: 'CameraIcon', title: 'Canon EOS 6D', desc: 'Appareil photo full-frame professionnel avec objectif ultra-performant pour des clichés d\'une netteté exceptionnelle et des couleurs vibrantes.' },
@@ -30,6 +31,7 @@ const ICONS = { CameraIcon, Monitor, Printer, Tv, Image, Palette, CheckCircle2 }
 
 const Photobooth = () => {
   const { content, updateContent } = useContent();
+  const { isAdminMode } = useAdmin();
 
   const specs = content.photobooth_specs || DEFAULT_SPECS;
   const allInFeatures = content.photobooth_all_in || DEFAULT_ALL_IN_FEATURES;
@@ -180,15 +182,17 @@ const Photobooth = () => {
               </div>
             </EditableBlock>
           ))}
-          <div style={{ padding: '12px', textAlign: 'center' }}>
-            <button 
-              className="btn-admin-add" 
-              onClick={() => {
-                const newG = [...photoboothGallery, { src: '/placeholder.jpg', alt: 'Nouvele image' }];
-                updateContent({ ...content, photobooth_gallery: newG });
-              }}
-            >+ Ajouter une image</button>
-          </div>
+          {isAdminMode && (
+            <div style={{ padding: '12px', textAlign: 'center' }}>
+              <button
+                className="btn-admin-add"
+                onClick={() => {
+                  const newG = [...photoboothGallery, { src: '/placeholder.jpg', alt: 'Nouvele image' }];
+                  updateContent({ ...content, photobooth_gallery: newG });
+                }}
+              >+ Ajouter une image</button>
+            </div>
+          )}
         </div>
       </section>
 
