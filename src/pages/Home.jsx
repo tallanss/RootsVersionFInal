@@ -413,7 +413,7 @@ const Home = () => {
         </div>
 
         <div style={{ textAlign: 'center', marginTop: '24px' }}>
-          <AnimatedButton to="/galerie" className="btn-outline" style={{ width: 'auto', padding: '12px 24px' }}>
+          <AnimatedButton to="/galerie" className="btn-secondary" style={{ width: 'auto', padding: '12px 32px', borderRadius: 'var(--radius-full)' }}>
             Accéder à la Galerie <ArrowRight size={16} />
           </AnimatedButton>
         </div>
@@ -447,7 +447,7 @@ const Home = () => {
         <div className="cta-section">
           <h2>Prêt à créer des souvenirs ?</h2>
           <p>Réservez votre date en ligne et recevez une confirmation instantanée.</p>
-          <AnimatedButton to="/contact" className="btn-primary" style={{ background: '#fff', color: 'var(--bg-dark)', width: 'auto', padding: '16px 36px', fontWeight: 800 }}>
+          <AnimatedButton to="/contact" className="btn-primary" style={{ background: '#ffffff', color: 'var(--primary)', width: 'auto', padding: '16px 36px', fontWeight: 800 }}>
             <Phone size={18} />
             Réserver maintenant
           </AnimatedButton>

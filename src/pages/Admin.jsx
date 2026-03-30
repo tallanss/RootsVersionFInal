@@ -153,9 +153,9 @@ const Admin = () => {
 
   const applyPreset = (type) => {
     const presets = {
-      minimal: { primary: "#16a34a", accent: "#22c55e", background: "#f7f9f8" },
-      futuristic: { primary: "#10b981", accent: "#34d399", background: "#0f172a" },
-      luxury: { primary: "#d4af37", accent: "#f1c40f", background: "#111111" }
+      minimal: { primary: "#c5a059", accent: "#e3c18c", background: "#ffffff" },
+      luxury: { primary: "#c5a059", accent: "#e3c18c", background: "#0a0a0c" },
+      light: { primary: "#c5a059", accent: "#e3c18c", background: "#faf7f2" }
     };
     
     if (presets[type]) {

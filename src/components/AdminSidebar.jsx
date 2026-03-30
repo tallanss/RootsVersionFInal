@@ -102,8 +102,8 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
              <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(var(--primary-rgb), 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: 800 }}>PR</div>
              <div>
-                <div style={{ fontSize: '13px', fontWeight: 700 }}>Version Pro</div>
-                <div style={{ fontSize: '11px', color: '#64748b' }}>SaaS 2030 Edition</div>
+                <div style={{ fontSize: '13px', fontWeight: 700 }}>PhotoRoots Pro</div>
+                <div style={{ fontSize: '11px', color: '#64748b' }}>Prestige Gold Edition</div>
              </div>
           </div>
           <button 

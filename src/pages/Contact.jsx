@@ -229,7 +229,7 @@ const Contact = () => {
         </div>
 
         {!isConfigured() && (
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', padding: '12px 16px', background: '#fef3c7', borderRadius: 'var(--radius-md)', border: '1px solid #fbbf24', marginBottom: '20px', fontSize: '13px', color: '#92400e', lineHeight: 1.5 }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', padding: '12px 16px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', marginBottom: '20px', fontSize: '13px', color: 'var(--primary)', lineHeight: 1.5 }}>
             <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
             <span><strong>Mode démo</strong> — Configurez l'URL Google Apps Script dans <code>src/config/emailjs.js</code> pour activer la réservation réelle avec Google Calendar.</span>
           </div>
