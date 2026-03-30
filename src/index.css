@@ -1,28 +1,28 @@
 :root {
   --font-main: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
-  /* Clean White & Emerald Green Palette with Glassmorphism */
-  --bg-app: transparent;
-  --bg-card: rgba(255, 255, 255, 0.5);
-  --bg-secondary: #f0fdf4;
-  --bg-dark: #052e16;
-  --primary: #16a34a;
-  --primary-dark: #15803d;
-  --primary-light: #bbf7d0;
-  --accent: #22c55e;
-  --accent-glow: rgba(34, 197, 94, 0.15);
+  /* Luxury White & Gold Palette */
+  --bg-app: #ffffff;
+  --bg-card: rgba(255, 255, 255, 0.8);
+  --bg-secondary: #faf7f2;
+  --bg-dark: #1a1a1a;
+  --primary: #c5a059;
+  --primary-dark: #a68549;
+  --primary-light: rgba(197, 160, 89, 0.15);
+  --accent: #e3c18c;
+  --accent-glow: rgba(197, 160, 89, 0.2);
 
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
+  --text-main: #1a1a1a;
+  --text-muted: #71717a;
+  --text-light: #a1a1aa;
 
-  --border-light: #e2e8f0;
-  --border-medium: #cbd5e1;
+  --border-light: rgba(197, 160, 89, 0.1);
+  --border-medium: rgba(197, 160, 89, 0.2);
 
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(197, 160, 89, 0.05), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 10px -1px rgba(197, 160, 89, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(197, 160, 89, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(197, 160, 89, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
 
   --radius-sm: 12px;
   --radius-md: 16px;
@@ -63,7 +63,7 @@ html {
 
 body {
   margin: 0;
-  background-color: #f7f9f8;
+  background-color: var(--bg-app);
   color: var(--text-main);
   font-family: var(--font-main);
   -webkit-font-smoothing: antialiased;
@@ -71,64 +71,13 @@ body {
   position: relative;
 }
 
-.ambient-orbs {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  z-index: -3; /* Derrière tout */
-  pointer-events: none;
-  background-color: transparent;
-  /* 3 Orbes massifs et extrêmement flous : Le "Sweet Spot" */
-  background-image: 
-    radial-gradient(circle 800px at 15% 30%, rgba(34, 197, 94, 0.2), transparent 70%),
-    radial-gradient(circle 900px at 85% 70%, rgba(187, 247, 208, 0.35), transparent 70%),
-    radial-gradient(circle 600px at 50% 80%, rgba(134, 239, 172, 0.25), transparent 70%);
-  filter: blur(100px); /* Flou très étendu pour une douceur parfaite */
-  animation: orbs-drift 22s ease-in-out infinite alternate;
+/* BACKGROUND EFFECTS REMOVED FOR PURE WHITE THEME */
+.ambient-orbs, .mouse-glow {
+  display: none !important;
 }
 
-@media (max-width: 768px) {
-  .ambient-orbs {
-    /* Fond beaucoup moins vert sur mobile : diamètres réduits et opacité baissée */
-    background-image: 
-      radial-gradient(circle 400px at 15% 30%, rgba(34, 197, 94, 0.1), transparent 70%),
-      radial-gradient(circle 450px at 85% 70%, rgba(187, 247, 208, 0.2), transparent 70%),
-      radial-gradient(circle 350px at 50% 80%, rgba(134, 239, 172, 0.15), transparent 70%);
-  }
-}
-
-@keyframes orbs-drift {
-  0% { transform: scale(1) translate(0px, 0px); }
-  33% { transform: scale(1.1) translate(4vw, -4vh); }
-  66% { transform: scale(0.9) translate(-2vw, 5vh); }
-  100% { transform: scale(1.05) translate(-4vw, 2vh); }
-}
-
-.mouse-glow {
-  position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  z-index: -2; /* Au dessus des orbes, mais sous les points */
-  pointer-events: none;
-  background-image: radial-gradient(
-    circle 600px at var(--mouse-x, 50vw) var(--mouse-y, -20vh),
-    rgba(34, 197, 94, 0.2) 0%,
-    rgba(34, 197, 94, 0.08) 30%,
-    transparent 60%
-  );
-}
-
-/* PATRON GÉOMÉTRIQUE SUBTIL (Points Modernes) */
 body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
-  background-size: 24px 24px;
-  opacity: 0.5;
-  pointer-events: none;
+  content: none !important;
 }
 
 @keyframes aurora-move {
@@ -181,7 +130,7 @@ button:active { transform: scale(0.97); }
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(197, 160, 89, 0.2), transparent);
   animation: skeleton-wave 1.5s infinite;
 }
 
@@ -348,12 +297,12 @@ button:active { transform: scale(0.97); }
 
 .btn-primary:active {
   transform: scale(0.95);
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
+  box-shadow: 0 2px 8px rgba(197, 160, 89, 0.1);
 }
 
 .btn-primary:hover {
   transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 12px 28px rgba(34, 197, 94, 0.4), 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 28px rgba(197, 160, 89, 0.35), 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* Effet Shimmer puissant et CONTINU sur mobile/desktop */
@@ -523,23 +472,23 @@ button:active { transform: scale(0.97); }
 
 .bento-item {
   position: relative;
-  background: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-sm);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: pointer;
   overflow: hidden;
   text-decoration: none;
   display: flex;
 }
 .bento-item:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: var(--shadow-md);
-  border-color: rgba(255,255,255,1);
-  background: rgba(255, 255, 255, 0.8);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .bento-large {
@@ -609,7 +558,14 @@ button:active { transform: scale(0.97); }
 }
 .bento-small .bento-text p {
   font-size: 13px;
-  opacity: 0.9;
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 
 .bento-watermark {
@@ -1002,7 +958,7 @@ button:active { transform: scale(0.97); }
   width: 200px;
   height: 200px;
   border-radius: 50%;
-  background: rgba(34, 197, 94, 0.15);
+  background: rgba(197, 160, 89, 0.15);
   filter: blur(60px);
 }
 .cta-section h2 {
@@ -1148,8 +1104,8 @@ button:active { transform: scale(0.97); }
 /* ===== CONTACT BUTTON ===== */
 .contact-float {
   position: fixed;
-  bottom: calc(84px + var(--safe-area-bottom)); /* Default position above BottomNav */
-  right: 20px;
+  bottom: calc(100px + var(--safe-area-bottom)); /* Higher to clear BottomNav */
+  right: 16px;
   width: 58px;
   height: 58px;
   background: var(--primary);
@@ -1526,6 +1482,12 @@ body.has-price-bar .contact-float {
   columns: 2;
   column-gap: 16px;
   padding: 10px 0;
+}
+
+@media (max-width: 768px) {
+  .gallery-masonry {
+    columns: 1;
+  }
 }
 
 @media (min-width: 768px) {
@@ -2164,6 +2126,42 @@ body.has-price-bar .contact-float {
     display: flex;
   }
 }
+
+/* PUBLIC MOBILE NAV OPTIMIZATION */
+.ios-nav {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .ios-nav {
+    display: block !important;
+  }
+  .mobile-hide {
+    display: none !important;
+  }
+}
+
+/* SAVE THE DATE ACCESSIBILITY FIX */
+.savethedate-container input::placeholder {
+  color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.savethedate-container input {
+  color: var(--text-main) !important;
+  background: white !important;
+  border: 1px solid var(--border-light) !important;
+}
+
+.savethedate-container label {
+  color: var(--primary) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 
 /* ENFORCE SINGLE COLUMN ON MOBILE ADMIN */
 @media (max-width: 768px) {

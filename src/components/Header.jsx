@@ -44,22 +44,32 @@ const Header = () => {
           top: 0,
           left: 0,
           height: '2px',
-          background: 'linear-gradient(90deg, #10b981, #34d399)',
+          background: 'linear-gradient(90deg, var(--primary), var(--accent))',
           width: `${scrollProgress}%`,
           transition: 'width 0.1s ease-out',
           zIndex: 10
         }} />
 
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, flexShrink: 0, textDecoration: 'none', zIndex: 20 }}>
-          <Camera size={20} style={{ color: 'var(--primary)', flexShrink: 0 }} />
-          <span style={{ fontWeight: 800, fontSize: '16px', letterSpacing: '-0.02em', color: 'var(--text-main)', whiteSpace: 'nowrap' }}>
-            Photo<span style={{ color: 'var(--primary)' }}>Roots</span>
-          </span>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', minWidth: 0, flexShrink: 0, textDecoration: 'none', zIndex: 20 }}>
+          <img 
+            src="/logo-gold.png" 
+            alt="PhotoRoots Logo" 
+            style={{ 
+              height: isScrolled ? '38px' : '48px', 
+              width: 'auto', 
+              objectFit: 'contain',
+              transition: 'height 0.3s ease'
+            }} 
+          />
         </Link>
+        {/* Navigation links removed as they are present in bottom nav */}
+
+
         {!isAdmin && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 20 }}>
             <AnimatedButton 
               to="/contact" 
+              className="header-cta"
               style={{ 
                 width: 'auto', 
                 fontSize: '13px', 
@@ -68,7 +78,6 @@ const Header = () => {
                 flexShrink: 0, 
                 minHeight: '40px',
                 borderRadius: 'var(--radius-full)',
-                boxShadow: '0 0 20px rgba(16, 185, 129, 0.25)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',

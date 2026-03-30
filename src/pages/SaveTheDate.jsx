@@ -77,7 +77,7 @@ const SaveTheDate = () => {
   };
 
   return (
-    <div className="animate-in pb-20">
+    <div className="savethedate-container animate-in pb-20">
       <Helmet>
         <title>Générateur Save The Date | PhotoRoots</title>
         <meta name="description" content="Créez et téléchargez gratuitement votre Save the Date personnalisé pour votre mariage ou événement." />

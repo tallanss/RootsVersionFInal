@@ -93,8 +93,6 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="ambient-orbs"></div>
-      <div className="mouse-glow"></div>
       <PageContent />
     </Router>
   );

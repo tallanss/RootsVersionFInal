@@ -20,9 +20,9 @@ const DEFAULT_CONTENT = {
     custom: { price: "Sur devis", subtitle: "Pour les événements d'exception qui méritent une prestation unique." }
   },
   theme: {
-    primary: "#16a34a",
-    accent: "#22c55e",
-    background: "#f7f9f8"
+    primary: "#c5a059",
+    accent: "#e3c18c",
+    background: "#ffffff"
   },
   seo: {
     title: "PhotoRoots | Location Photobooth Miroir Luxe Le Havre & Rouen",
@@ -54,7 +54,13 @@ export const ContentProvider = ({ children }) => {
       parsed.pricing = DEFAULT_CONTENT.pricing;
     }
 
-    // Migration for new pro features
+    // Theme migration to Luxury Gold
+    if (parsed.theme && (parsed.theme.background === "#f7f9f8" || parsed.theme.background === "#0a0a0c" || parsed.theme.background === "#f8fafb")) {
+      parsed.theme.background = DEFAULT_CONTENT.theme.background;
+      parsed.theme.primary = DEFAULT_CONTENT.theme.primary;
+      parsed.theme.accent = DEFAULT_CONTENT.theme.accent;
+    }
+    
     if (!parsed.theme) parsed.theme = DEFAULT_CONTENT.theme;
     if (!parsed.seo) parsed.seo = DEFAULT_CONTENT.seo;
     if (!parsed.messages) parsed.messages = DEFAULT_CONTENT.messages;

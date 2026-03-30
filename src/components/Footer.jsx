@@ -7,10 +7,8 @@ const Footer = () => {
 
   return (
     <footer style={{ 
-      background: 'rgba(255, 255, 255, 0.65)', 
-      backdropFilter: 'blur(32px) saturate(200%)', 
-      WebkitBackdropFilter: 'blur(32px) saturate(200%)',
-      borderTop: '1px solid rgba(255, 255, 255, 1)',
+      background: '#faf7f2', 
+      borderTop: '1px solid rgba(197, 160, 89, 0.15)',
       padding: '60px 24px 120px', // Extra bottom padding for BottomNav
       marginTop: 'auto',
       position: 'relative',
@@ -20,11 +18,12 @@ const Footer = () => {
         
         {/* BRAND & DESC */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none' }}>
-            <Camera size={24} style={{ color: 'var(--primary)' }} />
-            <span style={{ fontWeight: 800, fontSize: '20px', letterSpacing: '-0.02em', color: 'var(--text-main)' }}>
-              Photo<span style={{ color: 'var(--primary)' }}>Roots</span>
-            </span>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <img 
+              src="/logo-gold.png" 
+              alt="PhotoRoots Logo" 
+              style={{ height: '60px', width: 'auto', objectFit: 'contain' }} 
+            />
           </Link>
           <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6, maxWidth: '300px' }}>
             L'excellence du photobooth premium en Normandie. Sublimez vos événements avec nos bornes photos innovantes et élégantes.
@@ -87,7 +86,7 @@ const Footer = () => {
           width: 40px; 
           height: 40px; 
           border-radius: 50%; 
-          background: #fff; 
+          background: rgba(255, 255, 255, 0.05); 
           display: flex; 
           align-items: center; 
           justify-content: center; 
