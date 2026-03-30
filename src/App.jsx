@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Photobooth from './pages/Photobooth';
 import Tarifs from './pages/Tarifs';
@@ -13,8 +13,10 @@ import Footer from './components/Footer';
 import Header from './components/Header';
 import ContactButton from './components/WhatsAppButton';
 import CookieBanner from './components/CookieBanner';
+import AdminToolbar from './components/admin/AdminToolbar';
 
 import { useContent } from './context/ContentContext';
+import { AdminProvider } from './context/AdminContext';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -33,9 +35,8 @@ function PageContent() {
     if (content.theme) {
       document.documentElement.style.setProperty('--primary', content.theme.primary);
       document.documentElement.style.setProperty('--accent', content.theme.accent);
-      document.body.style.backgroundColor = content.theme.background || '#f7f9f8';
+      document.body.style.backgroundColor = content.theme.background || '#ffffff';
       
-      // Generate slightly darker/lighter variants
       const hexToRgb = (hex) => {
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? {
@@ -52,12 +53,12 @@ function PageContent() {
     }
   }, [content.theme]);
 
-  // Handle BottomNav and ContactButton visibility
-  const showGlobalUI = !location.pathname.startsWith('/admin');
+  // Hide global UI only on /admin (login page)
+  const isAdminLoginPage = location.pathname === '/admin';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
-      {showGlobalUI && <Header />}
+      {!isAdminLoginPage && <Header />}
       <main style={{ flexGrow: 1, position: 'relative' }}>
         <div key={location.pathname} className="page-transition">
           <Routes location={location}>
@@ -72,9 +73,10 @@ function PageContent() {
           </Routes>
         </div>
       </main>
-      {showGlobalUI && <Footer />}
-      {showGlobalUI && <BottomNav />}
-      {showGlobalUI && <ContactButton />}
+      {!isAdminLoginPage && <Footer />}
+      {!isAdminLoginPage && <BottomNav />}
+      {!isAdminLoginPage && <ContactButton />}
+      {!isAdminLoginPage && <AdminToolbar />}
       <CookieBanner />
     </div>
   );
@@ -92,8 +94,10 @@ function App() {
 
   return (
     <Router>
-      <ScrollToTop />
-      <PageContent />
+      <AdminProvider>
+        <ScrollToTop />
+        <PageContent />
+      </AdminProvider>
     </Router>
   );
 }

@@ -7,6 +7,8 @@ import FadeIn from '../components/FadeIn';
 import AnimatedButton from '../components/AnimatedButton';
 import MagneticEffect from '../components/MagneticEffect';
 import PremiumImage from '../components/PremiumImage';
+import EditableBlock from '../components/admin/EditableBlock';
+import { useContent } from '../context/ContentContext';
 
 const BACKGROUNDS = [
   { id: 'bg1', src: '/gallery-1.png', label: 'Mariage Premium' },
@@ -15,6 +17,7 @@ const BACKGROUNDS = [
 ];
 
 const SaveTheDate = () => {
+  const { content, updateContent } = useContent();
   const [name1, setName1] = useState('Sophie');
   const [name2, setName2] = useState('Marc');
   const [date, setDate] = useState('2026-08-15');
@@ -88,14 +91,24 @@ const SaveTheDate = () => {
         <FadeIn direction="down" duration={0.8}>
           <div className="section-tag"><Heart size={14} /> Outils Gratuits</div>
         </FadeIn>
-        <FadeIn direction="right" duration={0.8} delay={0.1}>
-          <h1 className="section-title" style={{ fontSize: '32px' }}>Générateur Save The Date</h1>
-        </FadeIn>
-        <FadeIn direction="up" delay={0.2} duration={0.8}>
-          <p className="section-subtitle">
-            Créez votre carte d'invitation digitale en quelques secondes, et partagez-la avec vos invités.
-          </p>
-        </FadeIn>
+        <EditableBlock
+          label="Header Outil"
+          modalTitle="Modifier le Titre"
+          fields={[
+            { key: 'title', label: 'Titre', type: 'text', value: content.saveTheDate?.title || "Générateur Save The Date" },
+            { key: 'subtitle', label: 'Sous-titre', type: 'textarea', value: content.saveTheDate?.subtitle || "Créez votre carte d'invitation digitale en quelques secondes, et partagez-la avec vos invités." },
+          ]}
+          onSave={(vals) => updateContent({ ...content, saveTheDate: { ...content.saveTheDate, ...vals } })}
+        >
+          <FadeIn direction="right" duration={0.8} delay={0.1}>
+            <h1 className="section-title" style={{ fontSize: '32px' }}>{content.saveTheDate?.title || "Générateur Save The Date"}</h1>
+          </FadeIn>
+          <FadeIn direction="up" delay={0.2} duration={0.8}>
+            <p className="section-subtitle">
+              {content.saveTheDate?.subtitle || "Créez votre carte d'invitation digitale en quelques secondes, et partagez-la avec vos invités."}
+            </p>
+          </FadeIn>
+        </EditableBlock>
       </section>
 
       <section className="container" style={{ padding: '0 20px 48px' }}>

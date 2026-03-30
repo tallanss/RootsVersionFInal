@@ -9,6 +9,7 @@ import AnimatedButton from '../components/AnimatedButton';
 import FadeIn from '../components/FadeIn';
 import { useContent } from '../context/ContentContext';
 import { Helmet } from 'react-helmet-async';
+import EditableBlock from '../components/admin/EditableBlock';
 
 const GALLERY_IMAGES = [
   { src: '/gallery-1.png', alt: 'Photobooth mariage premium Le Havre' },
@@ -18,7 +19,7 @@ const GALLERY_IMAGES = [
 ];
 
 const Home = () => {
-  const { content } = useContent();
+  const { content, updateContent } = useContent();
   const [openFaq, setOpenFaq] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
@@ -28,8 +29,7 @@ const Home = () => {
   useEffect(() => {
     const observerOptions = {
       root: null,
-      // Se déclenche quand l'élément atteint la partie centrale/haute de l'écran
-      rootMargin: '-30% 0px -50% 0px', 
+      rootMargin: '-30% 0px -50% 0px',
       threshold: 0
     };
 
@@ -44,10 +44,7 @@ const Home = () => {
 
     const stepElements = document.querySelectorAll('.scrolly-step');
     stepElements.forEach(el => observer.observe(el));
-
-    return () => {
-      stepElements.forEach(el => observer.unobserve(el));
-    };
+    return () => { stepElements.forEach(el => observer.unobserve(el)); };
   }, []);
 
   const faqs = [
@@ -67,53 +64,143 @@ const Home = () => {
       </Helmet>
 
       {/* ===== HERO ===== */}
-      <section className="hero-section container" id="hero">
-        <div className="hero-badge">
-          <Sparkles size={14} />
-          <span>N°1 en Seine-Maritime</span>
-        </div>
-        <FadeIn direction="down" duration={1} delay={0}>
-        <h1 className="hero-title">
-          {content.hero.title}<br />
-          <span className="highlight">{content.hero.subtitle}</span>
-        </h1>
-        </FadeIn>
-        <FadeIn direction="up" delay={0.2}>
-        <p className="hero-subtitle">
-          {content.hero.desc}
-        </p>
-        </FadeIn>
-        <FadeIn direction="up" delay={0.4}>
-          <AnimatedButton to="/contact">
-            Réserver maintenant
-            <ArrowRight size={18} />
-          </AnimatedButton>
-        </FadeIn>
-        <FadeIn direction="up" delay={0.6} duration={1.2}>
-        <div className="hero-image">
-          <PremiumImage
-            src="/hero-premium.png"
-            alt="Location Photobooth à partir de 189 euros pour mariage et événements à Le Havre, Rouen"
-          />
-        </div>
-        </FadeIn>
-      </section>
+        <section className="hero-section container" id="hero">
+          <EditableBlock
+            label="Badge"
+            modalTitle="Modifier le Badge"
+            fields={[{ key: 'heroBadge', label: 'Texte', type: 'text', value: content.heroBadge || "N°1 en Seine-Maritime" }]}
+            onSave={(vals) => updateContent({ ...content, ...vals })}
+          >
+            <div className="hero-badge">
+              <Sparkles size={14} />
+              <span>{content.heroBadge || "N°1 en Seine-Maritime"}</span>
+            </div>
+          </EditableBlock>
+
+          <FadeIn direction="down" duration={1} delay={0}>
+            <EditableBlock
+              label="Titre"
+              modalTitle="Modifier le Titre"
+              fields={[
+                { key: 'title', label: 'Titre principal', type: 'text', value: content.hero.title },
+                { key: 'subtitle', label: 'Sous-titre (or)', type: 'text', value: content.hero.subtitle },
+              ]}
+              onSave={(vals) => updateContent({ ...content, hero: { ...content.hero, ...vals } })}
+            >
+              <h1 className="hero-title">
+                {content.hero.title}<br />
+                <span className="highlight">{content.hero.subtitle}</span>
+              </h1>
+            </EditableBlock>
+          </FadeIn>
+
+          <FadeIn direction="up" delay={0.2}>
+            <EditableBlock
+              label="Description"
+              modalTitle="Modifier la Description"
+              fields={[{ key: 'desc', label: 'Texte', type: 'textarea', value: content.hero.desc }]}
+              onSave={(vals) => updateContent({ ...content, hero: { ...content.hero, ...vals } })}
+            >
+              <p className="hero-subtitle">
+                {content.hero.desc}
+              </p>
+            </EditableBlock>
+          </FadeIn>
+
+          <FadeIn direction="up" delay={0.4}>
+            <EditableBlock
+              label="Bouton"
+              modalTitle="Modifier le Bouton"
+              fields={[{ key: 'heroBtn', label: 'Texte', type: 'text', value: content.heroBtn || "Réserver maintenant" }]}
+              onSave={(vals) => updateContent({ ...content, ...vals })}
+            >
+              <AnimatedButton to="/contact">
+                {content.heroBtn || "Réserver maintenant"}
+                <ArrowRight size={18} />
+              </AnimatedButton>
+            </EditableBlock>
+          </FadeIn>
+
+          <FadeIn direction="up" delay={0.6} duration={1.2}>
+            <EditableBlock
+              label="Image Hero"
+              modalTitle="Modifier l'image"
+              fields={[{ key: 'heroImg', label: 'URL', type: 'image', value: content.heroImg || "/hero-premium.png" }]}
+              onSave={(vals) => updateContent({ ...content, ...vals })}
+            >
+              <div className="hero-image">
+                <PremiumImage
+                  src={content.heroImg || "/hero-premium.png"}
+                  alt="Location Photobooth premium"
+                />
+              </div>
+            </EditableBlock>
+          </FadeIn>
+        </section>
 
       {/* ===== TRUST BAR ===== */}
       <section className="container" style={{ paddingBottom: '16px' }}>
         <div className="stats-bar">
-          <FadeIn delay={0}><div className="stat-item">
-            <div className="stat-number">100+</div>
-            <div className="stat-label">Événements</div>
-          </div></FadeIn>
-          <FadeIn delay={0.2}><div className="stat-item">
-            <div className="stat-number">500+</div>
-            <div className="stat-label">Clients</div>
-          </div></FadeIn>
-          <FadeIn delay={0.4}><div className="stat-item">
-            <div className="stat-number">1000+</div>
-            <div className="stat-label">Sourires</div>
-          </div></FadeIn>
+          <FadeIn delay={0}>
+            <EditableBlock
+              label="Stat 1"
+              modalTitle="Modifier Stat 1"
+              fields={[
+                { key: 'num', label: 'Nombre', type: 'text', value: content.stats?.[0]?.num || '100+' },
+                { key: 'label', label: 'Label', type: 'text', value: content.stats?.[0]?.label || 'Événements' }
+              ]}
+              onSave={(vals) => {
+                const newStats = [...(content.stats || [{num:'100+',label:'Événements'},{num:'500+',label:'Clients'},{num:'1000+',label:'Sourires'}])];
+                newStats[0] = vals;
+                updateContent({ ...content, stats: newStats });
+              }}
+            >
+              <div className="stat-item">
+                <div className="stat-number">{content.stats?.[0]?.num || '100+'}</div>
+                <div className="stat-label">{content.stats?.[0]?.label || 'Événements'}</div>
+              </div>
+            </EditableBlock>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <EditableBlock
+              label="Stat 2"
+              modalTitle="Modifier Stat 2"
+              fields={[
+                { key: 'num', label: 'Nombre', type: 'text', value: content.stats?.[1]?.num || '500+' },
+                { key: 'label', label: 'Label', type: 'text', value: content.stats?.[1]?.label || 'Clients' }
+              ]}
+              onSave={(vals) => {
+                const newStats = [...(content.stats || [{num:'100+',label:'Événements'},{num:'500+',label:'Clients'},{num:'1000+',label:'Sourires'}])];
+                newStats[1] = vals;
+                updateContent({ ...content, stats: newStats });
+              }}
+            >
+              <div className="stat-item">
+                <div className="stat-number">{content.stats?.[1]?.num || '500+'}</div>
+                <div className="stat-label">{content.stats?.[1]?.label || 'Clients'}</div>
+              </div>
+            </EditableBlock>
+          </FadeIn>
+          <FadeIn delay={0.4}>
+            <EditableBlock
+              label="Stat 3"
+              modalTitle="Modifier Stat 3"
+              fields={[
+                { key: 'num', label: 'Nombre', type: 'text', value: content.stats?.[2]?.num || '1000+' },
+                { key: 'label', label: 'Label', type: 'text', value: content.stats?.[2]?.label || 'Sourires' }
+              ]}
+              onSave={(vals) => {
+                const newStats = [...(content.stats || [{num:'100+',label:'Événements'},{num:'500+',label:'Clients'},{num:'1000+',label:'Sourires'}])];
+                newStats[2] = vals;
+                updateContent({ ...content, stats: newStats });
+              }}
+            >
+              <div className="stat-item">
+                <div className="stat-number">{content.stats?.[2]?.num || '1000+'}</div>
+                <div className="stat-label">{content.stats?.[2]?.label || 'Sourires'}</div>
+              </div>
+            </EditableBlock>
+          </FadeIn>
         </div>
       </section>
 
@@ -128,41 +215,74 @@ const Home = () => {
         <p className="section-subtitle">Notre photobooth s'adapte à tous les types d'événements avec un service clé en main.</p>
 
         <div className="bento-grid">
-          {/* Bento Large - Mariage */}
-          <Link to="/tarifs" className="bento-item bento-large">
-            <div className="bento-content" style={{ display: 'flex', flexDirection: 'inherit', gap: 'inherit', alignItems: 'inherit' }}>
-              <div className="bento-icon wedding">
-                <Heart size={28} />
+          <EditableBlock
+            label="Service 1"
+            modalTitle="Modifier Service 1"
+            fields={[
+              { key: 'title', label: 'Titre', type: 'text', value: content.services?.[0]?.title || 'Mariage' },
+              { key: 'desc', label: 'Texte', type: 'textarea', value: content.services?.[0]?.desc || 'Offrez à vos invités des souvenirs inoubliables pour le plus beau jour de votre vie.' }
+            ]}
+            onSave={(vals) => {
+              const newServices = [...(content.services || [{title:'Mariage',desc:'...'},{title:'Entreprise',desc:'...'},{title:'Anniversaire',desc:'...'}])];
+              newServices[0] = vals;
+              updateContent({ ...content, services: newServices });
+            }}
+          >
+            <Link to="/tarifs" className="bento-item bento-large">
+              <div className="bento-content" style={{ display: 'flex', flexDirection: 'inherit', gap: 'inherit', alignItems: 'inherit' }}>
+                <div className="bento-icon wedding"><Heart size={28} /></div>
+                <div className="bento-text">
+                  <h3>{content.services?.[0]?.title || 'Mariage'}</h3>
+                  <p>{content.services?.[0]?.desc || 'Offrez à vos invités des souvenirs inoubliables pour le plus beau jour de votre vie.'}</p>
+                </div>
               </div>
+              <Heart className="bento-watermark" size={120} />
+            </Link>
+          </EditableBlock>
+
+          <EditableBlock
+            label="Service 2"
+            modalTitle="Modifier Service 2"
+            fields={[
+              { key: 'title', label: 'Titre', type: 'text', value: content.services?.[1]?.title || 'Entreprise' },
+              { key: 'desc', label: 'Texte', type: 'text', value: content.services?.[1]?.desc || 'Cohésion et dynamisme.' }
+            ]}
+            onSave={(vals) => {
+              const newServices = [...(content.services || [{title:'Mariage',desc:'...'},{title:'Entreprise',desc:'...'},{title:'Anniversaire',desc:'...'}])];
+              newServices[1] = vals;
+              updateContent({ ...content, services: newServices });
+            }}
+          >
+            <Link to="/tarifs" className="bento-item bento-small">
+              <div className="bento-icon corporate"><Briefcase size={22} /></div>
               <div className="bento-text">
-                <h3>Mariage</h3>
-                <p>Offrez à vos invités des souvenirs inoubliables pour le plus beau jour de votre vie.</p>
+                <h3>{content.services?.[1]?.title || 'Entreprise'}</h3>
+                <p>{content.services?.[1]?.desc || 'Cohésion et dynamisme.'}</p>
               </div>
-            </div>
-            <Heart className="bento-watermark" size={120} />
-          </Link>
+            </Link>
+          </EditableBlock>
 
-          {/* Bento Small 1 - Corporate */}
-          <Link to="/tarifs" className="bento-item bento-small">
-            <div className="bento-icon corporate">
-              <Briefcase size={22} />
-            </div>
-            <div className="bento-text">
-              <h3>Entreprise</h3>
-              <p>Cohésion et dynamisme.</p>
-            </div>
-          </Link>
-
-          {/* Bento Small 2 - Anniversaire */}
-          <Link to="/tarifs" className="bento-item bento-small">
-            <div className="bento-icon birthday">
-              <PartyPopper size={22} />
-            </div>
-            <div className="bento-text">
-              <h3>Anniversaire</h3>
-              <p>Rires garantis avec vos proches.</p>
-            </div>
-          </Link>
+          <EditableBlock
+            label="Service 3"
+            modalTitle="Modifier Service 3"
+            fields={[
+              { key: 'title', label: 'Titre', type: 'text', value: content.services?.[2]?.title || 'Anniversaire' },
+              { key: 'desc', label: 'Texte', type: 'text', value: content.services?.[2]?.desc || 'Rires garantis avec vos proches.' }
+            ]}
+            onSave={(vals) => {
+              const newServices = [...(content.services || [{title:'Mariage',desc:'...'},{title:'Entreprise',desc:'...'},{title:'Anniversaire',desc:'...'}])];
+              newServices[2] = vals;
+              updateContent({ ...content, services: newServices });
+            }}
+          >
+            <Link to="/tarifs" className="bento-item bento-small">
+              <div className="bento-icon birthday"><PartyPopper size={22} /></div>
+              <div className="bento-text">
+                <h3>{content.services?.[2]?.title || 'Anniversaire'}</h3>
+                <p>{content.services?.[2]?.desc || 'Rires garantis avec vos proches.'}</p>
+              </div>
+            </Link>
+          </EditableBlock>
         </div>
       </section>
       </FadeIn>
@@ -171,17 +291,16 @@ const Home = () => {
       <section className="container" style={{ padding: '32px 24px' }} id="process">
         <div className="section-tag">
           <Clock size={14} />
-          Simple & Rapide
+          Simple &amp; Rapide
         </div>
         <h2 className="section-title">Comment ça marche ?</h2>
         <p className="section-subtitle">3 étapes simples pour un événement inoubliable.</p>
 
         <div className="scrolly-container" style={{ marginTop: '24px', position: 'relative' }}>
-          
           {/* Sticky Image Viewport */}
           <div className="scrolly-sticky-viewport" style={{
             position: 'sticky',
-            top: '90px', /* Just below the dynamic island */
+            top: '90px',
             height: 'clamp(180px, 25vh, 240px)',
             width: '100%',
             borderRadius: 'var(--radius-lg)',
@@ -192,28 +311,23 @@ const Home = () => {
             zIndex: 10,
             background: 'var(--bg-card)'
           }}>
-            {/* Image 1 */}
             <div style={{ position: 'absolute', inset: 0, opacity: activeStep === 0 ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
               <PremiumImage src="/step-booking.png" alt="Réservez en ligne" />
             </div>
-            {/* Image 2 */}
             <div style={{ position: 'absolute', inset: 0, opacity: activeStep === 1 ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
               <PremiumImage src="/step-setup.png" alt="On s'occupe de tout" />
             </div>
-            {/* Image 3 */}
             <div style={{ position: 'absolute', inset: 0, opacity: activeStep === 2 ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
               <PremiumImage src="/step-results.png" alt="Profitez de la fête" />
             </div>
-
-            {/* Pagination Dots Top Right */}
             <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '6px', zIndex: 20 }}>
               {[0, 1, 2].map((i) => (
-                <div key={i} style={{ 
-                  width: activeStep === i ? '20px' : '6px', 
-                  height: '4px', 
-                  background: activeStep === i ? 'var(--primary)' : 'rgba(255,255,255,0.4)', 
-                  borderRadius: '2px', 
-                  transition: 'all 0.4s ease-out' 
+                <div key={i} style={{
+                  width: activeStep === i ? '20px' : '6px',
+                  height: '4px',
+                  background: activeStep === i ? 'var(--primary)' : 'rgba(255,255,255,0.4)',
+                  borderRadius: '2px',
+                  transition: 'all 0.4s ease-out'
                 }} />
               ))}
             </div>
@@ -221,43 +335,37 @@ const Home = () => {
 
           {/* Scrolling Steps */}
           <div className="scrolly-steps" style={{ position: 'relative', zIndex: 5, paddingBottom: '10vh' }}>
-            
-            <div className="scrolly-step" data-step="0" style={{ minHeight: '40vh', display: 'flex', alignItems: 'center', position: 'relative', zIndex: 2 }}>
-               <div className="glass-panel" style={{ 
-                  opacity: activeStep === 0 ? 1 : 0.4, 
-                  transform: activeStep === 0 ? 'scale(1)' : 'scale(0.95)', 
-                  transition: 'all 0.5s', width: '100%', padding: '24px'
-               }}>
-                  <div className="step-number" style={{ marginBottom: '16px', position: 'relative', zIndex: 10 }}>1</div>
-                  <h3 style={{ fontSize: '20px', marginBottom: '8px', color: 'var(--text-main)' }}>{content.scrolly.step1.title}</h3>
-                  <p style={{ color: 'var(--text-muted)', lineHeight: '1.6' }}>{content.scrolly.step1.desc}</p>
-               </div>
-            </div>
-
-            <div className="scrolly-step" data-step="1" style={{ minHeight: '40vh', display: 'flex', alignItems: 'center', position: 'relative', zIndex: 2 }}>
-               <div className="glass-panel" style={{ 
-                  opacity: activeStep === 1 ? 1 : 0.4, 
-                  transform: activeStep === 1 ? 'scale(1)' : 'scale(0.95)', 
-                  transition: 'all 0.5s', width: '100%', padding: '24px'
-               }}>
-                  <div className="step-number" style={{ marginBottom: '16px', position: 'relative', zIndex: 10 }}>2</div>
-                  <h3 style={{ fontSize: '20px', marginBottom: '8px', color: 'var(--text-main)' }}>{content.scrolly.step2.title}</h3>
-                  <p style={{ color: 'var(--text-muted)', lineHeight: '1.6' }}>{content.scrolly.step2.desc}</p>
-               </div>
-            </div>
-
-            <div className="scrolly-step" data-step="2" style={{ minHeight: '40vh', display: 'flex', alignItems: 'center', position: 'relative', zIndex: 2 }}>
-               <div className="glass-panel" style={{ 
-                  opacity: activeStep === 2 ? 1 : 0.4, 
-                  transform: activeStep === 2 ? 'scale(1)' : 'scale(0.95)', 
-                  transition: 'all 0.5s', width: '100%', padding: '24px'
-               }}>
-                  <div className="step-number" style={{ marginBottom: '16px', position: 'relative', zIndex: 10 }}>3</div>
-                  <h3 style={{ fontSize: '20px', marginBottom: '8px', color: 'var(--text-main)' }}>{content.scrolly.step3.title}</h3>
-                  <p style={{ color: 'var(--text-muted)', lineHeight: '1.6' }}>{content.scrolly.step3.desc}</p>
-               </div>
-            </div>
-
+            {[
+              { key: 'step1', num: 1, data: content.scrolly.step1 },
+              { key: 'step2', num: 2, data: content.scrolly.step2 },
+              { key: 'step3', num: 3, data: content.scrolly.step3 },
+            ].map(({ key, num, data }, idx) => (
+              <EditableBlock
+                key={key}
+                label={`Étape ${num}`}
+                modalTitle={`Modifier l'étape ${num}`}
+                fields={[
+                  { key: 'title', label: 'Titre', type: 'text', value: data.title },
+                  { key: 'desc', label: 'Description', type: 'textarea', value: data.desc },
+                ]}
+                onSave={(vals) => updateContent({
+                  ...content,
+                  scrolly: { ...content.scrolly, [key]: { ...data, ...vals } }
+                })}
+              >
+                <div className="scrolly-step" data-step={String(idx)} style={{ minHeight: '40vh', display: 'flex', alignItems: 'center', position: 'relative', zIndex: 2 }}>
+                  <div className="glass-panel" style={{
+                    opacity: activeStep === idx ? 1 : 0.4,
+                    transform: activeStep === idx ? 'scale(1)' : 'scale(0.95)',
+                    transition: 'all 0.5s', width: '100%', padding: '24px'
+                  }}>
+                    <div className="step-number" style={{ marginBottom: '16px', position: 'relative', zIndex: 10 }}>{num}</div>
+                    <h3 style={{ fontSize: '20px', marginBottom: '8px', color: 'var(--text-main)' }}>{data.title}</h3>
+                    <p style={{ color: 'var(--text-muted)', lineHeight: '1.6' }}>{data.desc}</p>
+                  </div>
+                </div>
+              </EditableBlock>
+            ))}
           </div>
         </div>
       </section>
@@ -285,7 +393,6 @@ const Home = () => {
       </section>
       </FadeIn>
 
-      {/* Lightbox */}
       {lightboxIndex !== null && (
         <Lightbox
           images={GALLERY_IMAGES}
@@ -305,47 +412,44 @@ const Home = () => {
         <p className="section-subtitle">+100 événements réussis en Seine-Maritime.</p>
 
         <SwipeCarousel autoPlay interval={5000}>
-          <div className="testimonial-card">
-            <div className="testimonial-stars">★★★★★</div>
-            <p className="testimonial-text">
-              "Location pour notre anniversaire. Les photos sont de très bonnes qualités et tous nos amis se sont bien amusés. Je recommande. Merci PhotoRoots !"
-            </p>
-            <div className="testimonial-author">
-              <div className="testimonial-avatar">C</div>
-              <div>
-                <div className="testimonial-name">Clément Robert</div>
-                <div className="testimonial-role">Anniversaire au Havre</div>
+          {(content.testimonials || [
+            { id: 1, name: 'Clément Robert', role: 'Anniversaire au Havre', text: 'Location pour notre anniversaire. Les photos sont de très bonnes qualités et tous nos amis se sont bien amusés. Je recommande. Merci PhotoRoots !', avatar: 'C' },
+            { id: 2, name: 'Jordan Racine', role: 'Fête privée à Rouen', text: 'Bien organisé du début à la fin. Jimmy est très arrangeant et a répondu à nos demandes de dernière minute. On se revoit pour mes 40 ans ;)', avatar: 'J' },
+            { id: 3, name: 'Sophie & Marc', role: 'Mariage à Dieppe', text: 'Super prestation pour notre mariage ! Tous les invités ont adoré le photobooth. Les impressions sont de qualité pro. Une vraie valeur ajoutée à notre soirée.', avatar: 'S' }
+          ]).map((t, idx) => (
+            <EditableBlock
+              key={t.id}
+              label={`Avis ${idx + 1}`}
+              modalTitle="Modifier l'avis"
+              fields={[
+                { key: 'name', label: 'Nom', type: 'text', value: t.name },
+                { key: 'role', label: 'Rôle/Lieu', type: 'text', value: t.role },
+                { key: 'text', label: 'Témoignage', type: 'textarea', value: t.text },
+                { key: 'avatar', label: 'Initiale', type: 'text', value: t.avatar }
+              ]}
+              onSave={(vals) => {
+                const newT = [...(content.testimonials || [])];
+                newT[idx] = { ...t, ...vals };
+                updateContent({ ...content, testimonials: newT });
+              }}
+              onDelete={() => {
+                const newT = content.testimonials.filter(item => item.id !== t.id);
+                updateContent({ ...content, testimonials: newT });
+              }}
+            >
+              <div className="testimonial-card">
+                <div className="testimonial-stars">★★★★★</div>
+                <p className="testimonial-text">"{t.text}"</p>
+                <div className="testimonial-author">
+                  <div className="testimonial-avatar">{t.avatar}</div>
+                  <div>
+                    <div className="testimonial-name">{t.name}</div>
+                    <div className="testimonial-role">{t.role}</div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div className="testimonial-card">
-            <div className="testimonial-stars">★★★★★</div>
-            <p className="testimonial-text">
-              "Bien organisé du début à la fin. Jimmy est très arrangeant et a répondu à nos demandes de dernière minute. On se revoit pour mes 40 ans ;)"
-            </p>
-            <div className="testimonial-author">
-              <div className="testimonial-avatar">J</div>
-              <div>
-                <div className="testimonial-name">Jordan Racine</div>
-                <div className="testimonial-role">Fête privée à Rouen</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="testimonial-card">
-            <div className="testimonial-stars">★★★★★</div>
-            <p className="testimonial-text">
-              "Super prestation pour notre mariage ! Tous les invités ont adoré le photobooth. Les impressions sont de qualité pro. Une vraie valeur ajoutée à notre soirée."
-            </p>
-            <div className="testimonial-author">
-              <div className="testimonial-avatar">S</div>
-              <div>
-                <div className="testimonial-name">Sophie & Marc</div>
-                <div className="testimonial-role">Mariage à Dieppe</div>
-              </div>
-            </div>
-          </div>
+            </EditableBlock>
+          ))}
         </SwipeCarousel>
       </section>
       </FadeIn>
@@ -361,31 +465,51 @@ const Home = () => {
         <p className="section-subtitle">Les meilleurs prix du marché pour un photobooth haut de gamme.</p>
 
         <div className="pricing-grid">
-          <div className="pricing-card">
-            <div className="pricing-name">Essentiel</div>
-            <div className="pricing-price">189€</div>
-            <div className="pricing-desc">Idéal pour les petits événements</div>
-            <ul className="pricing-features">
-              <li><span className="pricing-check"><CheckCircle2 size={14} /></span>2 heures d'animation</li>
-              <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Photos illimitées</li>
-              <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Accessoires & props fun</li>
-            </ul>
-            <AnimatedButton to="/contact" className="btn-secondary" style={{ width: '100%' }}>Réserver</AnimatedButton>
-          </div>
+          <EditableBlock
+            label="Formule Essentiel"
+            modalTitle="Modifier la formule Essentiel"
+            fields={[
+              { key: 'price', label: 'Prix (€)', type: 'text', value: content.pricing.essentiel.price },
+              { key: 'subtitle', label: 'Description courte', type: 'textarea', value: content.pricing.essentiel.subtitle },
+            ]}
+            onSave={(vals) => updateContent({ ...content, pricing: { ...content.pricing, essentiel: { ...content.pricing.essentiel, ...vals } } })}
+          >
+            <div className="pricing-card">
+              <div className="pricing-name">Essentiel</div>
+              <div className="pricing-price">{content.pricing.essentiel.price}€</div>
+              <div className="pricing-desc">Idéal pour les petits événements</div>
+              <ul className="pricing-features">
+                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>2 heures d'animation</li>
+                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Photos illimitées</li>
+                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Accessoires &amp; props fun</li>
+              </ul>
+              <AnimatedButton to="/contact" className="btn-secondary" style={{ width: '100%' }}>Réserver</AnimatedButton>
+            </div>
+          </EditableBlock>
 
           <div className="animated-border-wrapper">
-            <div className="pricing-card featured">
-              <div className="pricing-name">Premium</div>
-              <div className="pricing-price">289€</div>
-              <div className="pricing-desc">Notre best-seller pour mariages</div>
-              <ul className="pricing-features">
-                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>3 heures d'animation</li>
-                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Photos illimitées & impressions</li>
-                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Personnalisation totale</li>
-                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Écran de diffusion</li>
-              </ul>
-              <AnimatedButton to="/contact" className="btn-primary" style={{ width: '100%' }}>Réserver</AnimatedButton>
-            </div>
+            <EditableBlock
+              label="Formule Premium"
+              modalTitle="Modifier la formule Premium"
+              fields={[
+                { key: 'price', label: 'Prix (€)', type: 'text', value: content.pricing.premium.price },
+                { key: 'subtitle', label: 'Description courte', type: 'textarea', value: content.pricing.premium.subtitle },
+              ]}
+              onSave={(vals) => updateContent({ ...content, pricing: { ...content.pricing, premium: { ...content.pricing.premium, ...vals } } })}
+            >
+              <div className="pricing-card featured">
+                <div className="pricing-name">Premium</div>
+                <div className="pricing-price">{content.pricing.premium.price}€</div>
+                <div className="pricing-desc">Notre best-seller pour mariages</div>
+                <ul className="pricing-features">
+                  <li><span className="pricing-check"><CheckCircle2 size={14} /></span>3 heures d'animation</li>
+                  <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Photos illimitées &amp; impressions</li>
+                  <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Personnalisation totale</li>
+                  <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Écran de diffusion</li>
+                </ul>
+                <AnimatedButton to="/contact" className="btn-primary" style={{ width: '100%' }}>Réserver</AnimatedButton>
+              </div>
+            </EditableBlock>
           </div>
         </div>
 
@@ -403,12 +527,30 @@ const Home = () => {
         <div className="section-tag"><Image size={14} /> Souvenirs</div>
         <h2 className="section-title">Derniers Événements</h2>
         <p className="section-subtitle">Aperçu des moments capturés récemment par nos clients.</p>
-        
+
         <div className="gallery-teaser-grid">
           {content.gallery.slice(0, 4).map((item) => (
-            <div key={item.id} className="masonry-item" style={{ borderRadius: 'var(--radius-md)' }}>
-              <PremiumImage src={item.image} alt={item.title} />
-            </div>
+            <EditableBlock
+              key={item.id}
+              label="Photo"
+              modalTitle="Modifier la photo"
+              fields={[
+                { key: 'title', label: 'Titre', type: 'text', value: item.title },
+                { key: 'image', label: 'URL de l\'image', type: 'image', value: item.image },
+              ]}
+              onSave={(vals) => {
+                const newGallery = content.gallery.map(g => g.id === item.id ? { ...g, ...vals } : g);
+                updateContent({ ...content, gallery: newGallery });
+              }}
+              onDelete={() => {
+                const newGallery = content.gallery.filter(g => g.id !== item.id);
+                updateContent({ ...content, gallery: newGallery });
+              }}
+            >
+              <div className="masonry-item" style={{ borderRadius: 'var(--radius-md)' }}>
+                <PremiumImage src={item.image} alt={item.title} />
+              </div>
+            </EditableBlock>
           ))}
         </div>
 
@@ -425,34 +567,68 @@ const Home = () => {
       <section className="container" style={{ padding: '32px 24px' }} id="faq">
         <h2 className="section-title">Questions fréquentes</h2>
         <p className="section-subtitle">Tout ce que vous devez savoir avant de réserver.</p>
-
         <div>
-          {faqs.map((faq, i) => (
-            <div className="faq-item" key={i}>
-              <button className="faq-question" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                <span>{faq.q}</span>
-                {openFaq === i ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-              </button>
-              {openFaq === i && (
-                <div className="faq-answer">{faq.a}</div>
-              )}
-            </div>
+          {(content.faqs || faqs).map((faq, i) => (
+            <EditableBlock
+              key={i}
+              label={`FAQ ${i + 1}`}
+              modalTitle="Modifier la question"
+              fields={[
+                { key: 'q', label: 'Question', type: 'text', value: faq.q },
+                { key: 'a', label: 'Réponse', type: 'textarea', value: faq.a }
+              ]}
+              onSave={(vals) => {
+                const newFaqs = [...(content.faqs || faqs)];
+                newFaqs[i] = vals;
+                updateContent({ ...content, faqs: newFaqs });
+              }}
+              onDelete={() => {
+                const newFaqs = (content.faqs || faqs).filter((_, idx) => idx !== i);
+                updateContent({ ...content, faqs: newFaqs });
+              }}
+            >
+              <div className="faq-item">
+                <button className="faq-question" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                  <span>{faq.q}</span>
+                  {openFaq === i ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </button>
+                {openFaq === i && (
+                  <div className="faq-answer">{faq.a}</div>
+                )}
+              </div>
+            </EditableBlock>
           ))}
         </div>
       </section>
       </FadeIn>
 
       {/* ===== FINAL CTA ===== */}
-      <section className="container" style={{ padding: '32px 20px 48px' }}>
-        <div className="cta-section">
-          <h2>Prêt à créer des souvenirs ?</h2>
-          <p>Réservez votre date en ligne et recevez une confirmation instantanée.</p>
-          <AnimatedButton to="/contact" className="btn-primary" style={{ background: '#ffffff', color: 'var(--primary)', width: 'auto', padding: '16px 36px', fontWeight: 800 }}>
-            <Phone size={18} />
-            Réserver maintenant
-          </AnimatedButton>
-        </div>
-      </section>
+        <section className="container" style={{ padding: '32px 20px 48px' }}>
+          <div className="cta-section">
+            <EditableBlock
+              label="Titre CTA"
+              modalTitle="Modifier le titre"
+              fields={[{ key: 'ctaTitle', label: 'Titre', type: 'text', value: content.ctaTitle || 'Prêt à créer des souvenirs ?' }]}
+              onSave={(vals) => updateContent({ ...content, ...vals })}
+            >
+              <h2>{content.ctaTitle || 'Prêt à créer des souvenirs ?'}</h2>
+            </EditableBlock>
+
+            <EditableBlock
+              label="Texte CTA"
+              modalTitle="Modifier la description"
+              fields={[{ key: 'ctaDesc', label: 'Description', type: 'text', value: content.ctaDesc || 'Réservez votre date en ligne et recevez une confirmation instantanée.' }]}
+              onSave={(vals) => updateContent({ ...content, ...vals })}
+            >
+              <p>{content.ctaDesc || 'Réservez votre date en ligne et recevez une confirmation instantanée.'}</p>
+            </EditableBlock>
+
+            <AnimatedButton to="/contact" className="btn-primary" style={{ background: '#ffffff', color: 'var(--primary)', width: 'auto', padding: '16px 36px', fontWeight: 800 }}>
+              <Phone size={18} />
+              Réserver maintenant
+            </AnimatedButton>
+          </div>
+        </section>
 
       {/* ===== TRUST FOOTER ===== */}
       <section className="container" style={{ paddingBottom: '24px' }}>

@@ -6,6 +6,7 @@ import { processBooking, formatDateFR, fetchBusySlots } from '../services/emailS
 import { isConfigured } from '../config/emailjs';
 import Confetti from '../components/Confetti';
 import { Helmet } from 'react-helmet-async';
+import EditableBlock from '../components/admin/EditableBlock';
 
 import { useContent } from '../context/ContentContext';
 
@@ -14,14 +15,14 @@ const SLOT_LABELS = {
   evening: { label: 'Soirée', time: '19h — 23h', icon: Moon },
 };
 
-const FORMULAS = [
-  { id: 'essentiel', name: 'Essentiel', price: '189€', desc: '2h d\'animation' },
-  { id: 'premium', name: 'Premium', price: '289€', desc: '3h + impressions' },
-  { id: 'sur-mesure', name: 'Sur-Mesure', price: 'Sur devis', desc: 'Durée illimitée' },
-];
-
 const Contact = () => {
   const { content, updateContent } = useContent();
+
+  const FORMULAS = content.formulas || [
+    { id: 'essentiel', name: 'Essentiel', price: '189€', desc: '2h d\'animation' },
+    { id: 'premium', name: 'Premium', price: '289€', desc: '3h + impressions' },
+    { id: 'sur-mesure', name: 'Sur-Mesure', price: 'Sur devis', desc: 'Durée illimitée' },
+  ];
   const eventTypes = content.formOptions?.eventTypes || ['Mariage', 'Anniversaire', 'Entreprise', 'Baptême', 'Autre'];
   const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -212,10 +213,20 @@ const Contact = () => {
       {/* HEADER */}
       <section className="container" style={{ padding: '32px 20px 16px' }}>
         <div className="section-tag"><Calendar size={14} /> Réservation</div>
-        <h1 className="section-title" style={{ fontSize: '28px' }}>Réservez votre photobooth</h1>
-        <p className="section-subtitle" style={{ marginBottom: '20px' }}>
-          Choisissez votre date, votre créneau et recevez une confirmation instantanée par email.
-        </p>
+        <EditableBlock
+          label="Header Contact"
+          modalTitle="Modifier le Titre"
+          fields={[
+            { key: 'title', label: 'Titre', type: 'text', value: content.contactPage?.title || "Réservez votre photobooth" },
+            { key: 'subtitle', label: 'Sous-titre', type: 'textarea', value: content.contactPage?.subtitle || "Choisissez votre date, votre créneau et recevez une confirmation instantanée par email." },
+          ]}
+          onSave={(vals) => updateContent({ ...content, contactPage: { ...content.contactPage, ...vals } })}
+        >
+          <h1 className="section-title" style={{ fontSize: '28px' }}>{content.contactPage?.title || "Réservez votre photobooth"}</h1>
+          <p className="section-subtitle" style={{ marginBottom: '20px' }}>
+            {content.contactPage?.subtitle || "Choisissez votre date, votre créneau et recevez une confirmation instantanée par email."}
+          </p>
+        </EditableBlock>
 
         {/* Progress bar */}
         <div style={{ display: 'flex', gap: '4px', marginBottom: '28px' }}>
@@ -529,18 +540,41 @@ const Contact = () => {
       {step < 4 && (
         <section className="container" style={{ padding: '16px 20px 48px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div className="contact-info-card">
-              <div className="contact-info-icon"><Phone size={20} /></div>
-              <div><h3>Téléphone</h3><p>+33 6 12 34 56 78</p></div>
-            </div>
-            <div className="contact-info-card">
-              <div className="contact-info-icon"><Mail size={20} /></div>
-              <div><h3>Email</h3><p>contact@photoroots.fr</p></div>
-            </div>
-            <div className="contact-info-card">
-              <div className="contact-info-icon"><MapPin size={20} /></div>
-              <div><h3>Zone</h3><p>Le Havre, Rouen, Dieppe — Seine-Maritime</p></div>
-            </div>
+            <EditableBlock
+              label="Contact Téléphone"
+              modalTitle="Modifier le Téléphone"
+              fields={[{ key: 'phone', label: 'Numéro', type: 'text', value: content.contact?.phone || '+33 6 12 34 56 78' }]}
+              onSave={(vals) => updateContent({ ...content, contact: { ...content.contact, ...vals } })}
+            >
+              <div className="contact-info-card">
+                <div className="contact-info-icon"><Phone size={20} /></div>
+                <div><h3>Téléphone</h3><p>{content.contact?.phone || '+33 6 12 34 56 78'}</p></div>
+              </div>
+            </EditableBlock>
+
+            <EditableBlock
+              label="Contact Email"
+              modalTitle="Modifier l'Email"
+              fields={[{ key: 'email', label: 'Email', type: 'text', value: content.contact?.email || 'contact@photoroots.fr' }]}
+              onSave={(vals) => updateContent({ ...content, contact: { ...content.contact, ...vals } })}
+            >
+              <div className="contact-info-card">
+                <div className="contact-info-icon"><Mail size={20} /></div>
+                <div><h3>Email</h3><p>{content.contact?.email || 'contact@photoroots.fr'}</p></div>
+              </div>
+            </EditableBlock>
+
+            <EditableBlock
+              label="Contact Zone"
+              modalTitle="Modifier la Zone"
+              fields={[{ key: 'zone', label: 'Zone Géographique', type: 'text', value: content.contact?.zone || 'Le Havre, Rouen, Dieppe — Seine-Maritime' }]}
+              onSave={(vals) => updateContent({ ...content, contact: { ...content.contact, ...vals } })}
+            >
+              <div className="contact-info-card">
+                <div className="contact-info-icon"><MapPin size={20} /></div>
+                <div><h3>Zone</h3><p>{content.contact?.zone || 'Le Havre, Rouen, Dieppe — Seine-Maritime'}</p></div>
+              </div>
+            </EditableBlock>
           </div>
         </section>
       )}

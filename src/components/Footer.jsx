@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Camera, Instagram, Facebook, Mail, Phone, MapPin, Heart } from 'lucide-react';
+import { useContent } from '../context/ContentContext';
+import EditableBlock from './admin/EditableBlock';
 
 const Footer = () => {
+  const { content, updateContent } = useContent();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -25,9 +28,18 @@ const Footer = () => {
               style={{ height: '60px', width: 'auto', objectFit: 'contain' }} 
             />
           </Link>
-          <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6, maxWidth: '300px' }}>
-            L'excellence du photobooth premium en Normandie. Sublimez vos événements avec nos bornes photos innovantes et élégantes.
-          </p>
+          <EditableBlock
+            label="Description"
+            modalTitle="Description Bas de Page"
+            fields={[
+              { key: 'footerDesc', label: 'Texte', type: 'textarea', value: content.footerDesc || "L'excellence du photobooth premium en Normandie. Sublimez vos événements avec nos bornes photos innovantes et élégantes." }
+            ]}
+            onSave={(vals) => updateContent({ ...content, ...vals })}
+          >
+            <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6, maxWidth: '300px' }}>
+              {content.footerDesc || "L'excellence du photobooth premium en Normandie. Sublimez vos événements avec nos bornes photos innovantes et élégantes."}
+            </p>
+          </EditableBlock>
           <div style={{ display: 'flex', gap: '12px' }}>
             <a href="#" className="social-icon" aria-label="Instagram"><Instagram size={20} /></a>
             <a href="#" className="social-icon" aria-label="Facebook"><Facebook size={20} /></a>
@@ -50,11 +62,22 @@ const Footer = () => {
         {/* CONTACT INFO */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)' }}>Contact</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <div style={infoStyle}><Phone size={16} /> 06 00 00 00 00</div>
-            <div style={infoStyle}><Mail size={16} /> contact@photoroots.fr</div>
-            <div style={infoStyle}><MapPin size={16} /> Normandie : Le Havre, Rouen, Dieppe</div>
-          </div>
+          <EditableBlock
+            label="Infos Contact"
+            modalTitle="Informations de Contact"
+            fields={[
+              { key: 'phone', label: 'Téléphone', type: 'text', value: content.contact?.phone || "06 00 00 00 00" },
+              { key: 'email', label: 'Email', type: 'text', value: content.contact?.email || "contact@photoroots.fr" },
+              { key: 'location', label: 'Zone', type: 'text', value: content.contact?.location || "Normandie : Le Havre, Rouen, Dieppe" },
+            ]}
+            onSave={(vals) => updateContent({ ...content, contact: { ...content.contact, ...vals } })}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={infoStyle}><Phone size={16} /> {content.contact?.phone || "06 00 00 00 00"}</div>
+              <div style={infoStyle}><Mail size={16} /> {content.contact?.email || "contact@photoroots.fr"}</div>
+              <div style={infoStyle}><MapPin size={16} /> {content.contact?.location || "Normandie : Le Havre, Rouen, Dieppe"}</div>
+            </div>
+          </EditableBlock>
         </div>
       </div>
 
