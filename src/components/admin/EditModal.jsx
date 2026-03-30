@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Save, Plus, Trash2, ImageIcon } from 'lucide-react';
+import { showToast } from '../Toast';
 
 /**
  * EditModal — Modal universelle d'édition
@@ -52,6 +53,7 @@ const EditModal = ({ title, fields, onSave, onClose, onDelete, extraActions }) =
   const handleSave = () => {
     onSave(values);
     onClose();
+    showToast('Sauvegardé ✓');
   };
 
   const modal = (

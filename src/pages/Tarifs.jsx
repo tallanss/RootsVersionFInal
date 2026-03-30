@@ -205,20 +205,21 @@ const Tarifs = () => {
                               modalTitle="Modifier l'avantage"
                               fields={[{ key: 'text', label: 'Texte', type: 'text', value: f }]}
                               onSave={(vals) => {
-                                const newPlans = [...plans];
-                                newPlans[i].features[j] = vals.text;
+                                const newPlans = plans.map((p, pIdx) =>
+                                  pIdx !== i ? p : { ...p, features: p.features.map((f2, fIdx) => fIdx === j ? vals.text : f2) }
+                                );
                                 updateContent({ ...content, pricing_plans: newPlans });
                               }}
                               onDelete={() => {
-                                const newPlans = [...plans];
-                                newPlans[i].features = newPlans[i].features.filter((_, idx) => idx !== j);
+                                const newPlans = plans.map((p, pIdx) =>
+                                  pIdx !== i ? p : { ...p, features: p.features.filter((_, fIdx) => fIdx !== j) }
+                                );
                                 updateContent({ ...content, pricing_plans: newPlans });
                               }}
+                              tag="li"
                             >
-                              <li>
-                                <span className="pricing-check"><CheckCircle2 size={14} /></span>
-                                {f}
-                              </li>
+                              <span className="pricing-check"><CheckCircle2 size={14} /></span>
+                              {f}
                             </EditableBlock>
                           ))}
                           {plan.excluded.map((f, j) => (
@@ -228,20 +229,22 @@ const Tarifs = () => {
                               modalTitle="Modifier l'exclusion"
                               fields={[{ key: 'text', label: 'Texte', type: 'text', value: f }]}
                               onSave={(vals) => {
-                                const newPlans = [...plans];
-                                newPlans[i].excluded[j] = vals.text;
+                                const newPlans = plans.map((p, pIdx) =>
+                                  pIdx !== i ? p : { ...p, excluded: p.excluded.map((f2, fIdx) => fIdx === j ? vals.text : f2) }
+                                );
                                 updateContent({ ...content, pricing_plans: newPlans });
                               }}
                               onDelete={() => {
-                                const newPlans = [...plans];
-                                newPlans[i].excluded = newPlans[i].excluded.filter((_, idx) => idx !== j);
+                                const newPlans = plans.map((p, pIdx) =>
+                                  pIdx !== i ? p : { ...p, excluded: p.excluded.filter((_, fIdx) => fIdx !== j) }
+                                );
                                 updateContent({ ...content, pricing_plans: newPlans });
                               }}
+                              tag="li"
+                              style={{ color: 'var(--text-light)', textDecoration: 'line-through' }}
                             >
-                              <li style={{ color: 'var(--text-light)', textDecoration: 'line-through' }}>
-                                <span className="pricing-check" style={{ background: 'var(--bg-card)', color: 'var(--text-light)' }}><X size={14} /></span>
-                                {f}
-                              </li>
+                              <span className="pricing-check" style={{ background: 'var(--bg-card)', color: 'var(--text-light)' }}><X size={14} /></span>
+                              {f}
                             </EditableBlock>
                           ))}
                           
@@ -252,8 +255,9 @@ const Tarifs = () => {
                                 className="btn-admin-add"
                                 style={{ flex: 1, fontSize: '10px', padding: '4px' }}
                                 onClick={() => {
-                                  const newPlans = [...plans];
-                                  newPlans[i].features.push('Nouvel avantage');
+                                  const newPlans = plans.map((p, pIdx) =>
+                                    pIdx !== i ? p : { ...p, features: [...p.features, 'Nouvel avantage'] }
+                                  );
                                   updateContent({ ...content, pricing_plans: newPlans });
                                 }}
                               >+ Avantage</button>
@@ -261,8 +265,9 @@ const Tarifs = () => {
                                 className="btn-admin-add"
                                 style={{ flex: 1, fontSize: '10px', padding: '4px' }}
                                 onClick={() => {
-                                  const newPlans = [...plans];
-                                  newPlans[i].excluded.push('Nouvelle exclusion');
+                                  const newPlans = plans.map((p, pIdx) =>
+                                    pIdx !== i ? p : { ...p, excluded: [...p.excluded, 'Nouvelle exclusion'] }
+                                  );
                                   updateContent({ ...content, pricing_plans: newPlans });
                                 }}
                               >+ Exclusion</button>

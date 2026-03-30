@@ -29,6 +29,7 @@ const EditableBlock = ({
   onDelete,
   onAdd,
   style,
+  tag: Tag = 'div',
 }) => {
   const { isAdminMode } = useAdmin();
   const [hovered, setHovered] = useState(false);
@@ -36,10 +37,13 @@ const EditableBlock = ({
   const [addOpen, setAddOpen] = useState(false);
 
   // En mode public: on rend juste les enfants sans overhead
-  if (!isAdminMode) return <>{children}</>;
+  if (!isAdminMode) {
+    if (Tag !== 'div') return <Tag style={style}>{children}</Tag>;
+    return <>{children}</>;
+  }
 
   return (
-    <div
+    <Tag
       style={{
         position: 'relative',
         outline: '3px dashed #2c2416',
@@ -158,7 +162,7 @@ const EditableBlock = ({
           onClose={() => setAddOpen(false)}
         />
       )}
-    </div>
+    </Tag>
   );
 };
 

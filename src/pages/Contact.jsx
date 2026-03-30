@@ -240,7 +240,7 @@ const Contact = () => {
         </EditableBlock>
 
         {/* Progress bar */}
-        <div style={{ display: 'flex', gap: '4px', marginBottom: '28px' }}>
+        <div style={{ display: 'flex', gap: '4px', marginBottom: step > 1 ? '16px' : '28px' }}>
           {[1, 2, 3].map(s => (
             <div key={s} style={{
               flex: 1, height: '4px', borderRadius: '2px',
@@ -249,6 +249,38 @@ const Contact = () => {
             }} />
           ))}
         </div>
+
+        {/* Récapitulatif de la sélection — visible dès l'étape 2 */}
+        {step > 1 && step < 4 && (
+          <div style={{
+            display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px',
+            padding: '12px 16px', marginBottom: '20px',
+            background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--border-light)',
+            fontSize: '13px', fontWeight: 600,
+          }}>
+            <span style={{ color: 'var(--primary)', fontWeight: 800 }}>
+              {formatDateFR(selectedDate)}
+            </span>
+            <span style={{ color: 'var(--border-medium)' }}>·</span>
+            <span style={{ color: 'var(--text-main)' }}>
+              {SLOT_LABELS[selectedSlot]?.label} — {SLOT_LABELS[selectedSlot]?.time}
+            </span>
+            <span style={{ color: 'var(--border-medium)' }}>·</span>
+            <span style={{ color: 'var(--primary)' }}>
+              {FORMULAS.find(f => f.id === selectedFormula)?.name}{' '}
+              <span style={{ fontWeight: 700 }}>
+                {FORMULAS.find(f => f.id === selectedFormula)?.price}
+              </span>
+            </span>
+            <button
+              onClick={() => setStep(1)}
+              style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', fontSize: '12px', color: 'var(--text-muted)', textDecoration: 'underline', padding: 0 }}
+            >
+              Modifier
+            </button>
+          </div>
+        )}
 
         {!isConfigured() && (
           <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', padding: '12px 16px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', marginBottom: '20px', fontSize: '13px', color: 'var(--primary)', lineHeight: 1.5 }}>

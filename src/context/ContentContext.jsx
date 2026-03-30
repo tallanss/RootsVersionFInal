@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { supabase } from '../config/supabase';
 
 const ContentContext = createContext();
 
@@ -127,58 +128,133 @@ const DEFAULT_CONTENT = {
   }
 };
 
+// Deep merge depuis le localStorage/Supabase vers les defaults
+const buildMergedContent = (parsed = {}) => {
+  const merged = {
+    ...DEFAULT_CONTENT,
+    ...parsed,
+    hero: { ...DEFAULT_CONTENT.hero, ...(parsed.hero || {}) },
+    scrolly: { ...DEFAULT_CONTENT.scrolly, ...(parsed.scrolly || {}) },
+    theme: { ...DEFAULT_CONTENT.theme, ...(parsed.theme || {}) },
+    navigation: parsed.navigation || DEFAULT_CONTENT.navigation,
+    socials: { ...DEFAULT_CONTENT.socials, ...(parsed.socials || {}) },
+    contact: { ...DEFAULT_CONTENT.contact, ...(parsed.contact || {}) },
+    seo: {
+      ...DEFAULT_CONTENT.seo,
+      ...(parsed.seo || {}),
+      pages: { ...DEFAULT_CONTENT.seo.pages, ...(parsed.seo?.pages || {}) }
+    },
+    pricing: {
+      essentiel: { ...DEFAULT_CONTENT.pricing.essentiel, ...(parsed.pricing?.essentiel || {}) },
+      premium: { ...DEFAULT_CONTENT.pricing.premium, ...(parsed.pricing?.premium || {}) },
+      custom: { ...DEFAULT_CONTENT.pricing.custom, ...(parsed.pricing?.custom || {}) },
+    },
+    formOptions: { ...DEFAULT_CONTENT.formOptions, ...(parsed.formOptions || {}) },
+    analytics: { ...DEFAULT_CONTENT.analytics, ...(parsed.analytics || {}) },
+    stats: parsed.stats || DEFAULT_CONTENT.stats,
+    services: parsed.services || DEFAULT_CONTENT.services,
+  };
+
+  if (
+    merged.hero.subtitle === "Location Photobooth Premium" ||
+    merged.hero.subtitle === "location photobooth, a partir de 189 euros"
+  ) {
+    merged.hero.subtitle = DEFAULT_CONTENT.hero.subtitle;
+  }
+
+  return merged;
+};
+
+// Sauvegarde en arrière-plan vers Supabase
+const saveToSupabase = async (mergedContent) => {
+  try {
+    const { error } = await supabase
+      .from('site_content')
+      .upsert(
+        { id: 1, content: mergedContent, updated_at: new Date().toISOString() },
+        { onConflict: 'id' }
+      );
+    if (error) throw error;
+  } catch (err) {
+    console.error('[Supabase] Erreur de sauvegarde:', err.message);
+  }
+};
+
 export const ContentProvider = ({ children }) => {
+  // Initialisation depuis le cache localStorage (affichage immédiat)
   const [content, setContent] = useState(() => {
-    const saved = localStorage.getItem('photo_roots_content');
-    const parsed = saved ? JSON.parse(saved) : {};
-    
-    // Deep merge / Fallback to defaults for EVERY section
-    const merged = {
-      ...DEFAULT_CONTENT,
-      ...parsed,
-      hero: { ...DEFAULT_CONTENT.hero, ...(parsed.hero || {}) },
-      scrolly: { ...DEFAULT_CONTENT.scrolly, ...(parsed.scrolly || {}) },
-      theme: { ...DEFAULT_CONTENT.theme, ...(parsed.theme || {}) },
-      navigation: parsed.navigation || DEFAULT_CONTENT.navigation,
-      socials: { ...DEFAULT_CONTENT.socials, ...(parsed.socials || {}) },
-      seo: { 
-        ...DEFAULT_CONTENT.seo, 
-        ...(parsed.seo || {}),
-        pages: { ...DEFAULT_CONTENT.seo.pages, ...(parsed.seo?.pages || {}) }
-      },
-      pricing: {
-        essentiel: { ...DEFAULT_CONTENT.pricing.essentiel, ...(parsed.pricing?.essentiel || {}) },
-        premium: { ...DEFAULT_CONTENT.pricing.premium, ...(parsed.pricing?.premium || {}) },
-        custom: { ...DEFAULT_CONTENT.pricing.custom, ...(parsed.pricing?.custom || {}) },
-      },
-      formOptions: { ...DEFAULT_CONTENT.formOptions, ...(parsed.formOptions || {}) },
-      analytics: { ...DEFAULT_CONTENT.analytics, ...(parsed.analytics || {}) },
-      stats: parsed.stats || DEFAULT_CONTENT.stats,
-      services: parsed.services || DEFAULT_CONTENT.services,
-    };
-
-    // Keep individual migrations if needed
-    if (merged.hero.subtitle === "Location Photobooth Premium" || merged.hero.subtitle === "location photobooth, a partir de 189 euros") {
-      merged.hero.subtitle = DEFAULT_CONTENT.hero.subtitle;
+    try {
+      const cached = localStorage.getItem('photo_roots_content');
+      return buildMergedContent(cached ? JSON.parse(cached) : {});
+    } catch {
+      return buildMergedContent({});
     }
-
-    return merged;
   });
 
-  const updateContent = (newContent) => {
+  // Chargement depuis Supabase au montage (source de vérité)
+  useEffect(() => {
+    const fetchFromSupabase = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('site_content')
+          .select('content')
+          .eq('id', 1)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data?.content) {
+          // Supabase a des données → les utiliser
+          const merged = buildMergedContent(data.content);
+          const cached = localStorage.getItem('photo_roots_content');
+          const mergedStr = JSON.stringify(merged);
+          if (cached && cached !== mergedStr) {
+            // Données différentes du cache (modif depuis un autre appareil)
+            const isAdmin = sessionStorage.getItem('pr_admin') === '1';
+            if (isAdmin) {
+              window.dispatchEvent(new CustomEvent('photo-roots-toast', {
+                detail: { message: 'Contenu mis à jour depuis le serveur ✓', type: 'info' }
+              }));
+            }
+          }
+          setContent(merged);
+          localStorage.setItem('photo_roots_content', mergedStr);
+        } else {
+          // Première fois : migrer le localStorage vers Supabase
+          const cached = localStorage.getItem('photo_roots_content');
+          if (cached) {
+            const parsed = JSON.parse(cached);
+            await saveToSupabase(parsed);
+          } else {
+            await saveToSupabase(DEFAULT_CONTENT);
+          }
+        }
+      } catch (err) {
+        console.warn('[Supabase] Connexion impossible, mode cache actif:', err.message);
+      }
+    };
+
+    fetchFromSupabase();
+  }, []);
+
+  const updateContent = useCallback((newContent) => {
     setContent(prev => {
       const merged = { ...prev, ...newContent };
+      // Cache local immédiat
       localStorage.setItem('photo_roots_content', JSON.stringify(merged));
+      // Sync Supabase en arrière-plan
+      saveToSupabase(merged);
       return merged;
     });
-  };
+  }, []);
 
-  const resetToDefault = () => {
+  const resetToDefault = useCallback(async () => {
     localStorage.removeItem('photo_roots_content');
     setContent(DEFAULT_CONTENT);
-  };
+    await saveToSupabase(DEFAULT_CONTENT);
+  }, []);
 
-  const downloadLeadsCSV = () => {
+  const downloadLeadsCSV = useCallback(() => {
     const messages = content.messages || [];
     if (messages.length === 0) {
       alert("Aucun lead à exporter.");
@@ -207,7 +283,7 @@ export const ContentProvider = ({ children }) => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
+  }, [content.messages]);
 
   return (
     <ContentContext.Provider value={{ content, updateContent, resetToDefault, downloadLeadsCSV }}>

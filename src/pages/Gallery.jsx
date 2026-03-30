@@ -18,9 +18,16 @@ const Gallery = () => {
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [addOpen, setAddOpen] = useState(false);
 
-  const filteredData = filter === "Tous" 
-    ? content.gallery 
+  const filteredData = filter === "Tous"
+    ? content.gallery
     : content.gallery.filter(item => item.category === filter);
+
+  const categoryCounts = CATEGORIES.reduce((acc, cat) => {
+    acc[cat] = cat === 'Tous'
+      ? content.gallery.length
+      : content.gallery.filter(g => g.category === cat).length;
+    return acc;
+  }, {});
 
   const handleAddPhoto = (vals) => {
     const newItem = {
@@ -109,6 +116,11 @@ const Gallery = () => {
               onClick={() => setFilter(cat)}
             >
               {cat}
+              {categoryCounts[cat] > 0 && (
+                <span style={{ marginLeft: '5px', opacity: 0.65, fontSize: '11px', fontWeight: 500 }}>
+                  ({categoryCounts[cat]})
+                </span>
+              )}
             </button>
           ))}
         </div>
@@ -157,11 +169,40 @@ const Gallery = () => {
         </div>
 
         {filteredData.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>
-            {isAdminMode 
-              ? 'Aucune photo. Cliquez sur "Ajouter une photo" pour commencer.'
-              : 'Aucun événement ne correspond à cette catégorie pour le moment.'
-            }
+          <div style={{
+            textAlign: 'center', padding: '72px 24px',
+            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px',
+          }}>
+            <div style={{
+              width: '72px', height: '72px', borderRadius: '50%',
+              background: 'var(--bg-secondary)', display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+              border: '2px dashed var(--border-medium)',
+            }}>
+              <Camera size={28} color="var(--text-light)" />
+            </div>
+            <div>
+              <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginBottom: '6px' }}>
+                {isAdminMode ? 'Galerie vide' : 'Aucune photo dans cette catégorie'}
+              </p>
+              <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                {isAdminMode
+                  ? 'Cliquez sur "Ajouter une photo" en haut à droite pour commencer.'
+                  : filter === 'Tous'
+                    ? 'Les photos de nos événements arrivent bientôt.'
+                    : `Aucun événement "${filter}" pour le moment.`
+                }
+              </p>
+            </div>
+            {isAdminMode && (
+              <button
+                onClick={() => setAddOpen(true)}
+                className="btn-primary"
+                style={{ padding: '12px 24px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}
+              >
+                <Plus size={16} /> Ajouter une photo
+              </button>
+            )}
           </div>
         )}
       </section>

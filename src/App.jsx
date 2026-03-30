@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { ToastContainer } from './components/Toast';
 import Home from './pages/Home';
 import Photobooth from './pages/Photobooth';
 import Tarifs from './pages/Tarifs';
@@ -8,6 +9,7 @@ import Gallery from './pages/Gallery';
 import Admin from './pages/Admin';
 import Legal from './pages/Legal';
 import SaveTheDate from './pages/SaveTheDate';
+import NotFound from './pages/NotFound';
 import BottomNav from './components/BottomNav';
 import Footer from './components/Footer';
 import Header from './components/Header';
@@ -90,6 +92,7 @@ function PageContent() {
             <Route path="/admin" element={<Admin />} />
             <Route path="/mentions-legales" element={<Legal />} />
             <Route path="/save-the-date" element={<SaveTheDate />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
       </main>
@@ -109,6 +112,7 @@ function PageContent() {
       )}
       
       <CookieBanner />
+      <ToastContainer />
     </div>
   );
 }

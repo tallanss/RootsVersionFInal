@@ -8,6 +8,7 @@ import PremiumImage from '../components/PremiumImage';
 import AnimatedButton from '../components/AnimatedButton';
 import FadeIn from '../components/FadeIn';
 import { useContent } from '../context/ContentContext';
+import { useAdmin } from '../context/AdminContext';
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
 
@@ -15,6 +16,7 @@ import EditableBlock from '../components/admin/EditableBlock';
 
 const Home = () => {
   const { content, updateContent } = useContent();
+  const { isAdminMode } = useAdmin();
   const [openFaq, setOpenFaq] = useState(null);
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
@@ -224,7 +226,7 @@ const Home = () => {
               updateContent({ ...content, services: newServices });
             }}
           >
-            <Link to="/tarifs" className="bento-item bento-large">
+            <Link to="/tarifs" className="bento-item bento-large" onClick={(e) => { if (isAdminMode) e.preventDefault(); }}>
               <div className="bento-content" style={{ display: 'flex', flexDirection: 'inherit', gap: 'inherit', alignItems: 'inherit' }}>
                 <div className="bento-icon wedding"><Heart size={28} /></div>
                 <div className="bento-text">
@@ -249,7 +251,7 @@ const Home = () => {
               updateContent({ ...content, services: newServices });
             }}
           >
-            <Link to="/tarifs" className="bento-item bento-small">
+            <Link to="/tarifs" className="bento-item bento-small" onClick={(e) => { if (isAdminMode) e.preventDefault(); }}>
               <div className="bento-icon corporate"><Briefcase size={22} /></div>
               <div className="bento-text">
                 <h3>{content.services?.[1]?.title || 'Entreprise'}</h3>
@@ -271,7 +273,7 @@ const Home = () => {
               updateContent({ ...content, services: newServices });
             }}
           >
-            <Link to="/tarifs" className="bento-item bento-small">
+            <Link to="/tarifs" className="bento-item bento-small" onClick={(e) => { if (isAdminMode) e.preventDefault(); }}>
               <div className="bento-icon birthday"><PartyPopper size={22} /></div>
               <div className="bento-text">
                 <h3>{content.services?.[2]?.title || 'Anniversaire'}</h3>
@@ -407,7 +409,7 @@ const Home = () => {
         <h2 className="section-title">Ils nous ont fait confiance</h2>
         <p className="section-subtitle">+100 événements réussis en Seine-Maritime.</p>
 
-        <SwipeCarousel autoPlay interval={5000}>
+        <SwipeCarousel autoPlay={!isAdminMode} interval={5000}>
           {(content.testimonials || [
             { id: 1, name: 'Clément Robert', role: 'Anniversaire au Havre', text: 'Location pour notre anniversaire. Les photos sont de très bonnes qualités et tous nos amis se sont bien amusés. Je recommande. Merci PhotoRoots !', avatar: 'C' },
             { id: 2, name: 'Jordan Racine', role: 'Fête privée à Rouen', text: 'Bien organisé du début à la fin. Jimmy est très arrangeant et a répondu à nos demandes de dernière minute. On se revoit pour mes 40 ans ;)', avatar: 'J' },
