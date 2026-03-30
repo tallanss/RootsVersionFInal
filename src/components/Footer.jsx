@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Camera, Instagram, Facebook, Mail, Phone, MapPin, Heart } from 'lucide-react';
 import { useContent } from '../context/ContentContext';

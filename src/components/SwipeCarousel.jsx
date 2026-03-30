@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, Children } from 'react';
+import { useState, useRef, useEffect, Children } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const SwipeCarousel = ({ children, autoPlay = false, interval = 4000 }) => {

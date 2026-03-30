@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Camera as CameraIcon, Monitor, Printer, Palette, Image, Tv, ArrowRight, CheckCircle2, Phone } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 const Confetti = ({ active, duration = 3000 }) => {
   const canvasRef = useRef(null);

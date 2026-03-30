@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Clock, CheckCircle2, Send, ChevronLeft, ChevronRight, Calendar, CalendarCheck, Loader2, Sun, Moon, AlertCircle, Lock } from 'lucide-react';

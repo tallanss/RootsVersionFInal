@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 
 const FadeIn = ({ children, delay = 0, duration = 0.6, direction = 'up', className = '', style = {} }) => {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { Download, Calendar, Image as ImageIcon, Heart, Camera, Upload, Plus } from 'lucide-react';
 import html2canvas from 'html2canvas';

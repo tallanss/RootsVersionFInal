@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Camera, Filter, X, Calendar, MapPin, Plus } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
