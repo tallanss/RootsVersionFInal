@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Heart, Briefcase, PartyPopper, Phone, Shield, Clock, ChevronDown, ChevronUp, CheckCircle2, Sparkles, Camera, Tag, Image } from 'lucide-react';
 import useScrollAnimation from '../hooks/useScrollAnimation';
@@ -11,12 +11,7 @@ import { useContent } from '../context/ContentContext';
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
 
-const GALLERY_IMAGES = [
-  { src: '/gallery-1.png', alt: 'Photobooth mariage premium Le Havre' },
-  { src: '/gallery-2.png', alt: 'Photobooth événement entreprise moderne Rouen' },
-  { src: '/gallery-3.png', alt: 'Photobooth anniversaire festif Dieppe' },
-  { src: '/mirror-premium.png', alt: 'Borne photo miroir magique PhotoRoots' },
-];
+// Local fallbacks moved to context
 
 const Home = () => {
   const { content, updateContent } = useContent();
@@ -47,12 +42,13 @@ const Home = () => {
     return () => { stepElements.forEach(el => observer.unobserve(el)); };
   }, []);
 
-  const faqs = [
-    { q: "Comment réserver le photobooth ?", a: "C'est très simple ! Remplissez notre formulaire de contact avec la date et le type de votre événement. Nous vous répondons sous 24h avec un devis personnalisé gratuit." },
-    { q: "Quelle est la zone d'intervention ?", a: "Nous intervenons principalement en Seine-Maritime : Le Havre, Rouen, Dieppe et leurs alentours. Pour les événements plus éloignés, contactez-nous pour un devis." },
-    { q: "Le photobooth est-il livré et installé ?", a: "Oui ! Nous nous occupons de tout : livraison, installation, assistance technique pendant l'événement et reprise du matériel. Vous n'avez rien à faire." },
-    { q: "Peut-on personnaliser les photos ?", a: "Absolument ! Le format, le fond, les cadres et les textes sont entièrement personnalisables. L'écran de diffusion intégré dans le pied permet aussi d'afficher vos propres contenus." },
-    { q: "Les photos sont-elles imprimées sur place ?", a: "Oui, grâce à notre imprimante professionnelle ultra-rapide. Chaque invité repart avec un souvenir physique de qualité en quelques secondes." },
+  // Data now comes from ContentContext
+  const faqs = content.faqs || [];
+  const galleryImages = content.gallery?.length > 0 ? content.gallery.map(img => ({ src: img.image, alt: img.title })) : [
+    { src: '/gallery-1.png', alt: 'Photobooth mariage premium Le Havre' },
+    { src: '/gallery-2.png', alt: 'Photobooth événement entreprise moderne Rouen' },
+    { src: '/gallery-3.png', alt: 'Photobooth anniversaire festif Dieppe' },
+    { src: '/mirror-premium.png', alt: 'Borne photo miroir magique PhotoRoots' },
   ];
 
   return (
@@ -82,14 +78,14 @@ const Home = () => {
               label="Titre"
               modalTitle="Modifier le Titre"
               fields={[
-                { key: 'title', label: 'Titre principal', type: 'text', value: content.hero.title },
-                { key: 'subtitle', label: 'Sous-titre (or)', type: 'text', value: content.hero.subtitle },
+                { key: 'title', label: 'Titre principal', type: 'text', value: content.hero?.title },
+                { key: 'subtitle', label: 'Sous-titre (or)', type: 'text', value: content.hero?.subtitle },
               ]}
               onSave={(vals) => updateContent({ ...content, hero: { ...content.hero, ...vals } })}
             >
               <h1 className="hero-title">
-                {content.hero.title}<br />
-                <span className="highlight">{content.hero.subtitle}</span>
+                {content.hero?.title}<br />
+                <span className="highlight">{content.hero?.subtitle}</span>
               </h1>
             </EditableBlock>
           </FadeIn>
@@ -98,11 +94,11 @@ const Home = () => {
             <EditableBlock
               label="Description"
               modalTitle="Modifier la Description"
-              fields={[{ key: 'desc', label: 'Texte', type: 'textarea', value: content.hero.desc }]}
+              fields={[{ key: 'desc', label: 'Texte', type: 'textarea', value: content.hero?.desc }]}
               onSave={(vals) => updateContent({ ...content, hero: { ...content.hero, ...vals } })}
             >
               <p className="hero-subtitle">
-                {content.hero.desc}
+                {content.hero?.desc}
               </p>
             </EditableBlock>
           </FadeIn>
@@ -146,17 +142,17 @@ const Home = () => {
               label="Stat 1"
               modalTitle="Modifier Stat 1"
               fields={[
-                { key: 'num', label: 'Nombre', type: 'text', value: content.stats?.[0]?.num || '100+' },
+                { key: 'num', label: 'Nombre', type: 'text', value: content.stats?.[0]?.num || '150+' },
                 { key: 'label', label: 'Label', type: 'text', value: content.stats?.[0]?.label || 'Événements' }
               ]}
               onSave={(vals) => {
-                const newStats = [...(content.stats || [{num:'100+',label:'Événements'},{num:'500+',label:'Clients'},{num:'1000+',label:'Sourires'}])];
+                const newStats = [...(content.stats || [{num:'150+',label:'Événements'},{num:'500+',label:'Clients'},{num:'1000+',label:'Sourires'}])];
                 newStats[0] = vals;
                 updateContent({ ...content, stats: newStats });
               }}
             >
               <div className="stat-item">
-                <div className="stat-number">{content.stats?.[0]?.num || '100+'}</div>
+                <div className="stat-number">{content.stats?.[0]?.num || '150+'}</div>
                 <div className="stat-label">{content.stats?.[0]?.label || 'Événements'}</div>
               </div>
             </EditableBlock>
@@ -170,7 +166,7 @@ const Home = () => {
                 { key: 'label', label: 'Label', type: 'text', value: content.stats?.[1]?.label || 'Clients' }
               ]}
               onSave={(vals) => {
-                const newStats = [...(content.stats || [{num:'100+',label:'Événements'},{num:'500+',label:'Clients'},{num:'1000+',label:'Sourires'}])];
+                const newStats = [...(content.stats || [{num:'150+',label:'Événements'},{num:'500+',label:'Clients'},{num:'1000+',label:'Sourires'}])];
                 newStats[1] = vals;
                 updateContent({ ...content, stats: newStats });
               }}
@@ -190,7 +186,7 @@ const Home = () => {
                 { key: 'label', label: 'Label', type: 'text', value: content.stats?.[2]?.label || 'Sourires' }
               ]}
               onSave={(vals) => {
-                const newStats = [...(content.stats || [{num:'100+',label:'Événements'},{num:'500+',label:'Clients'},{num:'1000+',label:'Sourires'}])];
+                const newStats = [...(content.stats || [{num:'150+',label:'Événements'},{num:'500+',label:'Clients'},{num:'1000+',label:'Sourires'}])];
                 newStats[2] = vals;
                 updateContent({ ...content, stats: newStats });
               }}
@@ -336,9 +332,9 @@ const Home = () => {
           {/* Scrolling Steps */}
           <div className="scrolly-steps" style={{ position: 'relative', zIndex: 5, paddingBottom: '10vh' }}>
             {[
-              { key: 'step1', num: 1, data: content.scrolly.step1 },
-              { key: 'step2', num: 2, data: content.scrolly.step2 },
-              { key: 'step3', num: 3, data: content.scrolly.step3 },
+              { key: 'step1', num: 1, data: content.scrolly?.step1 || {} },
+              { key: 'step2', num: 2, data: content.scrolly?.step2 || {} },
+              { key: 'step3', num: 3, data: content.scrolly?.step3 || {} },
             ].map(({ key, num, data }, idx) => (
               <EditableBlock
                 key={key}
@@ -374,7 +370,7 @@ const Home = () => {
       <FadeIn direction="up">
       <section className="container" style={{ padding: '16px 24px' }}>
         <div className="gallery-grid">
-          {GALLERY_IMAGES.map((img, i) => (
+          {galleryImages.map((img, i) => (
             <div
               className="gallery-item gallery-item-clickable"
               key={i}
@@ -395,7 +391,7 @@ const Home = () => {
 
       {lightboxIndex !== null && (
         <Lightbox
-          images={GALLERY_IMAGES}
+          images={galleryImages}
           initialIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
         />
@@ -529,7 +525,7 @@ const Home = () => {
         <p className="section-subtitle">Aperçu des moments capturés récemment par nos clients.</p>
 
         <div className="gallery-teaser-grid">
-          {content.gallery.slice(0, 4).map((item) => (
+          {(content.gallery || []).slice(0, 4).map((item) => (
             <EditableBlock
               key={item.id}
               label="Photo"

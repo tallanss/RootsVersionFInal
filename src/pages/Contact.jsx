@@ -18,11 +18,22 @@ const SLOT_LABELS = {
 const Contact = () => {
   const { content, updateContent } = useContent();
 
-  const FORMULAS = content.formulas || [
-    { id: 'essentiel', name: 'Essentiel', price: '189€', desc: '2h d\'animation' },
-    { id: 'premium', name: 'Premium', price: '289€', desc: '3h + impressions' },
-    { id: 'sur-mesure', name: 'Sur-Mesure', price: 'Sur devis', desc: 'Durée illimitée' },
-  ];
+  const FORMULAS = useMemo(() => {
+    if (content.pricing_plans?.length > 0) {
+      return content.pricing_plans.map(p => ({
+        id: p.id,
+        name: p.name,
+        price: p.isCustom ? p.price : `${p.price}€`,
+        desc: p.desc
+      }));
+    }
+    return [
+      { id: 'essentiel', name: 'Essentiel', price: '189€', desc: '2h d\'animation' },
+      { id: 'premium', name: 'Premium', price: '289€', desc: '3h + impressions' },
+      { id: 'sur-mesure', name: 'Sur-Mesure', price: 'Sur devis', desc: 'Durée illimitée' },
+    ];
+  }, [content.pricing_plans]);
+
   const eventTypes = content.formOptions?.eventTypes || ['Mariage', 'Anniversaire', 'Entreprise', 'Baptême', 'Autre'];
   const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState(null);

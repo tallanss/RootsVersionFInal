@@ -14,9 +14,10 @@ import Header from './components/Header';
 import ContactButton from './components/WhatsAppButton';
 import CookieBanner from './components/CookieBanner';
 import AdminToolbar from './components/admin/AdminToolbar';
+import AdminSidebar from './components/AdminSidebar';
 
 import { useContent } from './context/ContentContext';
-import { AdminProvider } from './context/AdminContext';
+import { AdminProvider, useAdmin } from './context/AdminContext';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -29,15 +30,34 @@ function ScrollToTop() {
 function PageContent() {
   const location = useLocation();
   const { content } = useContent();
+  const { isAdminMode, logout } = useAdmin();
+  const [activeTab, setActiveTab] = React.useState('dashboard');
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   
-  // Inject Theme Colors
+  // SEO Injection
+  useEffect(() => {
+    const route = location.pathname;
+    const pageSEO = content.seo?.pages?.[route] || content.seo?.global;
+    if (pageSEO) {
+      document.title = pageSEO.title;
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.name = 'description';
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.content = pageSEO.description;
+    }
+  }, [location.pathname, content.seo]);
   useEffect(() => {
     if (content.theme) {
-      document.documentElement.style.setProperty('--primary', content.theme.primary);
-      document.documentElement.style.setProperty('--accent', content.theme.accent);
+      const primaryColor = content.theme.primary || '#c5a059';
+      document.documentElement.style.setProperty('--primary', primaryColor);
+      document.documentElement.style.setProperty('--accent', content.theme.accent || '#e3c18c');
       document.body.style.backgroundColor = content.theme.background || '#ffffff';
       
       const hexToRgb = (hex) => {
+        if (!hex) return null;
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? {
           r: parseInt(result[1], 16),
@@ -46,7 +66,7 @@ function PageContent() {
         } : null;
       };
       
-      const rgb = hexToRgb(content.theme.primary);
+      const rgb = hexToRgb(primaryColor);
       if (rgb) {
         document.documentElement.style.setProperty('--primary-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
       }
@@ -76,7 +96,18 @@ function PageContent() {
       {!isAdminLoginPage && <Footer />}
       {!isAdminLoginPage && <BottomNav />}
       {!isAdminLoginPage && <ContactButton />}
-      {!isAdminLoginPage && <AdminToolbar />}
+      {!isAdminLoginPage && <AdminToolbar onOpenDashboard={() => setIsSidebarOpen(true)} />}
+      
+      {isAdminMode && (
+        <AdminSidebar 
+          isOpen={isSidebarOpen} 
+          setIsOpen={setIsSidebarOpen} 
+          onLogout={logout}
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab}
+        />
+      )}
+      
       <CookieBanner />
     </div>
   );

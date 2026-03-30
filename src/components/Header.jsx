@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Heart, Calendar, ChevronRight } from 'lucide-react';
+import { Calendar, ChevronRight } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import AnimatedButton from './AnimatedButton';
+import { useContent } from '../context/ContentContext';
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const location = useLocation();
+  const { content } = useContent();
+  const contactNav = content.navigation?.find(n => n.path === '/contact') || { label: 'Réservez' };
   const isAdmin = location.pathname.startsWith('/admin');
 
   useEffect(() => {
@@ -52,7 +55,7 @@ const Header = () => {
 
         <Link to="/" style={{ display: 'flex', alignItems: 'center', minWidth: 0, flexShrink: 0, textDecoration: 'none', zIndex: 20 }}>
           <img 
-            src="/logo-gold.png" 
+            src={content.theme?.logoUrl || "/logo-gold.png"} 
             alt="PhotoRoots Logo" 
             style={{ 
               height: isScrolled ? '38px' : '48px', 
@@ -62,8 +65,6 @@ const Header = () => {
             }} 
           />
         </Link>
-        {/* Navigation links removed as they are present in bottom nav */}
-
 
         {!isAdmin && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', zIndex: 20 }}>
@@ -85,7 +86,7 @@ const Header = () => {
               }}
             >
               <Calendar size={16} /> 
-              Réservez
+              {contactNav.label}
               <ChevronRight size={14} style={{ opacity: 0.7 }} />
             </AnimatedButton>
           </div>

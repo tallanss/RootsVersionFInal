@@ -23,7 +23,7 @@ const Footer = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
             <img 
-              src="/logo-gold.png" 
+              src={content.theme?.logoUrl || "/logo-gold.png"} 
               alt="PhotoRoots Logo" 
               style={{ height: '60px', width: 'auto', objectFit: 'contain' }} 
             />
@@ -41,8 +41,8 @@ const Footer = () => {
             </p>
           </EditableBlock>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <a href="#" className="social-icon" aria-label="Instagram"><Instagram size={20} /></a>
-            <a href="#" className="social-icon" aria-label="Facebook"><Facebook size={20} /></a>
+            {content.socials?.instagram && <a href={content.socials.instagram} className="social-icon" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><Instagram size={20} /></a>}
+            {content.socials?.facebook && <a href={content.socials.facebook} className="social-icon" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><Facebook size={20} /></a>}
           </div>
         </div>
 
@@ -50,12 +50,9 @@ const Footer = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)' }}>Navigation</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <Link to="/" style={linkStyle}>Accueil</Link>
-            <Link to="/photobooth" style={linkStyle}>Notre Photobooth</Link>
-            <Link to="/tarifs" style={linkStyle}>Tarifs & Formules</Link>
-            <Link to="/galerie" style={linkStyle}>Galerie Photos</Link>
-            <Link to="/save-the-date" style={linkStyle}>Générateur Invite</Link>
-            <Link to="/contact" style={linkStyle}>Demander un devis</Link>
+            {content.navigation?.map(item => (
+              <Link key={item.id} to={item.path} style={linkStyle}>{item.label}</Link>
+            ))}
           </div>
         </div>
 
@@ -73,9 +70,9 @@ const Footer = () => {
             onSave={(vals) => updateContent({ ...content, contact: { ...content.contact, ...vals } })}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={infoStyle}><Phone size={16} /> {content.contact?.phone || "06 00 00 00 00"}</div>
-              <div style={infoStyle}><Mail size={16} /> {content.contact?.email || "contact@photoroots.fr"}</div>
-              <div style={infoStyle}><MapPin size={16} /> {content.contact?.location || "Normandie : Le Havre, Rouen, Dieppe"}</div>
+              <a href={`tel:${content.contact?.phone || "0600000000"}`} style={{ ...infoStyle, textDecoration: 'none' }}><Phone size={16} /> {content.contact?.phone || "06 00 00 00 00"}</a>
+              <a href={`mailto:${content.contact?.email || "contact@photoroots.fr"}`} style={{ ...infoStyle, textDecoration: 'none' }}><Mail size={16} /> {content.contact?.email || "contact@photoroots.fr"}</a>
+              <div style={infoStyle}><MapPin size={16} /> {content.contact?.zone || content.contact?.location || "Normandie : Le Havre, Rouen, Dieppe"}</div>
             </div>
           </EditableBlock>
         </div>
@@ -133,7 +130,6 @@ const linkStyle = {
   textDecoration: 'none',
   fontSize: '14px',
   transition: 'color 0.2s',
-  '&:hover': { color: 'var(--primary)' }
 };
 
 const infoStyle = {

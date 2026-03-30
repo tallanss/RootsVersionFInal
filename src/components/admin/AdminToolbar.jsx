@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '../../context/AdminContext';
-import { LogOut, Eye } from 'lucide-react';
+import { LogOut, Layout } from 'lucide-react';
 
-const AdminToolbar = () => {
+const AdminToolbar = ({ onOpenDashboard }) => {
   const { isAdminMode, logout } = useAdmin();
   const navigate = useNavigate();
 
@@ -17,7 +17,7 @@ const AdminToolbar = () => {
   return (
     <div style={{
       position: 'fixed',
-      bottom: '90px', // Above the BottomNav
+      bottom: '100px', // Above the BottomNav
       left: '50%',
       transform: 'translateX(-50%)',
       zIndex: 99998,
@@ -26,32 +26,34 @@ const AdminToolbar = () => {
       WebkitBackdropFilter: 'blur(20px)',
       border: '1px solid rgba(197, 160, 89, 0.4)',
       borderRadius: '50px',
-      padding: '10px 16px',
+      padding: '8px 12px',
       display: 'flex',
       alignItems: 'center',
-      gap: '10px',
-      boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
-      animation: 'slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+      gap: '12px',
+      boxShadow: '0 12px 40px rgba(0,0,0,0.5)',
+      animation: 'slideUpToolbar 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
       pointerEvents: 'auto',
-      whiteSpace: 'nowrap',
     }}>
-      {/* Badge */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: '6px',
-        background: 'rgba(197, 160, 89, 0.15)',
-        padding: '4px 10px', borderRadius: '20px',
-        border: '1px solid rgba(197, 160, 89, 0.3)',
-      }}>
-        <span style={{ width: '7px', height: '7px', background: 'var(--primary)', borderRadius: '50%', display: 'inline-block', boxShadow: '0 0 8px var(--primary)' }} />
-        <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary)', letterSpacing: '0.05em' }}>
-          MODE ADMIN
-        </span>
-      </div>
-
-      {/* Hint */}
-      <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', display: 'none' }} className="admin-toolbar-hint">
-        Survolez un bloc pour le modifier
-      </span>
+      {/* CMS DASHBOARD BUTTON */}
+      <button
+        onClick={onOpenDashboard}
+        style={{
+          background: 'var(--primary)',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '50px',
+          padding: '8px 16px',
+          fontSize: '13px',
+          fontWeight: 800,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          boxShadow: '0 4px 15px rgba(197, 160, 89, 0.3)',
+        }}
+      >
+        <Layout size={14} /> Dashboard
+      </button>
 
       {/* Divider */}
       <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)' }} />
@@ -60,11 +62,11 @@ const AdminToolbar = () => {
       <button
         onClick={handleLogout}
         style={{
-          background: 'rgba(239, 68, 68, 0.15)',
+          background: 'rgba(255, 255, 255, 0.05)',
           color: '#ef4444',
-          border: '1px solid rgba(239, 68, 68, 0.3)',
-          borderRadius: '20px',
-          padding: '6px 12px',
+          border: 'none',
+          borderRadius: '50px',
+          padding: '8px 12px',
           fontSize: '12px',
           fontWeight: 700,
           cursor: 'pointer',
@@ -73,12 +75,13 @@ const AdminToolbar = () => {
           gap: '5px',
         }}
       >
-        <LogOut size={13} /> Déconnexion
+        <LogOut size={13} />
       </button>
 
       <style>{`
-        @media (min-width: 640px) {
-          .admin-toolbar-hint { display: inline !important; }
+        @keyframes slideUpToolbar {
+          from { transform: translate(-50%, 100%); opacity: 0; }
+          to { transform: translate(-50%, 0); opacity: 1; }
         }
       `}</style>
     </div>

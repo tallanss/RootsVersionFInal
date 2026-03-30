@@ -4,8 +4,8 @@ import { Camera as CameraIcon, Monitor, Printer, Palette, Image, Tv, ArrowRight,
 import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
 import EditableBlock from '../components/admin/EditableBlock';
+import { useContent } from '../context/ContentContext';
 
-// Local state for spec cards editable content
 const DEFAULT_SPECS = [
   { id: 'camera', icon: 'CameraIcon', title: 'Canon EOS 6D', desc: 'Appareil photo full-frame professionnel avec objectif ultra-performant pour des clichés d\'une netteté exceptionnelle et des couleurs vibrantes.' },
   { id: 'screen', icon: 'Monitor', title: 'Écran Tactile ASUS 1080p', desc: 'Naviguez facilement à travers les options et personnalisez vos photos grâce à l\'interface tactile intuitive haute définition.' },
@@ -13,39 +13,28 @@ const DEFAULT_SPECS = [
   { id: 'display', icon: 'Tv', title: 'Écran de Diffusion', desc: 'Écran intégré dans le pied pour diffuser vos vidéos, diaporamas, messages personnalisés ou revivre les photos de l\'événement en direct.' },
 ];
 
-const ICONS = { CameraIcon, Monitor, Printer, Tv };
+const DEFAULT_ALL_IN_FEATURES = [
+  { id: 1, title: 'Photos Illimitées', desc: 'Prenez autant de photos que vous le souhaitez.', icon: 'Image' },
+  { id: 2, title: 'Personnalisation', desc: 'Fonds, cadres et textes à votre image.', icon: 'Palette' },
+  { id: 3, title: 'Impression Instant', desc: 'Repartez avec vos souvenirs en main.', icon: 'Printer' },
+  { id: 4, title: 'Clé en Main', desc: 'Livraison et installation incluses.', icon: 'CheckCircle2' },
+];
+
+const DEFAULT_PHOTOBOOTH_GALLERY = [
+  { src: '/gallery-1.png', alt: 'Photobooth en action lors d\'un mariage' },
+  { src: '/gallery-2.png', alt: 'Photobooth lors d\'un événement corporate' },
+  { src: '/gallery-3.png', alt: 'Anniversaire avec photobooth PhotoRoots' },
+  { src: '/hero-premium.png', alt: 'Vue du miroir photobooth premium' },
+];
+
+const ICONS = { CameraIcon, Monitor, Printer, Tv, Image, Palette, CheckCircle2 };
 
 const Photobooth = () => {
   const { content, updateContent } = useContent();
 
-  const defaultSpecs = [
-    { id: 'camera', icon: 'CameraIcon', title: 'Canon EOS 6D', desc: 'Appareil photo full-frame professionnel avec objectif ultra-performant pour des clichés d\'une netteté exceptionnelle et des couleurs vibrantes.' },
-    { id: 'screen', icon: 'Monitor', title: 'Écran Tactile ASUS 1080p', desc: 'Naviguez facilement à travers les options et personnalisez vos photos grâce à l\'interface tactile intuitive haute définition.' },
-    { id: 'printer', icon: 'Printer', title: 'Imprimante Hilti Ultra-Rapide', desc: 'Vos photos prennent vie instantanément avec une qualité d\'impression professionnelle. Fini les temps d\'attente !' },
-    { id: 'display', icon: 'Tv', title: 'Écran de Diffusion', desc: 'Écran intégré dans le pied pour diffuser vos vidéos, diaporamas, messages personnalisés ou revivre les photos de l\'événement en direct.' },
-  ];
-
-  const specs = content.photobooth_specs || defaultSpecs;
-
-  const defaultAllInFeatures = [
-    { id: 1, title: 'Photos Illimitées', desc: 'Prenez autant de photos que vous le souhaitez.', icon: 'Image' },
-    { id: 2, title: 'Personnalisation', desc: 'Fonds, cadres et textes à votre image.', icon: 'Palette' },
-    { id: 3, title: 'Impression Instant', desc: 'Repartez avec vos souvenirs en main.', icon: 'Printer' },
-    { id: 4, title: 'Clé en Main', desc: 'Livraison et installation incluses.', icon: 'CheckCircle2' },
-  ];
-
-  const allInFeatures = content.photobooth_all_in || defaultAllInFeatures;
-
-  const defaultPhotoboothGallery = [
-    { src: '/gallery-1.png', alt: 'Photobooth en action lors d\'un mariage' },
-    { src: '/gallery-2.png', alt: 'Photobooth lors d\'un événement corporate' },
-    { src: '/gallery-3.png', alt: 'Anniversaire avec photobooth PhotoRoots' },
-    { src: '/hero-premium.png', alt: 'Vue du miroir photobooth premium' },
-  ];
-
-  const photoboothGallery = content.photobooth_gallery || defaultPhotoboothGallery;
-
-  const ICONS = { CameraIcon, Monitor, Printer, Tv, Image, Palette, CheckCircle2 };
+  const specs = content.photobooth_specs || DEFAULT_SPECS;
+  const allInFeatures = content.photobooth_all_in || DEFAULT_ALL_IN_FEATURES;
+  const photoboothGallery = content.photobooth_gallery || DEFAULT_PHOTOBOOTH_GALLERY;
 
   return (
     <div className="animate-in">

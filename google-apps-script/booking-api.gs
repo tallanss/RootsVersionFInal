@@ -19,7 +19,7 @@
 
 // ===== CONFIGURATION (À MODIFIER) =====
 const CALENDAR_ID = 'primary'; // 'primary' = votre calendrier principal, ou ID spécifique
-const OWNER_EMAIL = 'contact@photoroots.fr'; // Votre email
+const OWNER_EMAIL = 'Jimmy.racine76170@gmail.com'; // Votre email
 const BUSINESS_NAME = 'PhotoRoots';
 const BUSINESS_PHONE = '+33 6 12 34 56 78';
 
