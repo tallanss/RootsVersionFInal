@@ -51,7 +51,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
       )}
 
       <aside className={`admin-sidebar ${isOpen ? 'open' : ''}`}>
-        <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ background: 'var(--primary)', padding: '6px', borderRadius: '8px' }}>
               <Camera size={18} color="#fff" />
@@ -60,14 +60,15 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
           </div>
           <button 
             onClick={() => setIsOpen(false)}
-            style={{ display: 'none', background: 'none', border: 'none', color: '#94a3b8' }}
+            style={{ display: 'none', background: 'rgba(255,255,255,0.05)', border: 'none', color: '#94a3b8', padding: '8px', borderRadius: '50%' }}
             className="mobile-only-flex"
           >
             <X size={20} />
           </button>
         </div>
 
-        <nav style={{ flexGrow: 1, marginTop: '12px' }}>
+        <nav style={{ flexGrow: 1, marginTop: '20px' }}>
+          <div style={{ padding: '0 24px 10px', fontSize: '11px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '1px' }}>Navigation</div>
           {menuItems.map((item) => (
             <div 
               key={item.id}
@@ -76,9 +77,10 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
                 setIsOpen(false);
               }}
               className={`admin-nav-item ${activeTab === item.id ? 'active' : ''}`}
+              style={{ margin: '4px 12px', borderRadius: '12px' }}
             >
               <item.icon size={18} />
-              <span style={{ flexGrow: 1 }}>{item.label}</span>
+              <span style={{ flexGrow: 1, fontWeight: 600 }}>{item.label}</span>
               {item.id === 'messages' && unreadCount > 0 && (
                 <span style={{ 
                   background: 'var(--primary)', 
@@ -87,8 +89,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
                   padding: '2px 8px', 
                   borderRadius: '10px', 
                   fontWeight: 800,
-                  boxShadow: '0 4px 10px rgba(var(--primary-rgb), 0.3)',
-                  animation: 'pulse-slow 2s infinite'
+                  boxShadow: '0 4px 10px rgba(var(--primary-rgb), 0.3)'
                 }}>
                   {unreadCount}
                 </span>
@@ -97,11 +98,18 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
           ))}
         </nav>
 
-        <div style={{ padding: '20px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ padding: '24px', borderTop: '1px solid rgba(255,255,255,0.05)', background: 'rgba(255,255,255,0.01)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+             <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'rgba(var(--primary-rgb), 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--primary)', fontWeight: 800 }}>PR</div>
+             <div>
+                <div style={{ fontSize: '13px', fontWeight: 700 }}>Version Pro</div>
+                <div style={{ fontSize: '11px', color: '#64748b' }}>SaaS 2030 Edition</div>
+             </div>
+          </div>
           <button 
             onClick={onLogout}
             className="admin-nav-item"
-            style={{ width: '100%', margin: 0, border: 'none', background: 'rgba(239, 68, 68, 0.05)', color: '#ef4444' }}
+            style={{ width: '100%', margin: 0, border: 'none', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', borderRadius: '12px', justifyContent: 'center' }}
           >
             <LogOut size={18} />
             Déconnexion

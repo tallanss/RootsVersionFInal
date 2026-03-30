@@ -35,11 +35,14 @@ import {
   Clock,
   Sparkles,
   BarChart3,
-  Layers
+  Layers,
+  Bell,
+  Search as SearchIcon
 } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 import PremiumImage from '../components/PremiumImage';
 import AdminSidebar from '../components/AdminSidebar';
+import AdminBottomNav from '../components/AdminBottomNav';
 
 // Reusable Chart Component (SVG based for zero dependencies)
 const BookingChart = ({ data, color }) => {
@@ -52,7 +55,7 @@ const BookingChart = ({ data, color }) => {
   }
 
   const values = data.map(d => d.value);
-  const maxVal = Math.max(...values, 1); // Avoid -Infinity and division by zero
+  const maxVal = Math.max(...values, 1);
   const height = 100;
   const width = 300;
   const padding = 20;
@@ -265,6 +268,19 @@ const Admin = () => {
     setHasChanges(true);
   };
 
+  const currentTabLabel = useMemo(() => {
+    const labels = {
+      dashboard: "Tableau de bord",
+      messages: "Messages",
+      hero: "Contenu Principal",
+      gallery: "Médiathèque",
+      pricing: "Style & SEO",
+      footer: "Tarifs & Forfaits",
+      legal: "Mentions Légales"
+    };
+    return labels[activeTab] || "Admin";
+  }, [activeTab]);
+
   if (!isAdmin) {
     return (
       <div className="admin-login-container">
@@ -313,15 +329,16 @@ const Admin = () => {
       />
 
       <main className="admin-main">
-        {/* Mobile Header Nav */}
-        <div style={{ display: 'none', alignItems: 'center', gap: '16px', marginBottom: '32px' }} className="mobile-only-flex">
-          <button 
-            onClick={() => setIsSidebarOpen(true)}
-            style={{ background: 'rgba(255,255,255,0.05)', border: 'none', padding: '12px', borderRadius: '12px', color: '#fff' }}
-          >
-            <Menu size={24} />
-          </button>
-          <h2 style={{ fontSize: '18px', fontWeight: 800 }}>Admin Panel</h2>
+        {/* Mobile App Header */}
+        <div style={{ display: 'none', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px', position: 'sticky', top: '0', zIndex: '9000', background: 'rgba(15, 23, 42, 0.8)', backdropFilter: 'blur(20px)', padding: '12px 0', margin: '-24px 0 32px' }} className="mobile-only-flex">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 800 }}>PR</div>
+            <h2 style={{ fontSize: '18px', fontWeight: 800 }}>{currentTabLabel}</h2>
+          </div>
+          <div style={{ display: 'flex', gap: '8px' }}>
+             <button style={{ background: 'rgba(255,255,255,0.05)', border: 'none', padding: '10px', borderRadius: '12px', color: '#fff' }}><Bell size={20} /></button>
+             <button onClick={() => window.location.reload()} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', padding: '10px', borderRadius: '12px', color: '#fff' }}><RefreshCcw size={20} /></button>
+          </div>
         </div>
 
         {/* DASHBOARD VIEW */}
@@ -362,7 +379,7 @@ const Admin = () => {
               </div>
             </div>
 
-            <div className="admin-grid" style={{ gridTemplateColumns: '1.5fr 1fr' }}>
+            <div className="admin-grid admin-grid-layout">
                <div className="admin-pro-card">
                  <h3 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                    <BarChart3 size={18} color="var(--primary)" /> Tendance des Réservations
@@ -583,7 +600,7 @@ const Admin = () => {
             </div>
 
             <h4 style={{ margin: '32px 0 16px', fontSize: '16px', fontWeight: 700 }}>Processus Scrolly</h4>
-            <div className="admin-grid">
+            <div className="admin-grid admin-grid-layout">
               {[1, 2, 3].map(n => (
                 <div key={n} className="admin-pro-card">
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: 'var(--primary)', fontWeight: 800 }}>
@@ -637,9 +654,9 @@ const Admin = () => {
                <h4 style={{ marginBottom: '16px', fontSize: '14px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
                  <ImageIcon size={16} color="var(--primary)" /> Explorateur Unsplash (Auto-Image)
                </h4>
-               <div style={{ display: 'flex', gap: '12px' }}>
-                  <div style={{ position: 'relative', flexGrow: 1 }}>
-                     <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: '#64748b' }} />
+               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  <div style={{ position: 'relative', flexGrow: 1, minWidth: '220px' }}>
+                     <SearchIcon size={18} style={{ position: 'absolute', left: '12px', top: '12px', color: '#64748b' }} />
                      <input 
                       className="admin-pro-input" 
                       style={{ paddingLeft: '40px' }}
@@ -648,7 +665,7 @@ const Admin = () => {
                       onChange={(e) => setSearchTerm(e.target.value)}
                      />
                   </div>
-                  <button onClick={searchUnsplash} className="btn-secondary" style={{ padding: '12px 20px' }}>Chercher</button>
+                  <button onClick={searchUnsplash} className="btn-secondary" style={{ padding: '12px 20px', flex: '1' }}>Chercher</button>
                </div>
                
                {searchResults.length > 0 && (
@@ -665,7 +682,7 @@ const Admin = () => {
                )}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+            <div className="admin-grid admin-grid-layout" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))' }}>
               {localContent.gallery.length === 0 ? (
                 <div className="admin-empty-state" style={{ gridColumn: '1 / -1' }}>
                    <div className="admin-empty-state-icon">
@@ -694,7 +711,7 @@ const Admin = () => {
                       onChange={(e) => handleGalleryChange(item.id, 'title', e.target.value)}
                     />
                   </div>
-                  <div className="admin-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <div className="admin-grid admin-grid-layout" style={{ gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <div className="admin-field-group">
                       <label className="admin-field-label">Catégorie</label>
                       <input 
@@ -735,7 +752,7 @@ const Admin = () => {
               <p style={{ color: '#94a3b8' }}>Gérez le style global, le SEO et les options du formulaire.</p>
             </header>
             
-            <div className="admin-grid" style={{ gridTemplateColumns: '1.2fr 1.8fr' }}>
+            <div className="admin-grid admin-grid-layout">
                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     {/* PRESETS SECTION */}
                     <div className="admin-pro-card">
@@ -800,7 +817,7 @@ const Admin = () => {
                                 <Layers size={18} color="var(--primary)" /> Catégories d'Événements
                             </h4>
                             <button onClick={addEventType} className="btn-secondary" style={{ padding: '6px 12px', fontSize: '11px' }}>
-                                <Plus size={12} /> Ajouter une option
+                                <Plus size={12} /> Ajouter
                             </button>
                         </div>
                         <p style={{ color: '#64748b', fontSize: '13px', marginBottom: '16px' }}>Ces catégories apparaissent dans le menu déroulant de votre formulaire de contact.</p>
@@ -830,7 +847,7 @@ const Admin = () => {
                         <h4 style={{ marginBottom: '20px', fontSize: '15px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <Palette size={18} color="var(--primary)" /> Palette Personnalisée
                         </h4>
-                        <div className="admin-grid">
+                        <div className="admin-grid admin-grid-layout" style={{ gridTemplateColumns: '1fr 1fr 1fr' }}>
                             <div className="admin-field-group">
                                 <label className="admin-field-label">Primaire</label>
                                 <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -867,7 +884,7 @@ const Admin = () => {
               <p style={{ color: '#94a3b8' }}>Mettez à jour vos forfaits et options de prix.</p>
             </header>
             
-            <div className="admin-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+            <div className="admin-grid admin-grid-layout" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
                {['essentiel', 'premium', 'custom'].map((plan) => (
                  <div key={plan} className="admin-pro-card">
                    <h4 style={{ textTransform: 'capitalize', color: 'var(--primary)', fontWeight: 800, marginBottom: '20px' }}>
@@ -917,6 +934,13 @@ const Admin = () => {
 
       </main>
 
+      {/* Navigation Mobile Native */}
+      <AdminBottomNav 
+        activeTab={activeTab} 
+        setActiveTab={setActiveTab} 
+        setIsSidebarOpen={setIsSidebarOpen} 
+      />
+
       {/* Message Detail Modal */}
       {selectedMessage && (
         <div className="admin-modal-overlay" onClick={() => setSelectedMessage(null)}>
@@ -927,7 +951,7 @@ const Admin = () => {
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }} className="admin-grid-layout">
                   <div className="detail-item">
                      <div className="detail-label"><User size={14} /> Client</div>
                      <div className="detail-value">{selectedMessage.name}</div>
@@ -987,7 +1011,7 @@ const Admin = () => {
             <div style={{ background: 'rgba(var(--primary-rgb), 0.1)', padding: '8px', borderRadius: '8px' }}>
               <RefreshCcw size={16} />
             </div>
-            <div>
+            <div className="mobile-hide">
               <div style={{ fontSize: '14px', fontWeight: 700 }}>Changements détectés</div>
               <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}>Pensez à enregistrer avant de quitter.</div>
             </div>

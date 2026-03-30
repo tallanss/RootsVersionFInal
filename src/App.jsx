@@ -57,7 +57,7 @@ function PageContent() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
-      <Header />
+      {showGlobalUI && <Header />}
       <main style={{ flexGrow: 1, position: 'relative' }}>
         <div key={location.pathname} className="page-transition">
           <Routes location={location}>
@@ -72,7 +72,7 @@ function PageContent() {
           </Routes>
         </div>
       </main>
-      <Footer />
+      {showGlobalUI && <Footer />}
       {showGlobalUI && <BottomNav />}
       {showGlobalUI && <ContactButton />}
       <CookieBanner />
