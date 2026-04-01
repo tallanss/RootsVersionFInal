@@ -1080,23 +1080,35 @@ export const LeadCenter = () => {
             <div key={m.id} className="cms-card" style={{ padding: '20px', borderLeft: `6px solid ${m.status === 'Nouveau' ? 'var(--primary)' : m.status === 'Réservé' ? '#10b981' : '#475569'}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                 <div>
-                  <h4 style={{ fontWeight: 800, fontSize: '17px' }}>{m.name || 'Anonyme'}</h4>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h4 style={{ fontWeight: 800, fontSize: '17px' }}>{m.name || 'Anonyme'}</h4>
+                    {m.status === 'Nouveau' && (
+                      <button
+                        onClick={() => updateStatus(m.id, 'Lu')}
+                        title="Marquer comme lu"
+                        style={{ background: 'rgba(197,160,89,0.15)', border: 'none', color: 'var(--primary)', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+                      >
+                        <Check size={13} strokeWidth={3} />
+                      </button>
+                    )}
+                  </div>
                   <p style={{ fontSize: '12px', color: '#64748b' }}>{m.date || '—'} • {m.subject || m.eventType || 'Contact'}</p>
                 </div>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <select 
-                    value={m.status || 'Nouveau'} 
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <select
+                    value={m.status || 'Nouveau'}
                     onChange={(e) => updateStatus(m.id, e.target.value)}
                     style={{ fontSize: '11px', fontWeight: 700, padding: '4px 8px', borderRadius: '6px', background: 'rgba(255,255,255,0.05)', color: '#fff', border: 'none' }}
                   >
                     <option value="Nouveau">Nouveau</option>
+                    <option value="Lu">Lu</option>
                     <option value="Contacté">Contacté</option>
                     <option value="Réservé">Réservé</option>
                     <option value="Archivé">Archivé</option>
                   </select>
-                  <button 
+                  <button
                     onClick={() => deleteMessage(m.id)}
-                    style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', padding: '10px', borderRadius: '8px' }}
+                    style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', padding: '10px', borderRadius: '8px', cursor: 'pointer' }}
                   >
                     <Trash2 size={16} />
                   </button>

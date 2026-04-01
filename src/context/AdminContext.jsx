@@ -4,6 +4,8 @@ const AdminContext = createContext();
 
 export const AdminProvider = ({ children }) => {
   const [isAdminMode, setIsAdminMode] = useState(() => {
+    const isPreview = new URLSearchParams(window.location.search).get('preview') === '1';
+    if (isPreview) return false;
     return sessionStorage.getItem('pr_admin') === '1';
   });
 

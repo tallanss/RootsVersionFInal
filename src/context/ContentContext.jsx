@@ -193,7 +193,6 @@ const saveToSupabase = async (mergedContent) => {
 };
 
 export const ContentProvider = ({ children }) => {
-  // Initialisation depuis le cache localStorage (affichage immédiat)
   const [saveStatus, setSaveStatus] = useState(null); // null | 'saving' | 'saved'
 
   const [content, setContent] = useState(() => {
@@ -205,40 +204,50 @@ export const ContentProvider = ({ children }) => {
     }
   });
 
+  // Ref toujours à jour sur le contenu courant — évite les closures stale
+  const contentRef = useRef(content);
+
   // Chargement depuis Supabase au montage (source de vérité)
   useEffect(() => {
     const fetchFromSupabase = async () => {
       try {
         const { data, error } = await supabase
           .from('site_content')
-          .select('content')
+          .select('content, updated_at')
           .eq('id', 1)
           .maybeSingle();
 
         if (error) throw error;
 
         if (data?.content) {
-          // Supabase a des données → les utiliser
-          const merged = buildMergedContent(data.content);
-          const cached = localStorage.getItem('photo_roots_content');
-          const mergedStr = JSON.stringify(merged);
-          if (cached && cached !== mergedStr) {
-            // Données différentes du cache (modif depuis un autre appareil)
-            const isAdmin = sessionStorage.getItem('pr_admin') === '1';
-            if (isAdmin) {
-              window.dispatchEvent(new CustomEvent('photo-roots-toast', {
-                detail: { message: 'Contenu mis à jour depuis le serveur ✓', type: 'info' }
-              }));
-            }
+          // Vérifier si le localStorage est plus récent (modif locale non encore synchro)
+          const localRaw = localStorage.getItem('photo_roots_content');
+          const localSavedAt = localRaw ? (JSON.parse(localRaw)._savedAt || 0) : 0;
+          const supabaseSavedAt = data.updated_at ? new Date(data.updated_at).getTime() : 0;
+
+          // Si local a été sauvegardé après Supabase → priorité au local, re-sync vers Supabase
+          if (localSavedAt > supabaseSavedAt) {
+            const localParsed = JSON.parse(localRaw);
+            await saveToSupabase(localParsed);
+            return;
           }
+
+          const merged = buildMergedContent(data.content);
+          const mergedStr = JSON.stringify(merged);
+          const isAdmin = sessionStorage.getItem('pr_admin') === '1';
+          if (localRaw && localRaw !== mergedStr && isAdmin) {
+            window.dispatchEvent(new CustomEvent('photo-roots-toast', {
+              detail: { message: 'Contenu mis à jour depuis le serveur ✓', type: 'info' }
+            }));
+          }
+          contentRef.current = merged;
           setContent(merged);
           localStorage.setItem('photo_roots_content', mergedStr);
         } else {
           // Première fois : migrer le localStorage vers Supabase
           const cached = localStorage.getItem('photo_roots_content');
           if (cached) {
-            const parsed = JSON.parse(cached);
-            await saveToSupabase(parsed);
+            await saveToSupabase(JSON.parse(cached));
           } else {
             await saveToSupabase(DEFAULT_CONTENT);
           }
@@ -256,18 +265,12 @@ export const ContentProvider = ({ children }) => {
   const updateContent = useCallback((newContent) => {
     setSaveStatus('saving');
 
-    // 1. Calculate new state
-    let merged;
-    setContent(prev => {
-      merged = { ...prev, ...newContent };
-      return merged;
-    });
-
-    // 2. Perform side effects OUTSIDE the state updater
-    if (merged) {
-      localStorage.setItem('photo_roots_content', JSON.stringify(merged));
-      saveToSupabase(merged);
-    }
+    // Calcul fiable via ref (pas de closure stale ni d'updater async)
+    const merged = { ...contentRef.current, ...newContent, _savedAt: Date.now() };
+    contentRef.current = merged;
+    setContent(merged);
+    localStorage.setItem('photo_roots_content', JSON.stringify(merged));
+    saveToSupabase(merged);
 
     clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
@@ -278,6 +281,7 @@ export const ContentProvider = ({ children }) => {
 
   const resetToDefault = useCallback(async () => {
     localStorage.removeItem('photo_roots_content');
+    contentRef.current = DEFAULT_CONTENT;
     setContent(DEFAULT_CONTENT);
     await saveToSupabase(DEFAULT_CONTENT);
   }, []);

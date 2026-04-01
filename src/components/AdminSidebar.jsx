@@ -134,7 +134,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
         </div>
         {/* iframe preview */}
         <iframe
-          src="/"
+          src="/?preview=1"
           style={{ flexGrow: 1, border: 'none', height: '100%' }}
           title="Prévisualisation du site"
         />
