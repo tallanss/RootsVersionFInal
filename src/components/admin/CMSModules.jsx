@@ -35,6 +35,39 @@ import { useContent } from '../../context/ContentContext';
 import EditModal from './EditModal';
 import { showToast } from '../Toast';
 
+/* ── Bouton de sauvegarde partagé ── */
+const SaveBar = ({ isDirty, onSave }) => (
+  <div style={{
+    position: 'sticky', bottom: '16px', zIndex: 10,
+    display: 'flex', justifyContent: 'center',
+    pointerEvents: 'none',
+  }}>
+    <button
+      onClick={onSave}
+      style={{
+        pointerEvents: 'all',
+        display: 'flex', alignItems: 'center', gap: '10px',
+        background: isDirty
+          ? 'linear-gradient(135deg, var(--primary), var(--accent))'
+          : 'rgba(255,255,255,0.07)',
+        color: isDirty ? '#fff' : '#64748b',
+        border: isDirty ? 'none' : '1px solid rgba(255,255,255,0.1)',
+        borderRadius: '50px',
+        padding: '14px 36px',
+        fontSize: '15px',
+        fontWeight: 800,
+        cursor: isDirty ? 'pointer' : 'default',
+        boxShadow: isDirty ? '0 8px 28px rgba(197,160,89,0.35)' : 'none',
+        transition: 'all 0.3s ease',
+        letterSpacing: '0.02em',
+      }}
+    >
+      <Save size={17} />
+      {isDirty ? 'Enregistrer les modifications' : 'Aucune modification'}
+    </button>
+  </div>
+);
+
 /* ========================================== */
 /* 🏠 DASHBOARD HOME                          */
 /* ========================================== */
@@ -686,12 +719,14 @@ export const FAQMaster = () => {
 /* ========================================== */
 export const SocialHub = () => {
   const { content, updateContent } = useContent();
-  const socials = content.socials || {};
-  const contact = content.contact || {};
 
-  const handleUpdate = (type, key, value) => {
-    updateContent({ [type]: { ...(content[type] || {}), [key]: value } });
-  };
+  const [localSocials, setLocalSocials] = useState({ ...(content.socials || {}) });
+  const [localContact, setLocalContact] = useState({ ...(content.contact || {}) });
+  const [isDirty, setIsDirty] = useState(false);
+
+  const setSocial = (key, value) => { setLocalSocials(p => ({ ...p, [key]: value })); setIsDirty(true); };
+  const setContact = (key, value) => { setLocalContact(p => ({ ...p, [key]: value })); setIsDirty(true); };
+  const handleSave = () => { updateContent({ socials: localSocials, contact: localContact }); setIsDirty(false); showToast('Sauvegardé ✓'); };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -706,15 +741,15 @@ export const SocialHub = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', display: 'block', marginBottom: '6px' }}>INSTAGRAM</label>
-              <input type="text" className="cms-input" value={socials.instagram} onChange={(e) => handleUpdate('socials', 'instagram', e.target.value)} />
+              <input type="text" className="cms-input" value={localSocials.instagram || ''} onChange={(e) => setSocial('instagram', e.target.value)} />
             </div>
             <div>
               <label style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', display: 'block', marginBottom: '6px' }}>FACEBOOK</label>
-              <input type="text" className="cms-input" value={socials.facebook} onChange={(e) => handleUpdate('socials', 'facebook', e.target.value)} />
+              <input type="text" className="cms-input" value={localSocials.facebook || ''} onChange={(e) => setSocial('facebook', e.target.value)} />
             </div>
             <div>
               <label style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', display: 'block', marginBottom: '6px' }}>WHATSAPP (Lien)</label>
-              <input type="text" className="cms-input" value={socials.whatsapp} onChange={(e) => handleUpdate('socials', 'whatsapp', e.target.value)} />
+              <input type="text" className="cms-input" value={localSocials.whatsapp || ''} onChange={(e) => setSocial('whatsapp', e.target.value)} />
             </div>
           </div>
         </section>
@@ -724,19 +759,21 @@ export const SocialHub = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
               <label style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', display: 'block', marginBottom: '6px' }}>ÉMAIL</label>
-              <input type="text" className="cms-input" value={contact.email} onChange={(e) => handleUpdate('contact', 'email', e.target.value)} />
+              <input type="text" className="cms-input" value={localContact.email || ''} onChange={(e) => setContact('email', e.target.value)} />
             </div>
             <div>
               <label style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', display: 'block', marginBottom: '6px' }}>TÉLÉPHONE</label>
-              <input type="text" className="cms-input" value={contact.phone} onChange={(e) => handleUpdate('contact', 'phone', e.target.value)} />
+              <input type="text" className="cms-input" value={localContact.phone || ''} onChange={(e) => setContact('phone', e.target.value)} />
             </div>
             <div>
               <label style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', display: 'block', marginBottom: '6px' }}>ZONE D'INTERVENTION</label>
-              <input type="text" className="cms-input" value={contact.zone} onChange={(e) => handleUpdate('contact', 'zone', e.target.value)} />
+              <input type="text" className="cms-input" value={localContact.zone || ''} onChange={(e) => setContact('zone', e.target.value)} />
             </div>
           </div>
         </section>
       </div>
+
+      <SaveBar isDirty={isDirty} onSave={handleSave} />
     </div>
   );
 };
@@ -907,12 +944,17 @@ export const SystemTools = () => {
 /* ========================================== */
 export const DesignHub = () => {
   const { content, updateContent } = useContent();
-  const branding = content.theme || {};
+
+  const [local, setLocal] = useState({ ...(content.theme || {}) });
+  const [isDirty, setIsDirty] = useState(false);
+
+  const setTheme = (patch) => { setLocal(p => ({ ...p, ...patch })); setIsDirty(true); };
+  const handleSave = () => { updateContent({ theme: local }); setIsDirty(false); showToast('Sauvegardé ✓'); };
 
   const colors = [
-    { label: 'Primaire (Or)', key: 'primary', value: branding.primary },
-    { label: 'Accent (Glow)', key: 'accent', value: branding.accent },
-    { label: 'Arrière-plan', key: 'background', value: branding.background },
+    { label: 'Primaire (Or)', key: 'primary' },
+    { label: 'Accent (Glow)', key: 'accent' },
+    { label: 'Arrière-plan', key: 'background' },
   ];
 
   return (
@@ -922,7 +964,6 @@ export const DesignHub = () => {
         <p style={{ color: '#64748b', fontSize: '14px' }}>Contrôlez l'apparence visuelle globale de votre site.</p>
       </header>
 
-      {/* COULEURS */}
       <section className="cms-card">
         <h3 className="cms-section-title"><Palette size={18} /> Couleurs de Marque</h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '16px' }}>
@@ -930,61 +971,48 @@ export const DesignHub = () => {
             <div key={c.key} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <label style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8' }}>{c.label}</label>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <input 
-                  type="color" 
-                  value={c.value} 
-                  onChange={(e) => updateContent({ theme: { ...branding, [c.key]: e.target.value } })}
+                <input
+                  type="color"
+                  value={local[c.key] || '#000000'}
+                  onChange={(e) => setTheme({ [c.key]: e.target.value })}
                   style={{ width: '44px', height: '44px', border: 'none', borderRadius: '8px', cursor: 'pointer', outline: 'none' }}
                 />
-                <code style={{ fontSize: '13px', fontWeight: 600 }}>{(c.value || '#000000').toUpperCase()}</code>
+                <code style={{ fontSize: '13px', fontWeight: 600 }}>{(local[c.key] || '#000000').toUpperCase()}</code>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* LOGO & FAVICON */}
       <section className="cms-card">
         <h3 className="cms-section-title"><Layout size={18} /> Logos & Assets</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <label style={{ fontSize: '13px', fontWeight: 700 }}>URL du Logo Principal</label>
-            <input 
-              type="text" 
-              className="cms-input"
-              value={branding.logoUrl}
-              onChange={(e) => updateContent({ theme: { ...branding, logoUrl: e.target.value } })}
-              placeholder="/logo-gold.png"
-            />
+            <input type="text" className="cms-input" value={local.logoUrl || ''} onChange={(e) => setTheme({ logoUrl: e.target.value })} placeholder="/logo-gold.png" />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <label style={{ fontSize: '13px', fontWeight: 700 }}>URL du Favicon (32x32)</label>
-            <input 
-              type="text" 
-              className="cms-input"
-              value={branding.faviconUrl}
-              onChange={(e) => updateContent({ theme: { ...branding, faviconUrl: e.target.value } })}
-              placeholder="/favicon.ico"
-            />
+            <input type="text" className="cms-input" value={local.faviconUrl || ''} onChange={(e) => setTheme({ faviconUrl: e.target.value })} placeholder="/favicon.ico" />
           </div>
         </div>
       </section>
 
-      {/* RADIUS */}
       <section className="cms-card">
         <h3 className="cms-section-title"><Maximize2 size={18} /> Formes & Angles</h3>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-           <input 
-            type="range" 
-            min="0" max="40" 
-            value={parseInt(branding.radius || '24')}
-            onChange={(e) => updateContent({ theme: { ...branding, radius: `${e.target.value}px` } })}
+          <input
+            type="range" min="0" max="40"
+            value={parseInt(local.radius || '24')}
+            onChange={(e) => setTheme({ radius: `${e.target.value}px` })}
             style={{ flexGrow: 1, accentColor: 'var(--primary)' }}
-           />
-           <span style={{ fontWeight: 800 }}>{branding.radius}</span>
+          />
+          <span style={{ fontWeight: 800 }}>{local.radius}</span>
         </div>
         <p style={{ fontSize: '12px', color: '#64748b', marginTop: '10px' }}>Ajuste la rondeur des boutons, cartes et images sur tout le site.</p>
       </section>
+
+      <SaveBar isDirty={isDirty} onSave={handleSave} />
     </div>
   );
 };
@@ -1135,15 +1163,22 @@ export const LeadCenter = () => {
 /* ========================================== */
 export const PageContentEditor = () => {
   const { content, updateContent } = useContent();
-  const hero = content.hero || {};
-  const scrolly = content.scrolly || {};
-  const cta = { title: content.ctaTitle || '', desc: content.ctaDesc || '' };
-  const badge = content.heroBadge || '';
-  const btnLabel = content.heroBtn || '';
 
-  const setHero = (field, value) => updateContent({ hero: { ...hero, [field]: value } });
-  const setScrolly = (step, field, value) => updateContent({ scrolly: { ...scrolly, [step]: { ...(scrolly[step] || {}), [field]: value } } });
-  const setCta = (field, value) => updateContent({ [field === 'title' ? 'ctaTitle' : 'ctaDesc']: value });
+  const [local, setLocal] = useState({
+    heroBadge: content.heroBadge || '',
+    heroBtn: content.heroBtn || '',
+    hero: content.hero || {},
+    scrolly: content.scrolly || {},
+    ctaTitle: content.ctaTitle || '',
+    ctaDesc: content.ctaDesc || '',
+  });
+  const [isDirty, setIsDirty] = useState(false);
+
+  const set = (patch) => { setLocal(p => ({ ...p, ...patch })); setIsDirty(true); };
+  const setHero = (field, value) => { setLocal(p => ({ ...p, hero: { ...p.hero, [field]: value } })); setIsDirty(true); };
+  const setScrolly = (step, field, value) => { setLocal(p => ({ ...p, scrolly: { ...p.scrolly, [step]: { ...(p.scrolly[step] || {}), [field]: value } } })); setIsDirty(true); };
+
+  const handleSave = () => { updateContent(local); setIsDirty(false); showToast('Sauvegardé ✓'); };
 
   const Section = ({ title, icon: Icon, children }) => (
     <section className="cms-card">
@@ -1169,33 +1204,32 @@ export const PageContentEditor = () => {
         <p style={{ color: '#64748b', fontSize: '14px' }}>Modifiez les textes principaux affichés sur votre site.</p>
       </header>
 
-      {/* HERO */}
       <Section title="Section Héro (bannière principale)" icon={Type}>
-        <Field label="BADGE (ex: N°1 en Seine-Maritime)" value={badge} onChange={v => updateContent({ heroBadge: v })} />
-        <Field label="TITRE PRINCIPAL" value={hero.title || ''} onChange={v => setHero('title', v)} />
-        <Field label="SOUS-TITRE (prix)" value={hero.subtitle || ''} onChange={v => setHero('subtitle', v)} />
-        <Field label="DESCRIPTION" value={hero.desc || ''} onChange={v => setHero('desc', v)} textarea rows={3} />
-        <Field label="TEXTE DU BOUTON" value={btnLabel} onChange={v => updateContent({ heroBtn: v })} />
+        <Field label="BADGE (ex: N°1 en Seine-Maritime)" value={local.heroBadge} onChange={v => set({ heroBadge: v })} />
+        <Field label="TITRE PRINCIPAL" value={local.hero.title || ''} onChange={v => setHero('title', v)} />
+        <Field label="SOUS-TITRE (prix)" value={local.hero.subtitle || ''} onChange={v => setHero('subtitle', v)} />
+        <Field label="DESCRIPTION" value={local.hero.desc || ''} onChange={v => setHero('desc', v)} textarea rows={3} />
+        <Field label="TEXTE DU BOUTON" value={local.heroBtn} onChange={v => set({ heroBtn: v })} />
       </Section>
 
-      {/* SCROLLY STEPS */}
       <Section title="Les 3 étapes (Comment ça marche)" icon={Hash}>
         {['step1', 'step2', 'step3'].map((step, i) => (
           <div key={step} style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
             <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--primary)', marginBottom: '12px' }}>ÉTAPE {i + 1}</p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <Field label="TITRE" value={scrolly[step]?.title || ''} onChange={v => setScrolly(step, 'title', v)} />
-              <Field label="DESCRIPTION" value={scrolly[step]?.desc || ''} onChange={v => setScrolly(step, 'desc', v)} textarea rows={2} />
+              <Field label="TITRE" value={local.scrolly[step]?.title || ''} onChange={v => setScrolly(step, 'title', v)} />
+              <Field label="DESCRIPTION" value={local.scrolly[step]?.desc || ''} onChange={v => setScrolly(step, 'desc', v)} textarea rows={2} />
             </div>
           </div>
         ))}
       </Section>
 
-      {/* CTA */}
       <Section title="Section Appel à l'Action (CTA)" icon={ChevronRight}>
-        <Field label="TITRE DU CTA" value={cta.title} onChange={v => setCta('title', v)} />
-        <Field label="DESCRIPTION DU CTA" value={cta.desc} onChange={v => setCta('desc', v)} textarea rows={2} />
+        <Field label="TITRE DU CTA" value={local.ctaTitle} onChange={v => set({ ctaTitle: v })} />
+        <Field label="DESCRIPTION DU CTA" value={local.ctaDesc} onChange={v => set({ ctaDesc: v })} textarea rows={2} />
       </Section>
+
+      <SaveBar isDirty={isDirty} onSave={handleSave} />
     </div>
   );
 };
@@ -1205,12 +1239,15 @@ export const PageContentEditor = () => {
 /* ========================================== */
 export const NavEditor = () => {
   const { content, updateContent } = useContent();
-  const nav = content.navigation || [];
 
-  const updateNavItem = (id, field, value) => {
-    const newNav = nav.map(n => n.id === id ? { ...n, [field]: value } : n);
-    updateContent({ navigation: newNav });
+  const [localNav, setLocalNav] = useState([...(content.navigation || [])]);
+  const [isDirty, setIsDirty] = useState(false);
+
+  const updateNavItem = (id, value) => {
+    setLocalNav(p => p.map(n => n.id === id ? { ...n, label: value } : n));
+    setIsDirty(true);
   };
+  const handleSave = () => { updateContent({ navigation: localNav }); setIsDirty(false); showToast('Sauvegardé ✓'); };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
@@ -1222,16 +1259,16 @@ export const NavEditor = () => {
       <div className="cms-card">
         <h3 className="cms-section-title"><Navigation size={18} /> Liens du Menu</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {nav.map(item => (
+          {localNav.map(item => (
             <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '12px' }}>
               <div style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
                 <ChevronRight size={14} />
               </div>
               <div style={{ flexGrow: 1 }}>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={item.label}
-                  onChange={(e) => updateNavItem(item.id, 'label', e.target.value)}
+                  onChange={(e) => updateNavItem(item.id, e.target.value)}
                   style={{ background: 'transparent', border: 'none', color: '#fff', fontWeight: 700, fontSize: '15px', width: '100%', outline: 'none' }}
                 />
                 <span style={{ fontSize: '11px', color: '#64748b' }}>Chemin : {item.path}</span>
@@ -1240,6 +1277,8 @@ export const NavEditor = () => {
           ))}
         </div>
       </div>
+
+      <SaveBar isDirty={isDirty} onSave={handleSave} />
     </div>
   );
 };
