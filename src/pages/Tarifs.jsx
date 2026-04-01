@@ -192,12 +192,12 @@ const PlanComparator = ({ plans, onSelect }) => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderTop: '1px solid var(--border-light)', padding: '16px 14px', gap: '8px' }}>
         <div />
         <div style={{ borderLeft: '1px solid transparent', paddingLeft: '14px' }}>
-          <button onClick={() => onSelect(0)} className="btn-secondary" style={{ width: '100%', fontSize: '12px', padding: '10px 8px', border: '1px solid var(--border-medium)' }}>
+          <button onClick={() => onSelect('essentiel')} className="btn-secondary" style={{ width: '100%', fontSize: '12px', padding: '10px 8px', border: '1px solid var(--border-medium)' }}>
             Choisir
           </button>
         </div>
         <div style={{ paddingLeft: '14px' }}>
-          <button onClick={() => onSelect(1)} className="btn-primary" style={{ width: '100%', fontSize: '12px', padding: '10px 8px' }}>
+          <button onClick={() => onSelect('premium')} className="btn-primary" style={{ width: '100%', fontSize: '12px', padding: '10px 8px' }}>
             Choisir
           </button>
         </div>
@@ -315,7 +315,8 @@ const Tarifs = () => {
 
   const calculateTotal = () => {
     if (selectedPlanId === null) return 0;
-    const plan = plans[selectedPlanId];
+    const plan = plans.find(p => p.id === selectedPlanId);
+    if (!plan) return 0;
     const planPrice = parseInt(plan.price) || 0;
     const optionsPrice = selectedOptions.reduce((total, optId) => {
       const option = options.find(o => o.id === optId);
@@ -394,7 +395,7 @@ const Tarifs = () => {
         <section className="container" style={{ padding: '0 20px 32px' }}>
           <PlanComparator
             plans={plans}
-            onSelect={(i) => { setSelectedPlanId(i); setCompareMode(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            onSelect={(id) => { setSelectedPlanId(id); setCompareMode(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
           />
         </section>
       )}
@@ -407,7 +408,7 @@ const Tarifs = () => {
               <div key={plan.id} className="pricing-wrapper" style={{ position: 'relative' }}>
                   {plan.featured ? (
                     <div className="animated-border-wrapper">
-                      <div className={`pricing-card featured ${isSelected(i) ? 'selected' : ''}`}>
+                      <div className={`pricing-card featured ${isSelected(plan.id) ? 'selected' : ''}`}>
                         <EditableBlock
                           label="Nom"
                           modalTitle="Nom de la formule"
@@ -530,22 +531,22 @@ const Tarifs = () => {
                         </ul>
 
                         <button 
-                          onClick={() => { haptic(12); setSelectedPlanId(isSelected(i) ? null : i); }}
-                          className={isSelected(i) ? 'btn-primary' : 'btn-secondary'} 
+                          onClick={() => { haptic(12); setSelectedPlanId(isSelected(plan.id) ? null : plan.id); }}
+                          className={isSelected(plan.id) ? 'btn-primary' : 'btn-secondary'} 
                           style={{ 
                             width: '100%', 
-                            background: isSelected(i) ? 'var(--bg-dark)' : '',
-                            color: isSelected(i) ? '#fff' : '',
-                            border: isSelected(i) ? 'none' : '1px solid var(--border-medium)',
+                            background: isSelected(plan.id) ? 'var(--bg-dark)' : '',
+                            color: isSelected(plan.id) ? '#fff' : '',
+                            border: isSelected(plan.id) ? 'none' : '1px solid var(--border-medium)',
                             marginTop: '16px'
                           }}
                         >
-                          {isSelected(i) ? 'Pack sélectionné ✓' : (plan.isCustom ? 'Demander un Devis' : 'Choisir ce pack')}
+                          {isSelected(plan.id) ? 'Pack sélectionné ✓' : (plan.isCustom ? 'Demander un Devis' : 'Choisir ce pack')}
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div className={`pricing-card ${isSelected(i) ? 'selected' : ''}`}>
+                    <div className={`pricing-card ${isSelected(plan.id) ? 'selected' : ''}`}>
                       <EditableBlock
                         label="Nom"
                         modalTitle="Nom de la formule"
@@ -663,17 +664,17 @@ const Tarifs = () => {
                       </ul>
 
                       <button 
-                        onClick={() => { haptic(12); setSelectedPlanId(isSelected(i) ? null : i); }}
-                        className={isSelected(i) ? 'btn-primary' : 'btn-secondary'} 
+                        onClick={() => { haptic(12); setSelectedPlanId(isSelected(plan.id) ? null : plan.id); }}
+                        className={isSelected(plan.id) ? 'btn-primary' : 'btn-secondary'} 
                         style={{ 
                           width: '100%', 
-                          background: isSelected(i) ? 'var(--bg-dark)' : '',
-                          color: isSelected(i) ? '#fff' : '',
-                          border: isSelected(i) ? 'none' : '1px solid var(--border-medium)',
+                          background: isSelected(plan.id) ? 'var(--bg-dark)' : '',
+                          color: isSelected(plan.id) ? '#fff' : '',
+                          border: isSelected(plan.id) ? 'none' : '1px solid var(--border-medium)',
                           marginTop: '16px'
                         }}
                       >
-                        {isSelected(i) ? 'Pack sélectionné ✓' : (plan.isCustom ? 'Demander un Devis' : 'Choisir ce pack')}
+                        {isSelected(plan.id) ? 'Pack sélectionné ✓' : (plan.isCustom ? 'Demander un Devis' : 'Choisir ce pack')}
                       </button>
                     </div>
                   )}
@@ -684,7 +685,7 @@ const Tarifs = () => {
       </section>}
 
       {/* OPTIONS ADD-ONS */}
-      {selectedPlanId !== null && !plans[selectedPlanId]?.isCustom && (
+      {selectedPlanId !== null && !plans.find(p => p.id === selectedPlanId)?.isCustom && (
         <section className="container" style={{ padding: '0 20px 24px' }}>
           <div style={{
             background: 'var(--bg-card)',
@@ -743,10 +744,10 @@ const Tarifs = () => {
         <div className="sticky-price-bar">
           <div style={{ flexGrow: 1 }}>
             <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '2px' }}>
-              {plans[selectedPlanId]?.name}{selectedOptions.length > 0 ? ` + ${selectedOptions.length} option${selectedOptions.length > 1 ? 's' : ''}` : ''}
+              {plans.find(p => p.id === selectedPlanId)?.name}{selectedOptions.length > 0 ? ` + ${selectedOptions.length} option${selectedOptions.length > 1 ? 's' : ''}` : ''}
             </div>
             <div style={{ fontSize: '22px', fontWeight: 900, color: 'var(--primary)', lineHeight: 1 }}>
-              {plans[selectedPlanId]?.isCustom ? 'Sur devis' : `${calculateTotal()}€`}
+              {plans.find(p => p.id === selectedPlanId)?.isCustom ? 'Sur devis' : `${calculateTotal()}€`}
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
