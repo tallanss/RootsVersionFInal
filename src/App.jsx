@@ -19,6 +19,7 @@ import CookieBanner from './components/CookieBanner';
 import AdminToolbar from './components/admin/AdminToolbar';
 import AdminSidebar from './components/AdminSidebar';
 import DateChecker from './components/DateChecker';
+import PageLoader from './components/PageLoader';
 
 import { useContent } from './context/ContentContext';
 import { AdminProvider, useAdmin } from './context/AdminContext';
@@ -136,7 +137,9 @@ function App() {
     <Router>
       <AdminProvider>
         <ScrollToTop />
-        <PageContent />
+        <PageLoader>
+          <PageContent />
+        </PageLoader>
       </AdminProvider>
     </Router>
   );
