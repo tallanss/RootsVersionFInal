@@ -122,7 +122,6 @@ body::before {
     display: flex !important;
     flex-direction: row !important;
     overflow-x: scroll;
-    overflow-y: clip;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 14px;
@@ -130,14 +129,12 @@ body::before {
     padding-right: 48px;
     margin: 0 -20px;
     scrollbar-width: none;
-    /* En cascade sur le container ET tous ses enfants :
-       le navigateur sait immédiatement que c'est scroll horizontal
-       → pas de blocage en attendant la direction du geste */
-    touch-action: pan-x;
+    /* Autorise tous les gestes naturels (scroll horizontal et vertical) */
+    touch-action: auto;
   }
   .pricing-grid,
   .pricing-grid * {
-    touch-action: pan-x;
+    touch-action: auto;
   }
   .pricing-grid::-webkit-scrollbar { display: none; }
   .pricing-grid > * {
