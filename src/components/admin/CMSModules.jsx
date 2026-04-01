@@ -35,6 +35,17 @@ import { useContent } from '../../context/ContentContext';
 import EditModal from './EditModal';
 import { showToast } from '../Toast';
 
+/* ── Champ texte/textarea réutilisable (défini hors composant pour éviter le remontage) ── */
+const PCEField = ({ label, value, onChange, textarea, rows = 3 }) => (
+  <div>
+    <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '6px' }}>{label}</label>
+    {textarea
+      ? <textarea className="cms-input" style={{ minHeight: `${rows * 28}px`, resize: 'vertical' }} value={value} onChange={e => onChange(e.target.value)} />
+      : <input type="text" className="cms-input" value={value} onChange={e => onChange(e.target.value)} />
+    }
+  </div>
+);
+
 /* ── Bouton de sauvegarde partagé ── */
 const SaveBar = ({ isDirty, onSave }) => (
   <div style={{
@@ -1180,23 +1191,6 @@ export const PageContentEditor = () => {
 
   const handleSave = () => { updateContent(local); setIsDirty(false); showToast('Sauvegardé ✓'); };
 
-  const Section = ({ title, icon: Icon, children }) => (
-    <section className="cms-card">
-      <h3 className="cms-section-title"><Icon size={16} /> {title}</h3>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>{children}</div>
-    </section>
-  );
-
-  const Field = ({ label, value, onChange, textarea, rows = 3 }) => (
-    <div>
-      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '6px' }}>{label}</label>
-      {textarea
-        ? <textarea className="cms-input" style={{ minHeight: `${rows * 28}px`, resize: 'vertical' }} value={value} onChange={e => onChange(e.target.value)} />
-        : <input type="text" className="cms-input" value={value} onChange={e => onChange(e.target.value)} />
-      }
-    </div>
-  );
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <header>
@@ -1204,30 +1198,42 @@ export const PageContentEditor = () => {
         <p style={{ color: '#64748b', fontSize: '14px' }}>Modifiez les textes principaux affichés sur votre site.</p>
       </header>
 
-      <Section title="Section Héro (bannière principale)" icon={Type}>
-        <Field label="BADGE (ex: N°1 en Seine-Maritime)" value={local.heroBadge} onChange={v => set({ heroBadge: v })} />
-        <Field label="TITRE PRINCIPAL" value={local.hero.title || ''} onChange={v => setHero('title', v)} />
-        <Field label="SOUS-TITRE (prix)" value={local.hero.subtitle || ''} onChange={v => setHero('subtitle', v)} />
-        <Field label="DESCRIPTION" value={local.hero.desc || ''} onChange={v => setHero('desc', v)} textarea rows={3} />
-        <Field label="TEXTE DU BOUTON" value={local.heroBtn} onChange={v => set({ heroBtn: v })} />
-      </Section>
+      {/* HERO */}
+      <section className="cms-card">
+        <h3 className="cms-section-title"><Type size={16} /> Section Héro (bannière principale)</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <PCEField label="BADGE (ex: N°1 en Seine-Maritime)" value={local.heroBadge} onChange={v => set({ heroBadge: v })} />
+          <PCEField label="TITRE PRINCIPAL" value={local.hero.title || ''} onChange={v => setHero('title', v)} />
+          <PCEField label="SOUS-TITRE (prix)" value={local.hero.subtitle || ''} onChange={v => setHero('subtitle', v)} />
+          <PCEField label="DESCRIPTION" value={local.hero.desc || ''} onChange={v => setHero('desc', v)} textarea rows={3} />
+          <PCEField label="TEXTE DU BOUTON" value={local.heroBtn} onChange={v => set({ heroBtn: v })} />
+        </div>
+      </section>
 
-      <Section title="Les 3 étapes (Comment ça marche)" icon={Hash}>
-        {['step1', 'step2', 'step3'].map((step, i) => (
-          <div key={step} style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-            <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--primary)', marginBottom: '12px' }}>ÉTAPE {i + 1}</p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <Field label="TITRE" value={local.scrolly[step]?.title || ''} onChange={v => setScrolly(step, 'title', v)} />
-              <Field label="DESCRIPTION" value={local.scrolly[step]?.desc || ''} onChange={v => setScrolly(step, 'desc', v)} textarea rows={2} />
+      {/* SCROLLY STEPS */}
+      <section className="cms-card">
+        <h3 className="cms-section-title"><Hash size={16} /> Les 3 étapes (Comment ça marche)</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          {['step1', 'step2', 'step3'].map((step, i) => (
+            <div key={step} style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+              <p style={{ fontSize: '11px', fontWeight: 800, color: 'var(--primary)', marginBottom: '12px' }}>ÉTAPE {i + 1}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <PCEField label="TITRE" value={local.scrolly[step]?.title || ''} onChange={v => setScrolly(step, 'title', v)} />
+                <PCEField label="DESCRIPTION" value={local.scrolly[step]?.desc || ''} onChange={v => setScrolly(step, 'desc', v)} textarea rows={2} />
+              </div>
             </div>
-          </div>
-        ))}
-      </Section>
+          ))}
+        </div>
+      </section>
 
-      <Section title="Section Appel à l'Action (CTA)" icon={ChevronRight}>
-        <Field label="TITRE DU CTA" value={local.ctaTitle} onChange={v => set({ ctaTitle: v })} />
-        <Field label="DESCRIPTION DU CTA" value={local.ctaDesc} onChange={v => set({ ctaDesc: v })} textarea rows={2} />
-      </Section>
+      {/* CTA */}
+      <section className="cms-card">
+        <h3 className="cms-section-title"><ChevronRight size={16} /> Section Appel à l'Action (CTA)</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <PCEField label="TITRE DU CTA" value={local.ctaTitle} onChange={v => set({ ctaTitle: v })} />
+          <PCEField label="DESCRIPTION DU CTA" value={local.ctaDesc} onChange={v => set({ ctaDesc: v })} textarea rows={2} />
+        </div>
+      </section>
 
       <SaveBar isDirty={isDirty} onSave={handleSave} />
     </div>
