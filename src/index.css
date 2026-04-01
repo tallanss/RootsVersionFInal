@@ -40,7 +40,7 @@
   padding: 0;
 }
 
-/* ===== ENHANCED GLASSMORPHISM ===== */
+/* ===== ENHANCED GLASSMORPHISM + UNIFIED SHADOW/BORDER ===== */
 .stat-item, .feature-card, .process-step,
 .testimonial-card, .pricing-card, .service-card {
   backdrop-filter: blur(20px) saturate(1.6);
@@ -49,16 +49,16 @@
   border: 1px solid rgba(255, 255, 255, 0.9) !important;
   box-shadow:
     0 2px 0 rgba(255,255,255,0.8) inset,
-    0 8px 32px rgba(197, 160, 89, 0.08),
-    0 1px 2px rgba(0,0,0,0.04) !important;
+    0 20px 40px rgba(0,0,0,0.18),
+    0 4px 12px rgba(197,160,89,0.07) !important;
   transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease !important;
 }
 .stat-item:hover, .feature-card:hover, .testimonial-card:hover, .pricing-card:hover, .service-card:hover {
-  transform: translateY(-3px) !important;
+  transform: translateY(-4px) !important;
   box-shadow:
     0 2px 0 rgba(255,255,255,0.9) inset,
-    0 16px 48px rgba(197, 160, 89, 0.14),
-    0 4px 8px rgba(0,0,0,0.06) !important;
+    0 28px 50px rgba(0,0,0,0.26),
+    0 8px 20px rgba(197,160,89,0.10) !important;
 }
 
 html {
@@ -361,8 +361,8 @@ button:active { transform: scale(0.97); }
   justify-content: center;
   gap: 8px;
   width: 100%;
-  box-shadow: 0 4px 14px var(--accent-glow), 0 2px 6px rgba(0, 0, 0, 0.06);
-  border: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25), 0 4px 14px var(--accent-glow);
+  border: 1px solid rgba(255,255,255,0.15);
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -370,12 +370,12 @@ button:active { transform: scale(0.97); }
 
 .btn-primary:active {
   transform: scale(0.95);
-  box-shadow: 0 2px 8px rgba(197, 160, 89, 0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
 .btn-primary:hover {
   transform: translateY(-4px) scale(1.03);
-  box-shadow: 0 12px 28px rgba(197, 160, 89, 0.35), 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 8px 20px rgba(197,160,89,0.25);
 }
 
 /* Effet Shimmer puissant et CONTINU sur mobile/desktop */
@@ -408,12 +408,15 @@ button:active { transform: scale(0.97); }
   justify-content: center;
   gap: 8px;
   width: 100%;
-  border: 2px solid var(--border-light);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  transition: all 0.3s ease;
 }
 .btn-secondary:hover {
-  border-color: var(--primary);
+  border-color: rgba(197,160,89,0.4);
   color: var(--primary);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  transform: translateY(-3px);
 }
 
 .btn-sm {
@@ -519,7 +522,7 @@ button:active { transform: scale(0.97); }
   padding: 12px 4px;
   background: var(--bg-card);
   border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(255,255,255,0.05);
 }
 .stat-number {
   font-size: 22px;
@@ -704,7 +707,7 @@ button:active { transform: scale(0.97); }
   background: var(--bg-card);
   border-radius: var(--radius-lg);
   padding: 24px;
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(255,255,255,0.05);
   margin-bottom: 12px;
 }
 .testimonial-stars {
@@ -933,8 +936,14 @@ button:active { transform: scale(0.97); }
   padding: 20px;
   background: var(--bg-card);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
   margin-bottom: 12px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.spec-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 28px 50px rgba(0,0,0,0.4);
 }
 .spec-icon {
   width: 48px;
