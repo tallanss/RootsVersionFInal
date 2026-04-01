@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { CheckCircle2, Tag, Star, Phone, X, Sliders, Heart, Briefcase, Gift } from 'lucide-react';
 import { haptic } from '../hooks/useHaptic';
 import { Helmet } from 'react-helmet-async';
@@ -208,9 +209,30 @@ const PlanComparator = ({ plans, onSelect }) => {
 const Tarifs = () => {
   const { content, updateContent } = useContent();
   const { isAdminMode } = useAdmin();
+  const location = useLocation();
   const [selectedPlanId, setSelectedPlanId] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [compareMode, setCompareMode] = useState(false);
+
+  // Handle pre-selection from URL (e.g. /tarifs?pack=premium)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const pack = params.get('pack');
+    if (pack) {
+      // Find if valid pack
+      const validPacks = ['essentiel', 'premium'];
+      if (validPacks.includes(pack.toLowerCase())) {
+        setSelectedPlanId(pack.toLowerCase());
+        // Small delay to ensure render is complete before scrolling
+        setTimeout(() => {
+          const element = document.querySelector('.pricing-grid');
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 100);
+      }
+    }
+  }, [location]);
 
   React.useEffect(() => {
     if (selectedPlanId !== null) {

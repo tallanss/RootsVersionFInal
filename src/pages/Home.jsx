@@ -483,7 +483,7 @@ const Home = () => {
                 <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Photos illimitées</li>
                 <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Accessoires &amp; props fun</li>
               </ul>
-              <AnimatedButton to="/contact" className="btn-secondary" style={{ width: '100%' }}>Réserver</AnimatedButton>
+              <AnimatedButton to="/tarifs?pack=essentiel" className="btn-secondary" style={{ width: '100%' }}>Choisir ce pack</AnimatedButton>
             </div>
           </EditableBlock>
 
@@ -507,7 +507,7 @@ const Home = () => {
                   <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Personnalisation totale</li>
                   <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Écran de diffusion</li>
                 </ul>
-                <AnimatedButton to="/contact" className="btn-primary" style={{ width: '100%' }}>Réserver</AnimatedButton>
+                <AnimatedButton to="/tarifs?pack=premium" className="btn-primary" style={{ width: '100%' }}>Choisir ce pack</AnimatedButton>
               </div>
             </EditableBlock>
           </div>
