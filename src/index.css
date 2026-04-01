@@ -121,18 +121,22 @@ body::before {
   .pricing-grid {
     display: flex !important;
     flex-direction: row !important;
-    /* overflow-y: clip évite que overflow-x:auto force overflow-y en auto */
-    overflow-x: auto;
+    overflow-x: scroll;
     overflow-y: clip;
     scroll-snap-type: x mandatory;
-    overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
     gap: 14px;
     padding: 4px 20px 24px;
     padding-right: 48px;
     margin: 0 -20px;
     scrollbar-width: none;
-    /* Ne capture que le scroll horizontal, laisse le vertical au parent */
+    /* En cascade sur le container ET tous ses enfants :
+       le navigateur sait immédiatement que c'est scroll horizontal
+       → pas de blocage en attendant la direction du geste */
+    touch-action: pan-x;
+  }
+  .pricing-grid,
+  .pricing-grid * {
     touch-action: pan-x;
   }
   .pricing-grid::-webkit-scrollbar { display: none; }
@@ -141,13 +145,7 @@ body::before {
     max-width: 78vw;
     scroll-snap-align: start;
     flex-shrink: 0;
-  }
-  /* Cartes non scrollables en interne */
-  .pricing-card,
-  .animated-border-wrapper,
-  .pricing-wrapper {
-    max-height: none !important;
-    height: auto !important;
+    height: auto;
   }
 }
 

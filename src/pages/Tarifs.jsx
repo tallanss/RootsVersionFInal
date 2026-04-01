@@ -382,8 +382,7 @@ const Tarifs = () => {
         <div className="pricing-grid">
           {plans.map((plan, i) => {
             return (
-              <FadeIn direction="up" delay={i * 0.15} key={plan.id}>
-                <div className="pricing-wrapper" style={{ position: 'relative' }}>
+              <div key={plan.id} className="pricing-wrapper" style={{ position: 'relative' }}>
                   {plan.featured ? (
                     <div className="animated-border-wrapper">
                       <div className={`pricing-card featured ${isSelected(i) ? 'selected' : ''}`}>
@@ -657,7 +656,7 @@ const Tarifs = () => {
                     </div>
                   )}
                 </div>
-              </FadeIn>
+              </div>
             );
           })}
         </div>
