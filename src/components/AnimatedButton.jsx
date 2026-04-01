@@ -15,7 +15,7 @@ const AnimatedButton = ({
   const handleClick = (e) => {
     e.preventDefault();
     if (status !== 'idle') return;
-
+    if (navigator.vibrate) navigator.vibrate(10);
     setStatus('loading');
     
     // Simulate complex calculation / payment setup to build excitement

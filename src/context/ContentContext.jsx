@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../config/supabase';
 
 const ContentContext = createContext();
@@ -125,7 +125,9 @@ const DEFAULT_CONTENT = {
     monthlyBookings: [],
     totalInquiries: 0,
     estimatedRevenue: 0
-  }
+  },
+  saveTheDateEvents: [],
+  blockedDates: [],
 };
 
 // Deep merge depuis le localStorage/Supabase vers les defaults
@@ -153,6 +155,11 @@ const buildMergedContent = (parsed = {}) => {
     analytics: { ...DEFAULT_CONTENT.analytics, ...(parsed.analytics || {}) },
     stats: parsed.stats || DEFAULT_CONTENT.stats,
     services: parsed.services || DEFAULT_CONTENT.services,
+    pricing_plans: parsed.pricing_plans || DEFAULT_CONTENT.pricing_plans,
+    testimonials: parsed.testimonials || DEFAULT_CONTENT.testimonials,
+    faqs: parsed.faqs || DEFAULT_CONTENT.faqs,
+    saveTheDateEvents: parsed.saveTheDateEvents || DEFAULT_CONTENT.saveTheDateEvents,
+    blockedDates: parsed.blockedDates || DEFAULT_CONTENT.blockedDates,
   };
 
   if (
@@ -182,6 +189,8 @@ const saveToSupabase = async (mergedContent) => {
 
 export const ContentProvider = ({ children }) => {
   // Initialisation depuis le cache localStorage (affichage immédiat)
+  const [saveStatus, setSaveStatus] = useState(null); // null | 'saving' | 'saved'
+
   const [content, setContent] = useState(() => {
     try {
       const cached = localStorage.getItem('photo_roots_content');
@@ -237,15 +246,21 @@ export const ContentProvider = ({ children }) => {
     fetchFromSupabase();
   }, []);
 
+  const saveTimerRef = useRef(null);
+
   const updateContent = useCallback((newContent) => {
+    setSaveStatus('saving');
     setContent(prev => {
       const merged = { ...prev, ...newContent };
-      // Cache local immédiat
       localStorage.setItem('photo_roots_content', JSON.stringify(merged));
-      // Sync Supabase en arrière-plan
       saveToSupabase(merged);
       return merged;
     });
+    clearTimeout(saveTimerRef.current);
+    saveTimerRef.current = setTimeout(() => {
+      setSaveStatus('saved');
+      setTimeout(() => setSaveStatus(null), 2200);
+    }, 600);
   }, []);
 
   const resetToDefault = useCallback(async () => {
@@ -286,7 +301,7 @@ export const ContentProvider = ({ children }) => {
   }, [content.messages]);
 
   return (
-    <ContentContext.Provider value={{ content, updateContent, resetToDefault, downloadLeadsCSV }}>
+    <ContentContext.Provider value={{ content, updateContent, resetToDefault, downloadLeadsCSV, saveStatus }}>
       {children}
     </ContentContext.Provider>
   );

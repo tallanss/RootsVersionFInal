@@ -2,15 +2,14 @@ import React, { createContext, useContext, useState } from 'react';
 
 const AdminContext = createContext();
 
-const ADMIN_PIN = '010272';
-
 export const AdminProvider = ({ children }) => {
   const [isAdminMode, setIsAdminMode] = useState(() => {
     return sessionStorage.getItem('pr_admin') === '1';
   });
 
   const login = (pin) => {
-    if (pin === ADMIN_PIN) {
+    const validPin = import.meta.env.VITE_ADMIN_PIN;
+    if (pin === validPin) {
       setIsAdminMode(true);
       sessionStorage.setItem('pr_admin', '1');
       return true;

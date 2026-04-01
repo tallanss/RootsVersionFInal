@@ -14,13 +14,22 @@ const CookieBanner = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (visible) {
+      document.body.classList.add('cookie-banner-visible');
+    } else {
+      document.body.classList.remove('cookie-banner-visible');
+    }
+    return () => document.body.classList.remove('cookie-banner-visible');
+  }, [visible]);
+
   const accept = () => {
     localStorage.setItem(COOKIE_KEY, 'true');
     setVisible(false);
   };
 
   const decline = () => {
-    localStorage.setItem(COOKIE_KEY, 'minimal');
+    localStorage.setItem(COOKIE_KEY, 'declined');
     setVisible(false);
   };
 

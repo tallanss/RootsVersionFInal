@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Camera, Filter, X, Calendar, MapPin, Plus } from 'lucide-react';
+import { haptic } from '../hooks/useHaptic';
 import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
 import Lightbox from '../components/Lightbox';
@@ -18,14 +19,16 @@ const Gallery = () => {
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [addOpen, setAddOpen] = useState(false);
 
+  const gallery = content.gallery || [];
+
   const filteredData = filter === "Tous"
-    ? content.gallery
-    : content.gallery.filter(item => item.category === filter);
+    ? gallery
+    : gallery.filter(item => item.category === filter);
 
   const categoryCounts = CATEGORIES.reduce((acc, cat) => {
     acc[cat] = cat === 'Tous'
-      ? content.gallery.length
-      : content.gallery.filter(g => g.category === cat).length;
+      ? gallery.length
+      : gallery.filter(g => g.category === cat).length;
     return acc;
   }, {});
 
@@ -38,15 +41,15 @@ const Gallery = () => {
       location: vals.location || 'Normandie',
       date: vals.date || new Date().getFullYear().toString(),
     };
-    updateContent({ ...content, gallery: [...content.gallery, newItem] });
+    updateContent({ ...content, gallery: [...gallery, newItem] });
   };
 
   const handleDelete = (id) => {
-    updateContent({ ...content, gallery: content.gallery.filter(g => g.id !== id) });
+    updateContent({ ...content, gallery: gallery.filter(g => g.id !== id) });
   };
 
   const handleEditPhoto = (id, vals) => {
-    const newGallery = content.gallery.map(g => g.id === id ? { ...g, ...vals } : g);
+    const newGallery = gallery.map(g => g.id === id ? { ...g, ...vals } : g);
     updateContent({ ...content, gallery: newGallery });
   };
 
@@ -113,7 +116,7 @@ const Gallery = () => {
             <button
               key={cat}
               className={`filter-btn ${filter === cat ? 'active' : ''}`}
-              onClick={() => setFilter(cat)}
+              onClick={() => { haptic(8); setFilter(cat); }}
             >
               {cat}
               {categoryCounts[cat] > 0 && (
@@ -211,7 +214,7 @@ const Gallery = () => {
       {lightboxIndex !== null && !isAdminMode && (
         <Lightbox
           images={filteredData.map(d => ({ src: d.image, alt: d.title }))}
-          currentIndex={lightboxIndex}
+          initialIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
         />
       )}

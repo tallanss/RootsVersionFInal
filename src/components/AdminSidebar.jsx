@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Image as ImageIcon,
   Tag,
@@ -13,13 +14,23 @@ import {
   Star,
   HelpCircle,
   Share2,
+  Home,
+  ExternalLink,
+  Check,
+  Loader2,
+  FileText,
+  Eye,
+  EyeOff,
+  Heart,
+  CalendarX,
 } from 'lucide-react';
 
 import { useContent } from '../context/ContentContext';
-import { 
-  DesignHub, 
-  SEOManager, 
-  LeadCenter, 
+import {
+  DashboardHome,
+  DesignHub,
+  SEOManager,
+  LeadCenter,
   NavEditor,
   AnalyticsHub,
   MediaLib,
@@ -27,40 +38,57 @@ import {
   PriceArchitect,
   FAQMaster,
   SocialHub,
-  SystemTools
+  SystemTools,
+  PageContentEditor,
+  SaveTheDateManager,
+  DisponibilitesManager,
 } from './admin/CMSModules';
 
 const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
-  const { content } = useContent();
+  const { content, saveStatus } = useContent();
+  const [previewMode, setPreviewMode] = React.useState(false);
   const unreadCount = content.messages?.filter(m => m.status === 'Nouveau').length || 0;
 
   const menuItems = [
-    // BUSINESS
+    { id: 'home', label: 'Accueil', icon: Home, category: 'BUSINESS' },
     { id: 'analytics', label: 'Performances', icon: BarChart3, category: 'BUSINESS' },
     { id: 'messages', label: 'Leads / Messages', icon: Mail, category: 'BUSINESS' },
     { id: 'tarifs', label: 'Tarifs & Plans', icon: Tag, category: 'BUSINESS' },
-    
-    // CONTENU
+
+    { id: 'pagecontent', label: 'Textes du Site', icon: FileText, category: 'CONTENU' },
     { id: 'gallery', label: 'Médiathèque', icon: ImageIcon, category: 'CONTENU' },
+    { id: 'savethedate', label: 'Save The Date', icon: Heart, category: 'CONTENU' },
+    { id: 'disponibilites', label: 'Disponibilités', icon: CalendarX, category: 'CONTENU' },
     { id: 'reviews', label: 'Avis Clients', icon: Star, category: 'CONTENU' },
     { id: 'faq', label: 'FAQ / Aide', icon: HelpCircle, category: 'CONTENU' },
 
-    // APPARENCE
     { id: 'design', label: 'Style & Couleurs', icon: Palette, category: 'APPARENCE' },
     { id: 'seo', label: 'SEO & Google', icon: Globe, category: 'APPARENCE' },
     { id: 'navigation', label: 'Menu & Liens', icon: NavIcon, category: 'APPARENCE' },
     { id: 'social', label: 'Réseaux Sociaux', icon: Share2, category: 'APPARENCE' },
 
-    // SYSTEM
     { id: 'system', label: 'Maintenance', icon: Settings, category: 'SYSTEM' },
+  ];
+
+  // Mobile bottom nav items (most used)
+  const mobileNavItems = [
+    { id: 'home', icon: Home, label: 'Accueil' },
+    { id: 'messages', icon: Mail, label: 'Leads', badge: unreadCount },
+    { id: 'gallery', icon: ImageIcon, label: 'Galerie' },
+    { id: 'design', icon: Palette, label: 'Design' },
+    { id: 'analytics', icon: BarChart3, label: 'Stats' },
   ];
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'home': return <DashboardHome onNavigate={setActiveTab} />;
       case 'analytics': return <AnalyticsHub />;
       case 'messages': return <LeadCenter />;
       case 'tarifs': return <PriceArchitect />;
+      case 'pagecontent': return <PageContentEditor />;
       case 'gallery': return <MediaLib />;
+      case 'savethedate': return <SaveTheDateManager />;
+      case 'disponibilites': return <DisponibilitesManager />;
       case 'reviews': return <ReviewCenter />;
       case 'faq': return <FAQMaster />;
       case 'design': return <DesignHub />;
@@ -68,14 +96,54 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
       case 'navigation': return <NavEditor />;
       case 'social': return <SocialHub />;
       case 'system': return <SystemTools />;
-      default: return <AnalyticsHub />;
+      default: return <DashboardHome onNavigate={setActiveTab} />;
     }
   };
 
   if (!isOpen) return null;
 
+  // ── PREVIEW MODE ──
+  if (previewMode) {
+    return (
+      <div style={{ position: 'fixed', inset: 0, zIndex: 100000, display: 'flex' }}>
+        {/* Thin sidebar */}
+        <div style={{ width: '60px', background: '#0f0f12', borderRight: '1px solid rgba(255,255,255,0.07)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '12px 0', gap: '8px', flexShrink: 0 }}>
+          <div style={{ background: 'var(--primary)', padding: '6px', borderRadius: '8px', color: '#fff', marginBottom: '8px' }}>
+            <ShieldCheck size={16} />
+          </div>
+          {menuItems.map(item => (
+            <button
+              key={item.id}
+              title={item.label}
+              onClick={() => { setActiveTab(item.id); setPreviewMode(false); }}
+              style={{ background: activeTab === item.id ? 'rgba(255,255,255,0.08)' : 'none', border: 'none', color: activeTab === item.id ? 'var(--primary)' : '#475569', padding: '10px', borderRadius: '10px', cursor: 'pointer', display: 'flex', position: 'relative' }}
+            >
+              <item.icon size={18} />
+              {item.id === 'messages' && unreadCount > 0 && (
+                <span style={{ position: 'absolute', top: '6px', right: '6px', background: 'var(--primary)', width: '8px', height: '8px', borderRadius: '50%' }} />
+              )}
+            </button>
+          ))}
+          <div style={{ flexGrow: 1 }} />
+          <button title="Quitter la prévisualisation" onClick={() => setPreviewMode(false)} style={{ background: 'rgba(197,160,89,0.1)', border: 'none', color: 'var(--primary)', padding: '10px', borderRadius: '10px', cursor: 'pointer' }}>
+            <EyeOff size={18} />
+          </button>
+          <button title="Fermer le dashboard" onClick={() => setIsOpen(false)} style={{ background: 'none', border: 'none', color: '#475569', padding: '10px', borderRadius: '10px', cursor: 'pointer' }}>
+            <ChevronLeft size={18} />
+          </button>
+        </div>
+        {/* iframe preview */}
+        <iframe
+          src="/"
+          style={{ flexGrow: 1, border: 'none', height: '100%' }}
+          title="Prévisualisation du site"
+        />
+      </div>
+    );
+  }
+
   return (
-    <div 
+    <div
       className="admin-overlay"
       style={{
         position: 'fixed',
@@ -88,24 +156,18 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
         animation: 'fadeIn 0.3s ease',
       }}
     >
-      <aside 
-        style={{
-          width: '300px',
-          background: '#0f0f12',
-          borderRight: '1px solid rgba(255,255,255,0.05)',
-          display: 'flex',
-          flexDirection: 'column',
-          height: '100%',
-        }}
-      >
+      {/* ── SIDEBAR (desktop only) ── */}
+      <aside className="admin-desktop-sidebar">
         <div style={{ padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={{ background: 'var(--primary)', padding: '6px', borderRadius: '8px', color: '#fff' }}>
               <ShieldCheck size={18} />
             </div>
-            <span style={{ fontWeight: 900, fontSize: '16px', color: '#fff' }}>Power CMS <span style={{ color: 'var(--primary)', fontSize: '10px' }}>v3.0</span></span>
+            <span style={{ fontWeight: 900, fontSize: '16px', color: '#fff' }}>
+              Power CMS <span style={{ color: 'var(--primary)', fontSize: '10px' }}>v3.0</span>
+            </span>
           </div>
-          <button 
+          <button
             onClick={() => setIsOpen(false)}
             style={{ background: 'rgba(255,255,255,0.03)', border: 'none', color: '#64748b', padding: '8px', borderRadius: '50%', cursor: 'pointer' }}
           >
@@ -116,13 +178,13 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
         <nav style={{ flexGrow: 1, padding: '12px', overflowY: 'auto' }}>
           {['BUSINESS', 'CONTENU', 'APPARENCE', 'SYSTEM'].map(cat => (
             <div key={cat} style={{ marginBottom: '20px' }}>
-               <div style={{ padding: '0 16px 8px', fontSize: '10px', fontWeight: 800, color: '#475569', letterSpacing: '1px' }}>{cat}</div>
-               {menuItems.filter(i => i.category === cat).map(item => (
-                 <div 
+              <div style={{ padding: '0 16px 8px', fontSize: '10px', fontWeight: 800, color: '#475569', letterSpacing: '1px' }}>{cat}</div>
+              {menuItems.filter(i => i.category === cat).map(item => (
+                <div
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
                   className={`admin-nav-item ${activeTab === item.id ? 'active' : ''}`}
-                  style={{ 
+                  style={{
                     cursor: 'pointer',
                     padding: '12px 16px',
                     margin: '2px 0',
@@ -139,40 +201,181 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
                   <item.icon size={18} color={activeTab === item.id ? 'var(--primary)' : 'currentColor'} />
                   <span style={{ flexGrow: 1 }}>{item.label}</span>
                   {item.id === 'messages' && unreadCount > 0 && (
-                     <span style={{ background: 'var(--primary)', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '6px' }}>{unreadCount}</span>
+                    <span style={{ background: 'var(--primary)', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '6px' }}>{unreadCount}</span>
                   )}
                 </div>
-               ))}
+              ))}
             </div>
           ))}
         </nav>
 
         <div style={{ padding: '20px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-           <button 
-             onClick={onLogout}
-             style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-           >
-             <LogOut size={16} /> Déconnexion
-           </button>
+          <button
+            onClick={onLogout}
+            style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: 'none', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+          >
+            <LogOut size={16} /> Déconnexion
+          </button>
         </div>
       </aside>
 
-      <main 
-        style={{ 
-          flexGrow: 1, 
-          height: '100%', 
-          overflowY: 'auto', 
-          padding: '40px 32px',
+      {/* ── MAIN CONTENT ── */}
+      <main
+        className="admin-main-content"
+        style={{
+          flexGrow: 1,
+          height: '100%',
+          overflowY: 'auto',
           color: '#fff',
         }}
       >
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+        {/* TOP BAR (mobile: header with close + save indicator) */}
+        <div className="admin-topbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ background: 'var(--primary)', padding: '5px', borderRadius: '7px', color: '#fff', display: 'flex' }}>
+              <ShieldCheck size={15} />
+            </div>
+            <span style={{ fontWeight: 900, fontSize: '14px', color: '#fff' }}>Power CMS</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {/* Save indicator */}
+            <div className={`save-indicator ${saveStatus ? 'visible' : ''}`}>
+              {saveStatus === 'saving' && <Loader2 size={13} className="spin" />}
+              {saveStatus === 'saved' && <Check size={13} />}
+              <span>{saveStatus === 'saving' ? 'Saving...' : 'Sauvegardé'}</span>
+            </div>
+            {/* Preview */}
+            <button
+              onClick={() => setPreviewMode(true)}
+              style={{ background: 'rgba(197,160,89,0.1)', border: 'none', color: 'var(--primary)', padding: '7px', borderRadius: '10px', cursor: 'pointer', display: 'flex' }}
+              title="Prévisualiser"
+            >
+              <Eye size={15} />
+            </button>
+            <button
+              onClick={() => setIsOpen(false)}
+              style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#64748b', padding: '7px', borderRadius: '10px', cursor: 'pointer', display: 'flex' }}
+            >
+              <ChevronLeft size={18} />
+            </button>
+          </div>
+        </div>
+
+        {/* Save indicator desktop (inside main, top-right) */}
+        <div className="admin-save-desktop">
+          <div className={`save-indicator ${saveStatus ? 'visible' : ''}`} style={{ marginRight: '12px' }}>
+            {saveStatus === 'saving' && <Loader2 size={13} className="spin" />}
+            {saveStatus === 'saved' && <Check size={13} />}
+            <span>{saveStatus === 'saving' ? 'Sauvegarde...' : 'Sauvegardé ✓'}</span>
+          </div>
+          <button
+            onClick={() => setPreviewMode(true)}
+            style={{ background: 'rgba(197,160,89,0.1)', border: '1px solid rgba(197,160,89,0.2)', color: 'var(--primary)', padding: '7px 12px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, marginRight: '8px' }}
+          >
+            <Eye size={13} /> Prévisualiser
+          </button>
+          <a
+            href="/"
+            target="_blank"
+            rel="noreferrer"
+            style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#94a3b8', padding: '7px 12px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 600, textDecoration: 'none' }}
+          >
+            <ExternalLink size={13} /> Voir le site
+          </a>
+        </div>
+
+        <div style={{ padding: '40px 32px', maxWidth: '800px', margin: '0 auto' }} className="admin-content-inner">
           {renderContent()}
         </div>
+
+        {/* ── MOBILE BOTTOM NAV ── */}
+        <nav className="admin-mobile-bottomnav">
+          {mobileNavItems.map(item => (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              style={{
+                flex: 1,
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '10px 4px',
+                color: activeTab === item.id ? 'var(--primary)' : '#64748b',
+                position: 'relative',
+              }}
+            >
+              <item.icon size={20} />
+              <span style={{ fontSize: '10px', fontWeight: activeTab === item.id ? 800 : 500 }}>{item.label}</span>
+              {item.badge > 0 && (
+                <span style={{ position: 'absolute', top: '6px', right: '50%', transform: 'translateX(8px)', background: 'var(--primary)', color: '#fff', fontSize: '9px', fontWeight: 800, width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{item.badge}</span>
+              )}
+            </button>
+          ))}
+          <button
+            onClick={onLogout}
+            style={{ flex: 1, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px 4px', color: '#ef4444' }}
+          >
+            <LogOut size={20} />
+            <span style={{ fontSize: '10px', fontWeight: 500 }}>Sortir</span>
+          </button>
+        </nav>
       </main>
 
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .spin { animation: spin 0.8s linear infinite; }
+
+        .save-indicator {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          font-size: 12px;
+          font-weight: 700;
+          color: #10b981;
+          background: rgba(16, 185, 129, 0.1);
+          padding: 5px 10px;
+          border-radius: 8px;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          pointer-events: none;
+        }
+        .save-indicator.visible { opacity: 1; }
+
+        /* Desktop sidebar */
+        .admin-desktop-sidebar {
+          width: 300px;
+          background: #0f0f12;
+          border-right: 1px solid rgba(255,255,255,0.05);
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          flex-shrink: 0;
+        }
+
+        /* Desktop save/view-site button row */
+        .admin-save-desktop {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          padding: 16px 32px 0;
+        }
+
+        /* Mobile top bar — hidden on desktop */
+        .admin-topbar { display: none; }
+
+        /* Mobile bottom nav — hidden on desktop */
+        .admin-mobile-bottomnav { display: none; }
+
+        .admin-main-content {
+          padding-top: 0;
+        }
+
         .cms-card {
           background: #16161a;
           border: 1px solid rgba(255,255,255,0.05);
@@ -202,6 +405,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
           font-family: inherit;
           font-size: 14px;
           transition: all 0.2s;
+          box-sizing: border-box;
         }
         .cms-input:focus {
           outline: none;
@@ -216,10 +420,49 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
           background: rgba(255,255,255,0.05);
           color: #94a3b8;
         }
-        @media (max-width: 1024px) {
-           .admin-overlay { flex-direction: column; }
-           aside { width: 100% !important; height: auto !important; max-height: 400px; }
-           main { padding: 24px 16px; }
+
+        /* ── MOBILE ── */
+        @media (max-width: 768px) {
+          .admin-overlay { flex-direction: column !important; }
+
+          .admin-desktop-sidebar { display: none !important; }
+
+          .admin-save-desktop { display: none !important; }
+
+          .admin-topbar {
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #0f0f12;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            flex-shrink: 0;
+          }
+
+          .admin-main-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+          }
+
+          .admin-content-inner {
+            padding: 20px 16px 100px !important;
+            overflow-y: auto;
+            flex-grow: 1;
+          }
+
+          .admin-mobile-bottomnav {
+            display: flex !important;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0f0f12;
+            border-top: 1px solid rgba(255,255,255,0.07);
+            z-index: 10;
+            padding-bottom: env(safe-area-inset-bottom);
+          }
         }
       `}</style>
     </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Lock, Delete, ArrowRight } from 'lucide-react';
+import { Delete } from 'lucide-react';
 import { useAdmin } from '../context/AdminContext';
 
 const Admin = () => {
@@ -10,34 +10,37 @@ const Admin = () => {
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
   const [shake, setShake] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Already logged in → redirect to home
   React.useEffect(() => {
     if (isAdminMode) navigate('/');
   }, [isAdminMode, navigate]);
 
-  const handleDigit = (digit) => {
-    if (pin.length < 6) {
-      const newPin = pin + digit;
-      setPin(newPin);
-      setError(false);
-      if (newPin.length === 6) {
-        const ok = login(newPin);
-        if (ok) {
-          navigate('/');
-        } else {
-          setShake(true);
-          setError(true);
-          setTimeout(() => {
-            setPin('');
-            setShake(false);
-          }, 700);
-        }
+  const handleDigit = async (digit) => {
+    if (pin.length >= 6 || loading) return;
+    const newPin = pin + digit;
+    setPin(newPin);
+    setError(false);
+
+    if (newPin.length === 6) {
+      setLoading(true);
+      const ok = await login(newPin);
+      setLoading(false);
+      if (ok) {
+        navigate('/');
+      } else {
+        setShake(true);
+        setError(true);
+        setTimeout(() => {
+          setPin('');
+          setShake(false);
+        }, 700);
       }
     }
   };
 
   const handleDelete = () => {
+    if (loading) return;
     setPin(p => p.slice(0, -1));
     setError(false);
   };
@@ -61,50 +64,29 @@ const Admin = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      {/* Ambient glow */}
       <div style={{
         position: 'absolute', top: '-20%', left: '50%', transform: 'translateX(-50%)',
         width: '400px', height: '400px', background: 'radial-gradient(circle, rgba(197,160,89,0.12) 0%, transparent 70%)',
         pointerEvents: 'none',
       }} />
 
-      {/* Logo */}
       <div style={{ marginBottom: '40px', textAlign: 'center' }}>
-        <img
-          src="/logo-gold.png"
-          alt="PhotoRoots"
-          style={{ height: '60px', width: 'auto', objectFit: 'contain', marginBottom: '16px' }}
-        />
+        <img src="/logo-gold.png" alt="PhotoRoots" style={{ height: '60px', width: 'auto', objectFit: 'contain', marginBottom: '16px' }} />
         <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
           Espace Administrateur
         </p>
       </div>
 
-      {/* PIN display */}
-      <div
-        style={{
-          display: 'flex',
-          gap: '12px',
-          marginBottom: '36px',
-          animation: shake ? 'adminShake 0.4s ease' : 'none',
-        }}
-      >
+      <div style={{ display: 'flex', gap: '12px', marginBottom: '36px', animation: shake ? 'adminShake 0.4s ease' : 'none' }}>
         {[0, 1, 2, 3, 4, 5].map(i => (
-          <div
-            key={i}
-            style={{
-              width: '14px',
-              height: '14px',
-              borderRadius: '50%',
-              background: pin.length > i
-                ? (error ? '#ef4444' : 'var(--primary)')
-                : 'rgba(255,255,255,0.15)',
-              border: pin.length > i ? 'none' : '2px solid rgba(255,255,255,0.15)',
-              transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-              transform: pin.length === i + 1 ? 'scale(1.3)' : 'scale(1)',
-              boxShadow: pin.length > i && !error ? '0 0 10px rgba(197,160,89,0.5)' : 'none',
-            }}
-          />
+          <div key={i} style={{
+            width: '14px', height: '14px', borderRadius: '50%',
+            background: loading ? 'rgba(197,160,89,0.5)' : pin.length > i ? (error ? '#ef4444' : 'var(--primary)') : 'rgba(255,255,255,0.15)',
+            border: pin.length > i ? 'none' : '2px solid rgba(255,255,255,0.15)',
+            transition: 'all 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+            transform: pin.length === i + 1 ? 'scale(1.3)' : 'scale(1)',
+            boxShadow: pin.length > i && !error ? '0 0 10px rgba(197,160,89,0.5)' : 'none',
+          }} />
         ))}
       </div>
 
@@ -114,43 +96,35 @@ const Admin = () => {
         </p>
       )}
 
-      {/* PIN Pad */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: '12px',
-        maxWidth: '260px',
-        width: '100%',
-      }}>
+      {loading && (
+        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '16px', marginTop: '-20px' }}>
+          Vérification...
+        </p>
+      )}
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', maxWidth: '260px', width: '100%' }}>
         {digits.map((d, i) => {
           if (d === null) return <div key={i} />;
-
           const isDel = d === 'del';
-
           return (
             <button
               key={i}
               onClick={() => isDel ? handleDelete() : handleDigit(String(d))}
-              disabled={isDel && pin.length === 0}
+              disabled={(isDel && pin.length === 0) || loading}
               style={{
-                height: '64px',
-                borderRadius: '18px',
-                border: 'none',
+                height: '64px', borderRadius: '18px', border: 'none',
                 background: isDel ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.06)',
                 color: isDel ? '#ef4444' : '#ffffff',
-                fontSize: isDel ? '14px' : '22px',
-                fontWeight: 700,
-                cursor: (isDel && pin.length === 0) ? 'not-allowed' : 'pointer',
-                opacity: (isDel && pin.length === 0) ? 0.3 : 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                fontSize: isDel ? '14px' : '22px', fontWeight: 700,
+                cursor: ((isDel && pin.length === 0) || loading) ? 'not-allowed' : 'pointer',
+                opacity: ((isDel && pin.length === 0) || loading) ? 0.3 : 1,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
                 backdropFilter: 'blur(10px)',
                 transition: 'all 0.15s ease',
                 fontFamily: 'var(--font-main)',
               }}
               onMouseEnter={e => {
-                if (!(isDel && pin.length === 0)) {
+                if (!((isDel && pin.length === 0) || loading)) {
                   e.currentTarget.style.background = isDel ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.12)';
                   e.currentTarget.style.transform = 'scale(1.05)';
                 }
@@ -166,7 +140,6 @@ const Admin = () => {
         })}
       </div>
 
-      {/* Footer hint */}
       <p style={{ marginTop: '40px', fontSize: '12px', color: 'rgba(255,255,255,0.2)', textAlign: 'center' }}>
         Entrez votre code PIN à 6 chiffres
       </p>

@@ -9,6 +9,7 @@ import Gallery from './pages/Gallery';
 import Admin from './pages/Admin';
 import Legal from './pages/Legal';
 import SaveTheDate from './pages/SaveTheDate';
+import SaveTheDateEvent from './pages/SaveTheDateEvent';
 import NotFound from './pages/NotFound';
 import BottomNav from './components/BottomNav';
 import Footer from './components/Footer';
@@ -17,6 +18,7 @@ import ContactButton from './components/WhatsAppButton';
 import CookieBanner from './components/CookieBanner';
 import AdminToolbar from './components/admin/AdminToolbar';
 import AdminSidebar from './components/AdminSidebar';
+import DateChecker from './components/DateChecker';
 
 import { useContent } from './context/ContentContext';
 import { AdminProvider, useAdmin } from './context/AdminContext';
@@ -75,12 +77,13 @@ function PageContent() {
     }
   }, [content.theme]);
 
-  // Hide global UI only on /admin (login page)
+  // Hide global UI on /admin (login page) and /save-the-date/:slug (standalone share page)
   const isAdminLoginPage = location.pathname === '/admin';
+  const isStandalonePage = isAdminLoginPage || /^\/save-the-date\/.+/.test(location.pathname);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
-      {!isAdminLoginPage && <Header />}
+      {!isStandalonePage && <Header />}
       <main style={{ flexGrow: 1, position: 'relative' }}>
         <div key={location.pathname} className="page-transition">
           <Routes location={location}>
@@ -92,14 +95,16 @@ function PageContent() {
             <Route path="/admin" element={<Admin />} />
             <Route path="/mentions-legales" element={<Legal />} />
             <Route path="/save-the-date" element={<SaveTheDate />} />
+            <Route path="/save-the-date/:slug" element={<SaveTheDateEvent />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
       </main>
-      {!isAdminLoginPage && <Footer />}
-      {!isAdminLoginPage && <BottomNav />}
-      {!isAdminLoginPage && <ContactButton />}
-      {!isAdminLoginPage && <AdminToolbar onOpenDashboard={() => setIsSidebarOpen(true)} />}
+      {!isStandalonePage && <Footer />}
+      {!isStandalonePage && <BottomNav />}
+      {!isStandalonePage && <ContactButton />}
+      {!isStandalonePage && !isAdminMode && <DateChecker />}
+      {!isStandalonePage && <AdminToolbar onOpenDashboard={() => setIsSidebarOpen(true)} />}
       
       {isAdminMode && (
         <AdminSidebar 

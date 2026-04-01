@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Clock, CheckCircle2, Send, ChevronLeft, ChevronRight, Calendar, CalendarCheck, Loader2, Sun, Moon, AlertCircle, Lock } from 'lucide-react';
+import { Mail, Phone, MapPin, Clock, CheckCircle2, Send, ChevronRight, ChevronLeft, Calendar, CalendarCheck, Loader2, Sun, Moon, AlertCircle, Lock } from 'lucide-react';
 import { processBooking, formatDateFR, fetchBusySlots } from '../services/emailService';
 import { isConfigured } from '../config/emailjs';
 import Confetti from '../components/Confetti';
@@ -49,16 +49,21 @@ const Contact = () => {
     name: '', email: '', phone: '', eventType: '', message: ''
   });
 
-  // Charger les dates occupées au montage
+  // Charger les dates occupées au montage + fusionner avec blockedDates du CMS
   useEffect(() => {
     const loadBusySlots = async () => {
       setLoadingSlots(true);
       const slots = await fetchBusySlots();
-      setBusySlots(slots);
+      // Convertir les dates bloquées CMS en slots (bloquer les deux créneaux)
+      const cmsBlocked = (content.blockedDates || []).flatMap(d => [
+        `${d}_afternoon`,
+        `${d}_evening`,
+      ]);
+      setBusySlots([...new Set([...slots, ...cmsBlocked])]);
       setLoadingSlots(false);
     };
     loadBusySlots();
-  }, []);
+  }, [content.blockedDates]);
 
   // Calendar logic
   const calendarDays = useMemo(() => {
@@ -113,6 +118,13 @@ const Contact = () => {
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async () => {
+    // Rate limiting: 1 soumission par 30s
+    const lastSubmit = sessionStorage.getItem('pr_last_submit');
+    if (lastSubmit && Date.now() - Number(lastSubmit) < 30000) {
+      setError('Veuillez patienter quelques secondes avant de renvoyer.');
+      return;
+    }
+    sessionStorage.setItem('pr_last_submit', String(Date.now()));
     setLoading(true);
     setError(null);
 

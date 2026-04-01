@@ -9,7 +9,7 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) =
       {!isLoaded && (
         <div className="skeleton-shimmer" style={{
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-          backgroundColor: '#e2e8f0',
+          backgroundColor: 'var(--bg-secondary)',
           zIndex: 1
         }} />
       )}

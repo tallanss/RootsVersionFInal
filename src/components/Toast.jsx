@@ -64,7 +64,7 @@ export const ToastContainer = () => {
         }
       `}</style>
       <div style={{
-        position: 'fixed', bottom: '80px', left: '50%', transform: 'translateX(-50%)',
+        position: 'fixed', bottom: 'calc(80px + env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)',
         zIndex: 999999, display: 'flex', flexDirection: 'column-reverse', gap: '8px',
         alignItems: 'center', width: '100%', maxWidth: '360px', padding: '0 16px',
         pointerEvents: 'none',
