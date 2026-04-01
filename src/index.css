@@ -41,8 +41,7 @@
 }
 
 /* ===== ENHANCED GLASSMORPHISM + UNIFIED SHADOW/BORDER ===== */
-.stat-item, .feature-card, .process-step,
-.testimonial-card, .pricing-card, .service-card {
+.stat-item, .feature-card, .process-step, .service-card {
   backdrop-filter: blur(20px) saturate(1.6);
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
   background: rgba(255, 255, 255, 0.72) !important;
@@ -53,12 +52,26 @@
     0 4px 12px rgba(197,160,89,0.07) !important;
   transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease !important;
 }
-.stat-item:hover, .feature-card:hover, .testimonial-card:hover, .pricing-card:hover, .service-card:hover {
+.stat-item:hover, .feature-card:hover, .service-card:hover {
   transform: translateY(-4px) !important;
   box-shadow:
     0 2px 0 rgba(255,255,255,0.9) inset,
     0 28px 50px rgba(0,0,0,0.26),
     0 8px 20px rgba(197,160,89,0.10) !important;
+}
+
+/* Version SANS OMBRE pour Tarifs et Avis */
+.testimonial-card, .pricing-card {
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  background: rgba(255, 255, 255, 0.72) !important;
+  border: 1px solid var(--border-medium) !important;
+  box-shadow: none !important;
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1) !important;
+}
+.testimonial-card:hover, .pricing-card:hover {
+  transform: translateY(-4px) !important;
+  box-shadow: none !important;
 }
 
 html {
@@ -755,7 +768,7 @@ button:active { transform: scale(0.97); }
   border-radius: var(--radius-lg);
   padding: 28px 24px;
   border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-sm);
+  box-shadow: none !important;
 }
 
 /* ANIMATED ENERGY BORDER WRAPPER */
@@ -764,7 +777,7 @@ button:active { transform: scale(0.97); }
   border-radius: var(--radius-lg);
   padding: 3px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(197, 160, 89, 0.3);
+  box-shadow: none !important;
 }
 
 .animated-border-wrapper::before {
