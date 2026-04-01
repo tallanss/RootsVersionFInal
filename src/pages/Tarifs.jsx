@@ -656,7 +656,6 @@ const Tarifs = () => {
                     </div>
                   )}
                 </div>
-              </div>
             );
           })}
         </div>
