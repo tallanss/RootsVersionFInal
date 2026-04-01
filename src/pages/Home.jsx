@@ -454,13 +454,15 @@ const Home = () => {
 
       {/* ===== PRICING PREVIEW ===== */}
       <FadeIn direction="up">
-      <section className="container" style={{ padding: '32px 24px' }} id="tarifs">
-        <div className="section-tag">
-          <Tag size={14} />
-          Tarifs
+      <section className="container" style={{ padding: '32px 0' }} id="tarifs">
+        <div style={{ padding: '0 24px' }}>
+          <div className="section-tag">
+            <Tag size={14} />
+            Tarifs
+          </div>
+          <h2 className="section-title">Qualité parfaite, budget aussi !</h2>
+          <p className="section-subtitle">Les meilleurs prix du marché pour un photobooth haut de gamme.</p>
         </div>
-        <h2 className="section-title">Qualité parfaite, budget aussi !</h2>
-        <p className="section-subtitle">Les meilleurs prix du marché pour un photobooth haut de gamme.</p>
 
         <div className="pricing-grid">
           <EditableBlock

@@ -138,13 +138,19 @@ body::before {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 14px;
-    padding: 4px 48px 24px;
-    padding-right: 48px;
-    scroll-padding: 0 48px;
-    margin: 0 -24px;
+    padding: 4px 20px 24px; /* Reduced vertical padding, standard horizontal */
+    scroll-padding: 0 32px; /* For snap alignment */
+    margin: 0 -20px; /* Aligns with container edge */
     scrollbar-width: none;
-    /* Autorise tous les gestes naturels (scroll horizontal et vertical) */
     touch-action: auto;
+  }
+  .pricing-grid::before {
+    content: "";
+    flex: 0 0 40px; /* Strong space before first card */
+  }
+  .pricing-grid::after {
+    content: "";
+    flex: 0 0 40px; /* Strong space after last card */
   }
   .pricing-grid,
   .pricing-grid * {

@@ -378,7 +378,7 @@ const Tarifs = () => {
       )}
 
       {/* PRICING CARDS */}
-      {!compareMode && <section className="container" style={{ padding: '0 20px 32px' }}>
+      {!compareMode && <section className="container" style={{ padding: '0 0 32px' }}>
         <div className="pricing-grid">
           {plans.map((plan, i) => {
             return (
