@@ -5,10 +5,15 @@ import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 
 // https://vite.dev/config/
 export default defineConfig({
+  build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+  },
   plugins: [
     react(),
     Sitemap({
       hostname: 'https://photoroot-le-havre.netlify.app/',
+      outDir: 'dist',
       dynamicRoutes: [
         '/',
         '/photobooth',
