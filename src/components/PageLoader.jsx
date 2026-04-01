@@ -6,18 +6,17 @@ const PageLoader = ({ children }) => {
 
   useEffect(() => {
     // Check if user has visited before in this session or ever
-    // (User said "first time", but typically we do it once per session for better UX)
-    const hasVisited = localStorage.getItem('pr_first_visit_v2');
+    const hasVisited = localStorage.getItem('pr_first_visit_v3');
     
     if (!hasVisited) {
       setShowLoader(true);
-      // Wait for the animation cycle
+      // Wait for the animation cycle (reduced to 1.8s for faster feel)
       const timerLoad = setTimeout(() => {
         setIsDone(true);
-        localStorage.setItem('pr_first_visit_v2', 'true');
+        localStorage.setItem('pr_first_visit_v3', 'true');
         // Final cleanup to remove the loader from DOM
-        setTimeout(() => setShowLoader(false), 1500);
-      }, 2500);
+        setTimeout(() => setShowLoader(false), 800);
+      }, 1800);
 
       return () => clearTimeout(timerLoad);
     }
@@ -28,10 +27,6 @@ const PageLoader = ({ children }) => {
   return (
     <>
       <div className={`page-loader ${isDone ? 'loaded' : ''}`}>
-        <div className="loader-shutter">
-           <div className="shutter-top"></div>
-           <div className="shutter-bottom"></div>
-        </div>
         <div className="loader-content">
           <img 
             src="/logo-icon.png" 
