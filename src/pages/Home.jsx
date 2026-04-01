@@ -553,8 +553,8 @@ const Home = () => {
         </div>
 
         <div style={{ textAlign: 'center', marginTop: '24px' }}>
-          <AnimatedButton to="/galerie" className="btn-secondary" style={{ width: 'auto', padding: '12px 32px', borderRadius: 'var(--radius-full)' }}>
-            Accéder à la Galerie <ArrowRight size={16} />
+          <AnimatedButton to="/galerie" style={{ width: 'auto', padding: '16px 36px' }}>
+            Accéder à la Galerie <ArrowRight size={18} />
           </AnimatedButton>
         </div>
       </section>
