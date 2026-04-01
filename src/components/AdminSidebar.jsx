@@ -238,12 +238,28 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
             <span style={{ fontWeight: 900, fontSize: '14px', color: '#fff' }}>Power CMS</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {/* Save indicator */}
-            <div className={`save-indicator ${saveStatus ? 'visible' : ''}`}>
-              {saveStatus === 'saving' && <Loader2 size={13} className="spin" />}
-              {saveStatus === 'saved' && <Check size={13} />}
+            {/* Save Button Mobile */}
+            <button
+              onClick={() => updateContent({})}
+              className={`save-indicator ${saveStatus ? 'visible' : ''}`}
+              style={{
+                background: saveStatus === 'saving' ? 'rgba(197,160,89,0.1)' : 'rgba(16, 185, 129, 0.1)',
+                color: saveStatus === 'saving' ? 'var(--primary)' : '#10b981',
+                border: 'none',
+                cursor: 'pointer',
+                pointerEvents: 'auto',
+                padding: '5px 12px',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '11px',
+                fontWeight: 700,
+              }}
+            >
+              {saveStatus === 'saving' ? <Loader2 size={13} className="spin" /> : <Check size={13} />}
               <span>{saveStatus === 'saving' ? 'Saving...' : 'Sauvegardé'}</span>
-            </div>
+            </button>
             {/* Preview */}
             <button
               onClick={() => setPreviewMode(true)}
@@ -261,13 +277,30 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
           </div>
         </div>
 
-        {/* Save indicator desktop (inside main, top-right) */}
+        {/* Save/Sync Desktop (top-right) */}
         <div className="admin-save-desktop">
-          <div className={`save-indicator ${saveStatus ? 'visible' : ''}`} style={{ marginRight: '12px' }}>
-            {saveStatus === 'saving' && <Loader2 size={13} className="spin" />}
-            {saveStatus === 'saved' && <Check size={13} />}
+          <button
+            onClick={() => updateContent({})}
+            className={`save-indicator ${saveStatus ? 'visible' : ''}`}
+            style={{ 
+              marginRight: '12px',
+              background: saveStatus === 'saving' ? 'rgba(197,160,89,0.1)' : 'rgba(16, 185, 129, 0.1)',
+              color: saveStatus === 'saving' ? 'var(--primary)' : '#10b981',
+              border: 'none',
+              cursor: 'pointer',
+              pointerEvents: 'auto',
+              padding: '6px 14px',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontSize: '12px',
+              fontWeight: 700,
+            }}
+          >
+            {saveStatus === 'saving' ? <Loader2 size={13} className="spin" /> : <Check size={13} />}
             <span>{saveStatus === 'saving' ? 'Sauvegarde...' : 'Sauvegardé ✓'}</span>
-          </div>
+          </button>
           <button
             onClick={() => setPreviewMode(true)}
             style={{ background: 'rgba(197,160,89,0.1)', border: '1px solid rgba(197,160,89,0.2)', color: 'var(--primary)', padding: '7px 12px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', fontWeight: 700, marginRight: '8px' }}
