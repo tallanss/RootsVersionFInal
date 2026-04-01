@@ -121,36 +121,33 @@ body::before {
   .pricing-grid {
     display: flex !important;
     flex-direction: row !important;
+    /* overflow-y: clip évite que overflow-x:auto force overflow-y en auto */
     overflow-x: auto;
-    overflow-y: visible;
+    overflow-y: clip;
     scroll-snap-type: x mandatory;
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
     gap: 14px;
     padding: 4px 20px 24px;
-    /* Espace à droite pour laisser dépasser la card suivante */
     padding-right: 48px;
     margin: 0 -20px;
     scrollbar-width: none;
-    /* Empêche le scroll vertical de se bloquer dans le carousel */
-    touch-action: pan-x pan-y;
+    /* Ne capture que le scroll horizontal, laisse le vertical au parent */
+    touch-action: pan-x;
   }
   .pricing-grid::-webkit-scrollbar { display: none; }
   .pricing-grid > * {
-    /* 78vw : laisse ~22vw visibles → ~9vw de peek après le gap */
     min-width: 78vw;
     max-width: 78vw;
     scroll-snap-align: start;
     flex-shrink: 0;
-    /* Pas d'overflow interne sur les cards */
-    overflow: visible;
   }
-  /* Aucun scroll interne dans les pricing-card sur mobile */
+  /* Cartes non scrollables en interne */
   .pricing-card,
   .animated-border-wrapper,
   .pricing-wrapper {
-    overflow: visible !important;
     max-height: none !important;
+    height: auto !important;
   }
 }
 
