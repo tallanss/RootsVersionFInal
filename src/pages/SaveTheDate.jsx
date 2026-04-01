@@ -143,7 +143,7 @@ const SaveTheDate = () => {
           modalTitle="Modifier le Titre"
           fields={[
             { key: 'title', label: 'Titre', type: 'text', value: content.saveTheDate?.title || 'Save The Date' },
-            { key: 'subtitle', label: 'Sous-titre', type: 'textarea', value: content.saveTheDate?.subtitle || "Créez une page personnalisée avec un compte à rebours pour vos invités, ou téléchargez une carte digitale." },
+            { key: 'subtitle', label: 'Sous-titre', type: 'textarea', value: content.saveTheDate?.subtitle || "Personnalisez et téléchargez votre carte 'Save the Date' gratuitement. La création de pages événementielles avec compte à rebours est réservée à l'administration PhotoRoots." },
           ]}
           onSave={(vals) => updateContent({ ...content, saveTheDate: { ...content.saveTheDate, ...vals } })}
         >
@@ -152,7 +152,7 @@ const SaveTheDate = () => {
           </FadeIn>
           <FadeIn direction="up" delay={0.2} duration={0.8}>
             <p className="section-subtitle">
-              {content.saveTheDate?.subtitle || "Créez une page personnalisée avec un compte à rebours pour vos invités, ou téléchargez une carte digitale."}
+              {content.saveTheDate?.subtitle || "Personnalisez et téléchargez votre carte 'Save the Date' gratuitement. La création de pages événementielles avec compte à rebours est réservée à l'administration PhotoRoots."}
             </p>
           </FadeIn>
         </EditableBlock>

@@ -128,6 +128,10 @@ const DEFAULT_CONTENT = {
   },
   saveTheDateEvents: [],
   blockedDates: [],
+  saveTheDate: {
+    title: 'Save The Date',
+    subtitle: "Personnalisez et téléchargez votre carte 'Save the Date' gratuitement. La création de pages événementielles avec compte à rebours est réservée à l'administration PhotoRoots."
+  },
 };
 
 // Deep merge depuis le localStorage/Supabase vers les defaults
@@ -160,6 +164,7 @@ const buildMergedContent = (parsed = {}) => {
     faqs: parsed.faqs || DEFAULT_CONTENT.faqs,
     saveTheDateEvents: parsed.saveTheDateEvents || DEFAULT_CONTENT.saveTheDateEvents,
     blockedDates: parsed.blockedDates || DEFAULT_CONTENT.blockedDates,
+    saveTheDate: { ...DEFAULT_CONTENT.saveTheDate, ...(parsed.saveTheDate || {}) },
   };
 
   if (
@@ -250,12 +255,20 @@ export const ContentProvider = ({ children }) => {
 
   const updateContent = useCallback((newContent) => {
     setSaveStatus('saving');
+    
+    // 1. Calculate new state
+    let merged;
     setContent(prev => {
-      const merged = { ...prev, ...newContent };
-      localStorage.setItem('photo_roots_content', JSON.stringify(merged));
-      saveToSupabase(merged);
+      merged = { ...prev, ...newContent };
       return merged;
     });
+
+    // 2. Perform side effects OUTSIDE the state updater
+    if (merged) {
+      localStorage.setItem('photo_roots_content', JSON.stringify(merged));
+      saveToSupabase(merged);
+    }
+
     clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
       setSaveStatus('saved');
