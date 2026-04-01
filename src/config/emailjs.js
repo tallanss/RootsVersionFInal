@@ -6,7 +6,7 @@ export const BOOKING_CONFIG = {
   // ===== GOOGLE APPS SCRIPT =====
   // URL de votre Google Apps Script déployé en tant qu'Application Web
   // Suivez les instructions dans google-apps-script/booking-api.gs
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyt8Y_Emumszar71Ng_IeLYIYOAuH9461hTflhJQ_4xW0GHUtPySJjLTTxOKGl4kPpU/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbznU-4laUBwbrdx-IJFlpjWz_PO5d62pWr0FwwwSCwCJ64mHdoIgqZmFzXluvJt2OnQ/exec',
 
   // ===== INFO ENTREPRISE =====
   OWNER_EMAIL: 'Jimmy.racine@outlook.fr',

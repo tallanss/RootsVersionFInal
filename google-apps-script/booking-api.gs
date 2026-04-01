@@ -89,19 +89,24 @@ function getBusyDatesArray() {
   const calendar = CalendarApp.getCalendarById(CALENDAR_ID);
   const events = calendar.getEvents(now, sixMonthsLater);
 
-  const busySlots = [];
+  // Compter le nombre d'événements par jour (tous événements confondus)
+  const countPerDay = {};
 
   events.forEach(function(event) {
-    const title = event.getTitle();
-    // Ne prendre que les événements PhotoRoots
-    if (title.indexOf('PhotoRoots') === -1 && title.indexOf('📸') === -1) return;
-
     const start = event.getStartTime();
     const dateStr = Utilities.formatDate(start, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-    const hour = start.getHours();
-    const slot = hour < 17 ? 'afternoon' : 'evening';
+    countPerDay[dateStr] = (countPerDay[dateStr] || 0) + 1;
+  });
 
-    busySlots.push(dateStr + '_' + slot);
+  // Si un jour a 2 événements ou plus → les deux créneaux sont complets
+  // (2 photobooths disponibles : 1 événement = encore 1 créneau libre)
+  const busySlots = [];
+
+  Object.keys(countPerDay).forEach(function(dateStr) {
+    if (countPerDay[dateStr] >= 2) {
+      busySlots.push(dateStr + '_afternoon');
+      busySlots.push(dateStr + '_evening');
+    }
   });
 
   return busySlots;
