@@ -130,7 +130,7 @@ const DEFAULT_CONTENT = {
   blockedDates: [],
   saveTheDate: {
     title: 'Save The Date',
-    subtitle: "Personnalisez et téléchargez votre carte 'Save the Date' gratuitement. La création de pages événementielles avec compte à rebours est réservée à l'administration PhotoRoots."
+    subtitle: "Personnalisez et téléchargez votre carte 'Save the Date' gratuitement."
   },
 };
 
@@ -255,7 +255,7 @@ export const ContentProvider = ({ children }) => {
 
   const updateContent = useCallback((newContent) => {
     setSaveStatus('saving');
-    
+
     // 1. Calculate new state
     let merged;
     setContent(prev => {
