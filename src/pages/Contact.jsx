@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Clock, CheckCircle2, Send, ChevronRight, ChevronLeft, Calendar, CalendarCheck, Loader2, Sun, Moon, AlertCircle, Lock } from 'lucide-react';
-import { processBooking, formatDateFR, fetchBusySlots } from '../services/emailService';
+import { processBooking, formatDateFR, fetchBusySlots, invalidateBusySlotsCache } from '../services/emailService';
 import { isConfigured } from '../config/emailjs';
 import Confetti from '../components/Confetti';
 import { Helmet } from 'react-helmet-async';
@@ -143,6 +143,7 @@ const Contact = () => {
 
     setLoading(false);
     if (res.success) {
+      invalidateBusySlotsCache();
       // Sync with CMS Messages Center
       const newMessage = {
         id: Date.now(),

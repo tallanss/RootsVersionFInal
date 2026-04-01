@@ -14,25 +14,49 @@ export function formatDateFR(dateStr) {
   });
 }
 
+const BUSY_SLOTS_CACHE_KEY = 'pr_busy_slots_cache';
+const BUSY_SLOTS_TTL_MS = 10 * 60 * 1000; // 10 minutes
+
 /**
  * Récupère les créneaux déjà réservés depuis Google Calendar
+ * Résultat mis en cache 10 min dans sessionStorage pour éviter les cold starts
  * Retourne un tableau de strings "YYYY-MM-DD_slot"
  */
 export async function fetchBusySlots() {
   if (!isConfigured()) {
-    console.log('[DEMO] Pas de dates occupées (mode démo)');
     return [];
   }
 
+  // Lire le cache
+  try {
+    const cached = sessionStorage.getItem(BUSY_SLOTS_CACHE_KEY);
+    if (cached) {
+      const { slots, timestamp } = JSON.parse(cached);
+      if (Date.now() - timestamp < BUSY_SLOTS_TTL_MS) {
+        return slots;
+      }
+    }
+  } catch {}
+
+  // Fetch frais
   try {
     const url = `${BOOKING_CONFIG.APPS_SCRIPT_URL}?action=busy`;
     const response = await fetch(url);
     const data = await response.json();
-    return data.busySlots || [];
+    const slots = data.busySlots || [];
+    sessionStorage.setItem(BUSY_SLOTS_CACHE_KEY, JSON.stringify({ slots, timestamp: Date.now() }));
+    return slots;
   } catch (error) {
     console.error('Erreur récupération dates occupées:', error);
     return [];
   }
+}
+
+/**
+ * Invalide le cache des créneaux (à appeler après une réservation réussie)
+ */
+export function invalidateBusySlotsCache() {
+  sessionStorage.removeItem(BUSY_SLOTS_CACHE_KEY);
 }
 
 /**
