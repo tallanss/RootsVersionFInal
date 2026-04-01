@@ -1229,7 +1229,7 @@ body.has-price-bar .contact-float {
 }
 
 body.has-price-bar .date-checker-pill {
-  display: none;
+  display: none !important;
 }
 
 body.cookie-banner-visible .date-checker-pill {
