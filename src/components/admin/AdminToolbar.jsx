@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { useAdmin } from '../../context/AdminContext';
-import { LogOut, Layout } from 'lucide-react';
+import { useContent } from '../../context/ContentContext';
+import { LogOut, Layout, Save, Loader2, Check } from 'lucide-react';
 
 const AdminToolbar = ({ onOpenDashboard }) => {
   const { isAdminMode, logout } = useAdmin();
+  const { saveStatus, updateContent } = useContent();
   const navigate = useNavigate();
 
   if (!isAdminMode) return null;
@@ -54,6 +56,36 @@ const AdminToolbar = ({ onOpenDashboard }) => {
         <Layout size={14} /> Dashboard
       </button>
 
+      {/* SAVE BUTTON */}
+      <button
+        onClick={() => updateContent({})}
+        style={{
+          background: saveStatus === 'saved' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.05)',
+          color: saveStatus === 'saved' ? '#10b981' : (saveStatus === 'saving' ? 'var(--primary)' : '#fff'),
+          border: saveStatus === 'saved' ? '1px solid #10b981' : '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '50px',
+          padding: '8px 16px',
+          fontSize: '12px',
+          fontWeight: 700,
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          transition: 'all 0.3s ease',
+        }}
+      >
+        {saveStatus === 'saving' ? (
+          <Loader2 size={14} className="spin" />
+        ) : saveStatus === 'saved' ? (
+          <Check size={14} />
+        ) : (
+          <Save size={14} />
+        )}
+        <span className="hide-mobile">
+          {saveStatus === 'saving' ? 'Enregistrement...' : saveStatus === 'saved' ? 'Sauvegardé ✓' : 'Sauvegarder'}
+        </span>
+      </button>
+
       {/* Divider */}
       <div style={{ width: '1px', height: '20px', background: 'rgba(255,255,255,0.1)' }} />
 
@@ -81,6 +113,14 @@ const AdminToolbar = ({ onOpenDashboard }) => {
         @keyframes slideUpToolbar {
           from { transform: translate(-50%, 100%); opacity: 0; }
           to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .spin { animation: spin 0.8s linear infinite; }
+        @media (max-width: 600px) {
+          .hide-mobile { display: none; }
         }
       `}</style>
     </div>
