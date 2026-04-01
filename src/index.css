@@ -91,21 +91,23 @@ body::after { content: none !important; }
 body::before {
   content: '';
   position: fixed;
-  inset: 0;
+  inset: -20%;
+  width: 140%;
+  height: 140%;
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 70vw 50vh at 15% 20%, rgba(197,160,89,0.07) 0%, transparent 70%),
-    radial-gradient(ellipse 60vw 60vh at 85% 75%, rgba(227,193,140,0.05) 0%, transparent 70%),
-    radial-gradient(ellipse 50vw 40vh at 50% 50%, rgba(197,160,89,0.03) 0%, transparent 70%);
-  animation: mesh-drift 18s ease-in-out infinite alternate;
+    radial-gradient(ellipse 60% 45% at 15% 20%, rgba(197,160,89,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 55% 55% at 85% 75%, rgba(227,193,140,0.13) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 38% at 55% 45%, rgba(197,160,89,0.09) 0%, transparent 65%);
+  animation: mesh-drift 20s ease-in-out infinite alternate;
 }
 
 @keyframes mesh-drift {
-  0%   { background-position: 0% 0%, 100% 100%, 50% 50%; }
-  33%  { background-position: 10% 15%, 85% 80%, 55% 45%; }
-  66%  { background-position: 5% 25%, 90% 65%, 48% 52%; }
-  100% { background-position: 15% 10%, 80% 90%, 52% 48%; }
+  0%   { transform: translate(0%, 0%) scale(1); }
+  33%  { transform: translate(3%, 4%) scale(1.04); }
+  66%  { transform: translate(-2%, 6%) scale(0.98); }
+  100% { transform: translate(4%, -3%) scale(1.03); }
 }
 
 @keyframes aurora-move {
@@ -120,19 +122,35 @@ body::before {
     display: flex !important;
     flex-direction: row !important;
     overflow-x: auto;
+    overflow-y: visible;
     scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
     gap: 14px;
-    padding: 4px 20px 20px;
+    padding: 4px 20px 24px;
+    /* Espace à droite pour laisser dépasser la card suivante */
+    padding-right: 48px;
     margin: 0 -20px;
     scrollbar-width: none;
+    /* Empêche le scroll vertical de se bloquer dans le carousel */
+    touch-action: pan-x pan-y;
   }
   .pricing-grid::-webkit-scrollbar { display: none; }
   .pricing-grid > * {
-    min-width: 82vw;
-    max-width: 82vw;
-    scroll-snap-align: center;
+    /* 78vw : laisse ~22vw visibles → ~9vw de peek après le gap */
+    min-width: 78vw;
+    max-width: 78vw;
+    scroll-snap-align: start;
     flex-shrink: 0;
+    /* Pas d'overflow interne sur les cards */
+    overflow: visible;
+  }
+  /* Aucun scroll interne dans les pricing-card sur mobile */
+  .pricing-card,
+  .animated-border-wrapper,
+  .pricing-wrapper {
+    overflow: visible !important;
+    max-height: none !important;
   }
 }
 
