@@ -29,6 +29,7 @@ import {
   Heart,
   Copy,
   Link as LinkIcon,
+  Loader2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../../context/ContentContext';
@@ -47,34 +48,35 @@ const PCEField = ({ label, value, onChange, textarea, rows = 3 }) => (
 );
 
 /* ── Bouton de sauvegarde partagé ── */
-const SaveBar = ({ isDirty, onSave }) => (
+export const SaveBar = ({ isDirty, onSave, label, status }) => (
   <div style={{
     position: 'sticky', bottom: '16px', zIndex: 10,
     display: 'flex', justifyContent: 'center',
     pointerEvents: 'none',
+    marginTop: '40px',
   }}>
     <button
       onClick={onSave}
       style={{
         pointerEvents: 'all',
         display: 'flex', alignItems: 'center', gap: '10px',
-        background: isDirty
+        background: isDirty || status === 'saving'
           ? 'linear-gradient(135deg, var(--primary), var(--accent))'
           : 'rgba(255,255,255,0.07)',
-        color: isDirty ? '#fff' : '#64748b',
-        border: isDirty ? 'none' : '1px solid rgba(255,255,255,0.1)',
+        color: isDirty || status === 'saving' || status === 'saved' ? '#fff' : '#64748b',
+        border: isDirty || status === 'saving' || status === 'saved' ? 'none' : '1px solid rgba(255,255,255,0.1)',
         borderRadius: '50px',
         padding: '14px 36px',
         fontSize: '15px',
         fontWeight: 800,
-        cursor: isDirty ? 'pointer' : 'default',
-        boxShadow: isDirty ? '0 8px 28px rgba(197,160,89,0.35)' : 'none',
+        cursor: (isDirty || status === 'saving') ? 'pointer' : 'default',
+        boxShadow: (isDirty || status === 'saving') ? '0 8px 28px rgba(197,160,89,0.35)' : 'none',
         transition: 'all 0.3s ease',
         letterSpacing: '0.02em',
       }}
     >
-      <Save size={17} />
-      {isDirty ? 'Enregistrer les modifications' : 'Aucune modification'}
+      {status === 'saving' ? <Loader2 size={17} className="spin" /> : (status === 'saved' ? <Check size={17} /> : <Save size={17} />)}
+      {label || (status === 'saving' ? 'Enregistrement...' : status === 'saved' ? 'Sauvegardé ✓' : (isDirty ? 'Enregistrer les modifications' : 'Aucune modification'))}
     </button>
   </div>
 );
@@ -266,6 +268,7 @@ export const AnalyticsHub = () => {
           ))}
         </div>
       </section>
+      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -274,7 +277,7 @@ export const AnalyticsHub = () => {
 /* 📸 MEDIA LIB                               */
 /* ========================================== */
 export const MediaLib = () => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, saveStatus } = useContent();
   const gallery = content.gallery || [];
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState(null);
@@ -423,6 +426,7 @@ export const MediaLib = () => {
           ))}
         </div>
       )}
+      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -431,7 +435,7 @@ export const MediaLib = () => {
 /* ⭐ REVIEW CENTER                            */
 /* ========================================== */
 export const ReviewCenter = () => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, saveStatus } = useContent();
   const reviews = content.testimonials || [];
   const [newReview, setNewReview] = useState({ name: '', role: '', text: '', avatar: '' });
 
@@ -521,6 +525,7 @@ export const ReviewCenter = () => {
           </div>
         ))}
       </div>
+      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -529,7 +534,7 @@ export const ReviewCenter = () => {
 /* 💰 PRICE ARCHITECT                         */
 /* ========================================== */
 export const PriceArchitect = () => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, saveStatus } = useContent();
   const plans = content.pricing_plans || [];
   const [activePlanIdx, setActivePlanIdx] = useState(0);
 
@@ -655,6 +660,7 @@ export const PriceArchitect = () => {
           </div>
         </div>
       )}
+      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -721,6 +727,7 @@ export const FAQMaster = () => {
           </section>
         ))}
       </div>
+      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -796,7 +803,7 @@ export const SocialHub = () => {
 /* 📅 DISPONIBILITÉS                          */
 /* ========================================== */
 export const DisponibilitesManager = () => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, saveStatus } = useContent();
   const [newDate, setNewDate] = useState('');
 
   const blocked = content.blockedDates || [];
@@ -899,6 +906,7 @@ export const DisponibilitesManager = () => {
           </div>
         </div>
       )}
+      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -954,7 +962,7 @@ export const SystemTools = () => {
 /* 🎨 DESIGN HUB (Original Updated)           */
 /* ========================================== */
 export const DesignHub = () => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, saveStatus } = useContent();
 
   const [local, setLocal] = useState({ ...(content.theme || {}) });
   const [isDirty, setIsDirty] = useState(false);
@@ -1023,7 +1031,7 @@ export const DesignHub = () => {
         <p style={{ fontSize: '12px', color: '#64748b', marginTop: '10px' }}>Ajuste la rondeur des boutons, cartes et images sur tout le site.</p>
       </section>
 
-      <SaveBar isDirty={isDirty} onSave={handleSave} />
+      <SaveBar isDirty={isDirty} status={saveStatus} onSave={handleSave} />
     </div>
   );
 };
@@ -1032,7 +1040,7 @@ export const DesignHub = () => {
 /* 🌍 SEO MANAGER                             */
 /* ========================================== */
 export const SEOManager = () => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, saveStatus } = useContent();
   const seo = content.seo || { pages: {} };
 
   const handleUpdate = (path, field, value) => {
@@ -1079,6 +1087,7 @@ export const SEOManager = () => {
           </section>
         ))}
       </div>
+      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -1087,7 +1096,7 @@ export const SEOManager = () => {
 /* 📬 LEAD CENTER (Original with Updates)    */
 /* ========================================== */
 export const LeadCenter = () => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, saveStatus } = useContent();
   const messages = content.messages || [];
 
   const deleteMessage = (id) => {
@@ -1165,6 +1174,7 @@ export const LeadCenter = () => {
           ))}
         </div>
       )}
+      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -1173,7 +1183,7 @@ export const LeadCenter = () => {
 /* ✏️ PAGE CONTENT EDITOR                    */
 /* ========================================== */
 export const PageContentEditor = () => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, saveStatus } = useContent();
 
   const [local, setLocal] = useState({
     heroBadge: content.heroBadge || '',
@@ -1235,7 +1245,7 @@ export const PageContentEditor = () => {
         </div>
       </section>
 
-      <SaveBar isDirty={isDirty} onSave={handleSave} />
+      <SaveBar isDirty={isDirty} status={saveStatus} onSave={handleSave} />
     </div>
   );
 };
@@ -1244,7 +1254,7 @@ export const PageContentEditor = () => {
 /* 🗺️ NAVIGATION EDITOR                      */
 /* ========================================== */
 export const NavEditor = () => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, saveStatus } = useContent();
 
   const [localNav, setLocalNav] = useState([...(content.navigation || [])]);
   const [isDirty, setIsDirty] = useState(false);
@@ -1284,7 +1294,7 @@ export const NavEditor = () => {
         </div>
       </div>
 
-      <SaveBar isDirty={isDirty} onSave={handleSave} />
+      <SaveBar isDirty={isDirty} status={saveStatus} onSave={handleSave} />
     </div>
   );
 };
@@ -1315,7 +1325,7 @@ const formatDateSTD = (dateString) => {
 };
 
 export const SaveTheDateManager = () => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, saveStatus } = useContent();
   const [createOpen, setCreateOpen] = useState(false);
   const [copiedSlug, setCopiedSlug] = useState(null);
 
@@ -1475,6 +1485,7 @@ export const SaveTheDateManager = () => {
           onClose={() => setCreateOpen(false)}
         />
       )}
+      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
     </div>
   );
 };
