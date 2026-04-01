@@ -75,7 +75,7 @@ const Photobooth = () => {
           fields={[{ key: 'photoboothHeroImg', label: 'URL de l\'image', type: 'image', value: content.photoboothHeroImg || '/mirror-premium.png' }]}
           onSave={(vals) => updateContent({ ...content, ...vals })}
         >
-          <div style={{ borderRadius: 'var(--radius-xl)', overflow: 'hidden', boxShadow: 'var(--shadow-xl)', marginBottom: '32px' }}>
+          <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.05)', marginBottom: '32px' }}>
             <PremiumImage
               src={content.photoboothHeroImg || "/mirror-premium.png"}
               alt="Photobooth miroir premium PhotoRoots avec éclairage LED"
