@@ -1,22 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { haptic } from '../hooks/useHaptic';
 import { Calendar, X, Check, AlertCircle, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../context/ContentContext';
+import { fetchBusySlots } from '../services/emailService';
 
 const DateChecker = () => {
   const { content } = useContent();
   const [isOpen, setIsOpen] = useState(false);
   const [date, setDate] = useState('');
-  const [result, setResult] = useState(null); // null | 'available' | 'unavailable'
+  const [result, setResult] = useState(null); // null | 'available' | 'unavailable' | 'loading'
+  const busySlotsRef = useRef([]);
 
   const blockedDates = content.blockedDates || [];
+
+  // Charger les créneaux occupés depuis Google Calendar au montage
+  useEffect(() => {
+    fetchBusySlots().then(slots => {
+      const cmsBlocked = blockedDates.flatMap(d => [`${d}_afternoon`, `${d}_evening`]);
+      busySlotsRef.current = [...new Set([...slots, ...cmsBlocked])];
+    }).catch(() => {
+      // Fallback sur les dates bloquées manuellement uniquement
+      busySlotsRef.current = blockedDates.flatMap(d => [`${d}_afternoon`, `${d}_evening`]);
+    });
+  }, [blockedDates]);
 
   const checkDate = () => {
     if (!date) return;
     haptic(12);
-    setResult(blockedDates.includes(date) ? 'unavailable' : 'available');
+    // Une date est complète si les deux créneaux (matin et soir) sont occupés
+    const afternoonBusy = busySlotsRef.current.includes(`${date}_afternoon`);
+    const eveningBusy = busySlotsRef.current.includes(`${date}_evening`);
+    setResult(afternoonBusy && eveningBusy ? 'unavailable' : 'available');
   };
 
   const reset = () => { setDate(''); setResult(null); };
