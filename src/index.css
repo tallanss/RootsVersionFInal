@@ -138,9 +138,10 @@ body::before {
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
     gap: 14px;
-    padding: 4px 32px 24px;
+    padding: 4px 48px 24px;
     padding-right: 48px;
-    margin: 0 -20px;
+    scroll-padding: 0 48px;
+    margin: 0 -24px;
     scrollbar-width: none;
     /* Autorise tous les gestes naturels (scroll horizontal et vertical) */
     touch-action: auto;
