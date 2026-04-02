@@ -189,7 +189,7 @@ export const DashboardHome = ({ onNavigate }) => {
 /* 📊 ANALYTICS HUB                           */
 /* ========================================== */
 export const AnalyticsHub = () => {
-  const { content, updateContent, downloadLeadsCSV } = useContent();
+  const { content, updateContent, downloadLeadsCSV, saveStatus } = useContent();
   const messages = content.messages || [];
   const stats = content.stats || [
     { num: '150+', label: 'Événements' },
@@ -669,7 +669,7 @@ export const PriceArchitect = () => {
 /* ❓ FAQ MASTER                               */
 /* ========================================== */
 export const FAQMaster = () => {
-  const { content, updateContent } = useContent();
+  const { content, updateContent, saveStatus } = useContent();
   const faqs = content.faqs || [];
 
   const updateFaq = (idx, field, value) => {
