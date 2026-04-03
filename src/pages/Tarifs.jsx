@@ -232,7 +232,7 @@ const Tarifs = () => {
     }
   }, [location]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedPlanId !== null) {
       document.body.classList.add('has-price-bar');
     } else {

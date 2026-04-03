@@ -66,8 +66,6 @@ export function invalidateBusySlotsCache() {
  */
 export async function processBooking(booking) {
   if (!isConfigured()) {
-    // Mode démo : simuler le succès
-    console.log('[DEMO] Réservation simulée:', booking);
     return {
       success: true,
       isDemo: true,

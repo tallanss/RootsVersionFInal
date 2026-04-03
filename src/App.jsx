@@ -115,7 +115,7 @@ function PageContent() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', position: 'relative' }}>
       {!isStandalonePage && <Header />}
-      <main style={{ flexGrow: 1, position: 'relative' }}>
+      <main id="main-content" style={{ flexGrow: 1, position: 'relative' }}>
         <div key={location.pathname} className="page-transition">
           <Routes location={location}>
             <Route path="/" element={<Home />} />
@@ -155,12 +155,20 @@ function PageContent() {
 
 function App() {
   useEffect(() => {
+    let rafId;
     const handlePointerMove = (e) => {
-      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
-      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+        document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+        rafId = null;
+      });
     };
-    window.addEventListener('pointermove', handlePointerMove);
-    return () => window.removeEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
