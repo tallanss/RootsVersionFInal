@@ -49,7 +49,7 @@ const DEFAULT_CONTENT = {
       name: 'Essentiel',
       price: '189',
       desc: 'Parfait pour les petits événements et les fêtes entre amis.',
-      features: ['2 heures d\'animation', 'Photos illimitées', 'Accessoires & props fun', 'Livraison & installation', 'Galerie en ligne'],
+      features: ['Photos illimitées', 'Accessoires & props fun', 'Livraison & installation', 'Galerie en ligne'],
       excluded: ['Impressions sur place', 'Personnalisation complète', 'Écran de diffusion'],
       featured: false
     },
@@ -58,7 +58,7 @@ const DEFAULT_CONTENT = {
       name: 'Premium',
       price: '289',
       desc: 'Notre formule la plus populaire pour les mariages et grands événements.',
-      features: ['3 heures d\'animation', 'Photos illimitées', 'Impressions illimitées sur place', 'Personnalisation totale (cadres, fonds)', 'Accessoires premium', 'Écran de diffusion', 'Livraison & installation', 'Galerie en ligne HD'],
+      features: ['Photos illimitées', 'Impressions illimitées sur place', 'Personnalisation totale (cadres, fonds)', 'Accessoires premium', 'Écran de diffusion', 'Livraison & installation', 'Galerie en ligne HD'],
       excluded: [],
       featured: true
     },
@@ -67,7 +67,7 @@ const DEFAULT_CONTENT = {
       name: 'Excellence',
       price: '389',
       desc: 'La formule complète pour les mariages et événements d\'entreprise haut de gamme.',
-      features: ['5 heures d\'animation', 'Photos illimitées', 'Impressions illimitées sur place', 'Personnalisation totale (cadres, fonds)', 'Accessoires premium', 'Écran de diffusion', 'Livre d\'or Premium offert', 'Branding personnalisé complet', 'Technicien dédié', 'Livraison & installation', 'Galerie en ligne HD'],
+      features: ['Photos illimitées', 'Impressions illimitées sur place', 'Personnalisation totale (cadres, fonds)', 'Accessoires premium', 'Écran de diffusion', 'Livre d\'or Premium offert', 'Branding personnalisé complet', 'Technicien dédié', 'Livraison & installation', 'Galerie en ligne HD'],
       excluded: [],
       featured: false
     },
@@ -77,7 +77,7 @@ const DEFAULT_CONTENT = {
       price: 'Sur devis',
       isCustom: true,
       desc: 'Pour les événements d\'exception qui méritent une prestation unique.',
-      features: ['Durée illimitée', 'Tout le Premium inclus', 'Branding personnalisé complet', 'Animations vidéo sur mesure', 'Technicien dédié', 'Multi-impressions (formats spéciaux)', 'Livraison France entière'],
+      features: ['Tout le Premium inclus', 'Branding personnalisé complet', 'Animations vidéo sur mesure', 'Technicien dédié', 'Multi-impressions (formats spéciaux)', 'Livraison France entière'],
       excluded: [],
       featured: false
     }

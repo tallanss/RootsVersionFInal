@@ -18,20 +18,18 @@ const EVENT_TYPES = [
 
 const BudgetEstimator = ({ plans }) => {
   const [eventType, setEventType] = useState('mariage');
-  const [hours, setHours] = useState(3);
 
   const essentiel = plans.find(p => p.id === 'essentiel');
   const premium = plans.find(p => p.id === 'premium');
-  const baseEssentiel = parseInt(essentiel?.price) || 189;
-  const basePremium = parseInt(premium?.price) || 289;
+  const excellence = plans.find(p => p.id === 'excellence');
 
-  // Essentiel includes 2h, Premium includes 3h. Extra = 49€/h
-  const extraEssentiel = Math.max(0, hours - 2) * 49;
-  const extraPremium = Math.max(0, hours - 3) * 49;
-  const totalEssentiel = baseEssentiel + extraEssentiel;
-  const totalPremium = basePremium + extraPremium;
+  const recommended = eventType === 'entreprise' ? 'excellence' : eventType === 'mariage' ? 'premium' : 'essentiel';
 
-  const recommended = (hours >= 3 || eventType === 'mariage') ? 'premium' : 'essentiel';
+  const displayPlans = [
+    { plan: essentiel, id: 'essentiel' },
+    { plan: premium, id: 'premium' },
+    { plan: excellence, id: 'excellence' },
+  ];
 
   return (
     <section className="container" style={{ padding: '0 20px 32px' }}>
@@ -42,7 +40,7 @@ const BudgetEstimator = ({ plans }) => {
         </div>
 
         {/* Event type */}
-        <div style={{ marginBottom: '20px' }}>
+        <div style={{ marginBottom: '24px' }}>
           <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '10px' }}>
             Type d'événement
           </label>
@@ -67,30 +65,9 @@ const BudgetEstimator = ({ plans }) => {
           </div>
         </div>
 
-        {/* Duration slider */}
-        <div style={{ marginBottom: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Durée
-            </label>
-            <span style={{ fontSize: '15px', fontWeight: 800, color: 'var(--primary)' }}>{hours}h</span>
-          </div>
-          <input
-            type="range" min={2} max={8} step={1} value={hours}
-            onChange={e => setHours(Number(e.target.value))}
-            style={{ width: '100%', accentColor: 'var(--primary)', height: '4px', cursor: 'pointer' }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
-            <span>2h</span><span>5h</span><span>8h</span>
-          </div>
-        </div>
-
         {/* Results */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          {[
-            { plan: essentiel, total: totalEssentiel, id: 'essentiel' },
-            { plan: premium, total: totalPremium, id: 'premium' },
-          ].map(({ plan, total, id }) => (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
+          {displayPlans.map(({ plan, id }) => (
             <div
               key={id}
               style={{
@@ -105,16 +82,15 @@ const BudgetEstimator = ({ plans }) => {
                   Recommandé
                 </div>
               )}
-              <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '4px' }}>{plan?.name}</div>
-              <div style={{ fontSize: '24px', fontWeight: 900, color: recommended === id ? 'var(--primary)' : 'var(--text-main)', lineHeight: 1 }}>
-                {total}€
+              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '4px' }}>{plan?.name}</div>
+              <div style={{ fontSize: '22px', fontWeight: 900, color: recommended === id ? 'var(--primary)' : 'var(--text-main)', lineHeight: 1 }}>
+                {plan?.price}€
               </div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>{hours}h d'animation</div>
             </div>
           ))}
         </div>
         <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '12px', textAlign: 'center' }}>
-          Estimation indicative · heure sup. +49€ · options non incluses
+          Estimation indicative · options non incluses
         </p>
       </div>
     </section>
@@ -250,7 +226,6 @@ const Tarifs = () => {
       price: '189',
       desc: 'Parfait pour les petits événements et les fêtes entre amis.',
       features: [
-        '2 heures d\'animation',
         'Photos illimitées',
         'Accessoires & props fun',
         'Livraison & installation',
@@ -265,7 +240,6 @@ const Tarifs = () => {
       price: '289',
       desc: 'Notre formule la plus populaire pour les mariages et grands événements.',
       features: [
-        '3 heures d\'animation',
         'Photos illimitées',
         'Impressions illimitées sur place',
         'Personnalisation totale (cadres, fonds)',
@@ -283,7 +257,6 @@ const Tarifs = () => {
       price: '389',
       desc: 'La formule complète pour les mariages et événements d\'entreprise haut de gamme.',
       features: [
-        '5 heures d\'animation',
         'Photos illimitées',
         'Impressions illimitées sur place',
         'Personnalisation totale (cadres, fonds)',
@@ -305,7 +278,6 @@ const Tarifs = () => {
       isCustom: true,
       desc: 'Pour les événements d\'exception qui méritent une prestation unique.',
       features: [
-        'Durée illimitée',
         'Tout le Premium inclus',
         'Branding personnalisé complet',
         'Animations vidéo sur mesure',
@@ -321,7 +293,6 @@ const Tarifs = () => {
   const plans = content.pricing_plans || defaultPlans;
 
   const options = [
-    { id: 'extra_hour', name: 'Heure supplémentaire', price: 49, desc: 'Au-delà de la durée incluse' },
     { id: 'guestbook', name: 'Livre d\'or Premium', price: 39, desc: 'Avec collages et stylos' },
     { id: 'usb', name: 'Clé USB souvenirs', price: 15, desc: 'Toutes les photos en HD' },
     { id: 'branding', name: 'Branding Écran', price: 29, desc: 'Votre logo sur l\'interface' },
