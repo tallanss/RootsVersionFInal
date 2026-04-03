@@ -479,9 +479,9 @@ const Home = () => {
               <div className="pricing-price">{content.pricing.essentiel.price}€</div>
               <div className="pricing-desc">Idéal pour les petits événements</div>
               <ul className="pricing-features">
-                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>2 heures d'animation</li>
                 <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Photos illimitées</li>
                 <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Accessoires &amp; props fun</li>
+                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Galerie en ligne</li>
               </ul>
               <AnimatedButton to="/tarifs?pack=essentiel" className="btn-secondary" style={{ width: '100%' }}>Choisir ce pack</AnimatedButton>
             </div>
@@ -502,7 +502,6 @@ const Home = () => {
                 <div className="pricing-price">{content.pricing.premium.price}€</div>
                 <div className="pricing-desc">Notre best-seller pour mariages</div>
                 <ul className="pricing-features">
-                  <li><span className="pricing-check"><CheckCircle2 size={14} /></span>3 heures d'animation</li>
                   <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Photos illimitées &amp; impressions</li>
                   <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Personnalisation totale</li>
                   <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Écran de diffusion</li>

@@ -163,13 +163,20 @@ const buildMergedContent = (parsed = {}) => {
     pricing: {
       essentiel: { ...DEFAULT_CONTENT.pricing.essentiel, ...(parsed.pricing?.essentiel || {}) },
       premium: { ...DEFAULT_CONTENT.pricing.premium, ...(parsed.pricing?.premium || {}) },
+      excellence: { ...DEFAULT_CONTENT.pricing.excellence, ...(parsed.pricing?.excellence || {}) },
       custom: { ...DEFAULT_CONTENT.pricing.custom, ...(parsed.pricing?.custom || {}) },
     },
     formOptions: { ...DEFAULT_CONTENT.formOptions, ...(parsed.formOptions || {}) },
     analytics: { ...DEFAULT_CONTENT.analytics, ...(parsed.analytics || {}) },
     stats: parsed.stats || DEFAULT_CONTENT.stats,
     services: parsed.services || DEFAULT_CONTENT.services,
-    pricing_plans: parsed.pricing_plans || DEFAULT_CONTENT.pricing_plans,
+    pricing_plans: (() => {
+      const stored = parsed.pricing_plans;
+      if (!stored) return DEFAULT_CONTENT.pricing_plans;
+      const storedIds = new Set(stored.map(p => p.id));
+      const missing = DEFAULT_CONTENT.pricing_plans.filter(p => !storedIds.has(p.id));
+      return [...stored, ...missing];
+    })(),
     testimonials: parsed.testimonials || DEFAULT_CONTENT.testimonials,
     faqs: parsed.faqs || DEFAULT_CONTENT.faqs,
     saveTheDateEvents: parsed.saveTheDateEvents || DEFAULT_CONTENT.saveTheDateEvents,
