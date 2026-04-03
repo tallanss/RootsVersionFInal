@@ -31,9 +31,10 @@ const Contact = () => {
       }));
     }
     return [
-      { id: 'essentiel', name: 'Essentiel', price: '189€', desc: '2h d\'animation' },
-      { id: 'premium', name: 'Premium', price: '289€', desc: '3h + impressions' },
-      { id: 'sur-mesure', name: 'Sur-Mesure', price: 'Sur devis', desc: 'Durée illimitée' },
+      { id: 'essentiel', name: 'Essentiel', price: '189€', desc: 'Photos illimitées' },
+      { id: 'premium', name: 'Premium', price: '289€', desc: 'Impressions illimitées incluses' },
+      { id: 'excellence', name: 'Excellence', price: '389€', desc: 'Branding & technicien dédié' },
+      { id: 'sur-mesure', name: 'Sur-Mesure', price: 'Sur devis', desc: 'Prestation sur mesure' },
     ];
   }, [content.pricing_plans]);
 

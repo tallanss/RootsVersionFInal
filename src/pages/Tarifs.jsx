@@ -18,18 +18,18 @@ const EVENT_TYPES = [
 
 const BudgetEstimator = ({ plans }) => {
   const [eventType, setEventType] = useState('mariage');
+  const [prints, setPrints] = useState(50);
 
   const essentiel = plans.find(p => p.id === 'essentiel');
   const premium = plans.find(p => p.id === 'premium');
-  const excellence = plans.find(p => p.id === 'excellence');
+  const baseEssentiel = parseInt(essentiel?.price) || 189;
+  const basePremium = parseInt(premium?.price) || 289;
 
-  const recommended = eventType === 'entreprise' ? 'excellence' : eventType === 'mariage' ? 'premium' : 'essentiel';
+  // Essentiel : impressions à 0,50€/unité. Premium : illimitées incluses.
+  const totalEssentiel = baseEssentiel + prints * 0.5;
+  const totalPremium = basePremium;
 
-  const displayPlans = [
-    { plan: essentiel, id: 'essentiel' },
-    { plan: premium, id: 'premium' },
-    { plan: excellence, id: 'excellence' },
-  ];
+  const recommended = totalEssentiel >= totalPremium || eventType === 'mariage' ? 'premium' : 'essentiel';
 
   return (
     <section className="container" style={{ padding: '0 20px 32px' }}>
@@ -40,7 +40,7 @@ const BudgetEstimator = ({ plans }) => {
         </div>
 
         {/* Event type */}
-        <div style={{ marginBottom: '24px' }}>
+        <div style={{ marginBottom: '20px' }}>
           <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '10px' }}>
             Type d'événement
           </label>
@@ -65,9 +65,30 @@ const BudgetEstimator = ({ plans }) => {
           </div>
         </div>
 
+        {/* Prints slider */}
+        <div style={{ marginBottom: '24px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Impressions souhaitées
+            </label>
+            <span style={{ fontSize: '15px', fontWeight: 800, color: 'var(--primary)' }}>{prints}</span>
+          </div>
+          <input
+            type="range" min={0} max={300} step={25} value={prints}
+            onChange={e => setPrints(Number(e.target.value))}
+            style={{ width: '100%', accentColor: 'var(--primary)', height: '4px', cursor: 'pointer' }}
+          />
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+            <span>0</span><span>150</span><span>300</span>
+          </div>
+        </div>
+
         {/* Results */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px' }}>
-          {displayPlans.map(({ plan, id }) => (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          {[
+            { plan: essentiel, total: Math.round(totalEssentiel), id: 'essentiel', note: `${prints} impression${prints > 1 ? 's' : ''}` },
+            { plan: premium, total: totalPremium, id: 'premium', note: 'impressions illimitées' },
+          ].map(({ plan, total, id, note }) => (
             <div
               key={id}
               style={{
@@ -82,15 +103,16 @@ const BudgetEstimator = ({ plans }) => {
                   Recommandé
                 </div>
               )}
-              <div style={{ fontSize: '11px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '4px' }}>{plan?.name}</div>
-              <div style={{ fontSize: '22px', fontWeight: 900, color: recommended === id ? 'var(--primary)' : 'var(--text-main)', lineHeight: 1 }}>
-                {plan?.price}€
+              <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '4px' }}>{plan?.name}</div>
+              <div style={{ fontSize: '24px', fontWeight: 900, color: recommended === id ? 'var(--primary)' : 'var(--text-main)', lineHeight: 1 }}>
+                {total}€
               </div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>{note}</div>
             </div>
           ))}
         </div>
         <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '12px', textAlign: 'center' }}>
-          Estimation indicative · options non incluses
+          Estimation indicative · 0,50€/impression pour Essentiel · options non incluses
         </p>
       </div>
     </section>
