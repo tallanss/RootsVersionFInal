@@ -11,6 +11,9 @@ export const AdminProvider = ({ children }) => {
 
   const login = (pin) => {
     const validPin = import.meta.env.VITE_ADMIN_PIN;
+    if (!validPin && import.meta.env.DEV) {
+      console.warn('[AdminContext] VITE_ADMIN_PIN non défini dans .env — la connexion admin sera toujours refusée.');
+    }
     if (pin === validPin) {
       setIsAdminMode(true);
       sessionStorage.setItem('pr_admin', '1');

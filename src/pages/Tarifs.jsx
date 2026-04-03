@@ -220,7 +220,7 @@ const Tarifs = () => {
     const pack = params.get('pack');
     if (pack) {
       // Find if valid pack
-      const validPacks = ['essentiel', 'premium'];
+      const validPacks = ['essentiel', 'premium', 'excellence'];
       if (validPacks.includes(pack.toLowerCase())) {
         setSelectedPlanId(pack.toLowerCase());
         // Small delay to ensure render is complete before scrolling
@@ -276,6 +276,27 @@ const Tarifs = () => {
       ],
       excluded: [],
       featured: true,
+    },
+    {
+      id: 'excellence',
+      name: 'Excellence',
+      price: '389',
+      desc: 'La formule complète pour les mariages et événements d\'entreprise haut de gamme.',
+      features: [
+        '5 heures d\'animation',
+        'Photos illimitées',
+        'Impressions illimitées sur place',
+        'Personnalisation totale (cadres, fonds)',
+        'Accessoires premium',
+        'Écran de diffusion',
+        'Livre d\'or Premium offert',
+        'Branding personnalisé complet',
+        'Technicien dédié',
+        'Livraison & installation',
+        'Galerie en ligne HD',
+      ],
+      excluded: [],
+      featured: false,
     },
     {
       id: 'custom',

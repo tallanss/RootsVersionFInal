@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Clock, CheckCircle2, Send, ChevronRight, ChevronLeft, Calendar, CalendarCheck, Loader2, Sun, Moon, AlertCircle, Lock } from 'lucide-react';
+import { Mail, Phone, MapPin, CheckCircle2, Send, ChevronRight, ChevronLeft, Calendar, CalendarCheck, Loader2, Sun, Moon, AlertCircle, Lock } from 'lucide-react';
 import { processBooking, formatDateFR, fetchBusySlots, invalidateBusySlotsCache } from '../services/emailService';
 import { isConfigured } from '../config/emailjs';
 import Confetti from '../components/Confetti';
@@ -14,6 +14,9 @@ const SLOT_LABELS = {
   afternoon: { label: 'Après-midi', time: '14h — 18h', icon: Sun },
   evening: { label: 'Soirée', time: '19h — 23h', icon: Moon },
 };
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^[+\d\s()./-]{7,20}$/;
 
 const Contact = () => {
   const { content, updateContent } = useContent();
@@ -118,6 +121,11 @@ const Contact = () => {
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async () => {
+    // Validation explicite
+    if (!formData.name.trim()) { setError('Veuillez saisir votre nom.'); return; }
+    if (!EMAIL_REGEX.test(formData.email)) { setError('Veuillez saisir une adresse email valide.'); return; }
+    if (formData.phone && !PHONE_REGEX.test(formData.phone)) { setError('Numéro de téléphone invalide.'); return; }
+
     // Rate limiting: 1 soumission par 30s
     const lastSubmit = sessionStorage.getItem('pr_last_submit');
     if (lastSubmit && Date.now() - Number(lastSubmit) < 30000) {
@@ -159,7 +167,7 @@ const Contact = () => {
       };
       
       const newMessages = [newMessage, ...(content.messages || [])];
-      updateContent({ ...content, messages: newMessages });
+      updateContent({ messages: newMessages });
       
       setResult(res);
       setStep(4);
@@ -169,7 +177,7 @@ const Contact = () => {
   };
 
   const canProceedStep1 = selectedDate && selectedSlot;
-  const canProceedStep2 = formData.name && formData.email && formData.eventType;
+  const canProceedStep2 = formData.name.trim() && EMAIL_REGEX.test(formData.email) && formData.eventType;
 
   // ===== STEP 4: SUCCESS =====
   if (step === 4) {
@@ -244,7 +252,7 @@ const Contact = () => {
             { key: 'title', label: 'Titre', type: 'text', value: content.contactPage?.title || "Réservez votre photobooth" },
             { key: 'subtitle', label: 'Sous-titre', type: 'textarea', value: content.contactPage?.subtitle || "Choisissez votre date, votre créneau et recevez une confirmation instantanée par email." },
           ]}
-          onSave={(vals) => updateContent({ ...content, contactPage: { ...content.contactPage, ...vals } })}
+          onSave={(vals) => updateContent({ contactPage: { ...content.contactPage, ...vals } })}
         >
           <h1 className="section-title" style={{ fontSize: '28px' }}>{content.contactPage?.title || "Réservez votre photobooth"}</h1>
           <p className="section-subtitle" style={{ marginBottom: '20px' }}>
@@ -367,12 +375,12 @@ const Contact = () => {
                           animate={{ scale: 1, opacity: 1 }}
                           transition={{ delay: i * 0.01 }}
                           className="skeleton" 
-                          style={{ 
-                            width: '100%', 
-                            aspectRatio: '1', 
+                          style={{
+                            width: '100%',
+                            aspectRatio: '1',
                             borderRadius: '50%',
-                            opacity: 0.2 + (Math.random() * 0.3) // Variety
-                          }} 
+                            opacity: 0.35
+                          }}
                         />
                       ))}
                     </div>

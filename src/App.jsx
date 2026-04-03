@@ -1,5 +1,36 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, info) {
+    console.error('[ErrorBoundary]', error, info.componentStack);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0a0a0c', color: '#fff', padding: '24px', textAlign: 'center' }}>
+          <img src="/logo-gold.png" alt="PhotoRoots" style={{ height: '48px', marginBottom: '24px', opacity: 0.7 }} />
+          <h1 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '12px' }}>Une erreur inattendue est survenue</h1>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', marginBottom: '24px' }}>Rechargez la page pour continuer.</p>
+          <button
+            onClick={() => window.location.reload()}
+            style={{ background: '#c5a059', color: '#fff', border: 'none', borderRadius: '12px', padding: '12px 28px', fontWeight: 700, cursor: 'pointer', fontSize: '15px' }}
+          >
+            Recharger la page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 import { ToastContainer } from './components/Toast';
 import Home from './pages/Home';
 import Photobooth from './pages/Photobooth';
@@ -35,7 +66,7 @@ function PageContent() {
   const location = useLocation();
   const { content } = useContent();
   const { isAdminMode, logout } = useAdmin();
-  const [activeTab, setActiveTab] = React.useState('dashboard');
+  const [activeTab, setActiveTab] = React.useState('home');
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   
   // SEO Injection
@@ -133,12 +164,14 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <AdminProvider>
-        <ScrollToTop />
-        <PageContent />
-      </AdminProvider>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <AdminProvider>
+          <ScrollToTop />
+          <PageContent />
+        </AdminProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }
 

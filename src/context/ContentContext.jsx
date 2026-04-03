@@ -63,6 +63,15 @@ const DEFAULT_CONTENT = {
       featured: true
     },
     {
+      id: 'excellence',
+      name: 'Excellence',
+      price: '389',
+      desc: 'La formule complète pour les mariages et événements d\'entreprise haut de gamme.',
+      features: ['5 heures d\'animation', 'Photos illimitées', 'Impressions illimitées sur place', 'Personnalisation totale (cadres, fonds)', 'Accessoires premium', 'Écran de diffusion', 'Livre d\'or Premium offert', 'Branding personnalisé complet', 'Technicien dédié', 'Livraison & installation', 'Galerie en ligne HD'],
+      excluded: [],
+      featured: false
+    },
+    {
       id: 'custom',
       name: 'Sur-Mesure',
       price: 'Sur devis',
@@ -76,6 +85,7 @@ const DEFAULT_CONTENT = {
   pricing: {
     essentiel: { price: "189", subtitle: "Parfait pour les petits événements et les fêtes entre amis." },
     premium: { price: "289", subtitle: "Notre formule la plus populaire pour les mariages et grands événements." },
+    excellence: { price: "389", subtitle: "La formule complète pour les mariages et événements d'entreprise haut de gamme." },
     custom: { price: "Sur devis", subtitle: "Pour les événements d'exception qui méritent une prestation unique." }
   },
   theme: {

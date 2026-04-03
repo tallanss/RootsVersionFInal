@@ -45,7 +45,7 @@ import {
 } from './admin/CMSModules';
 
 const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
-  const { content, saveStatus } = useContent();
+  const { content, saveStatus, updateContent } = useContent();
   const [previewMode, setPreviewMode] = React.useState(false);
   const unreadCount = content.messages?.filter(m => m.status === 'Nouveau').length || 0;
 

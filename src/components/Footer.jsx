@@ -3,6 +3,16 @@ import { Instagram, Facebook, Mail, Phone, MapPin } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 import EditableBlock from './admin/EditableBlock';
 
+const safeUrl = (url) => {
+  if (!url) return '#';
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' || u.protocol === 'http:' ? url : '#';
+  } catch {
+    return '#';
+  }
+};
+
 const Footer = () => {
   const { content, updateContent } = useContent();
   const currentYear = new Date().getFullYear();
@@ -33,15 +43,15 @@ const Footer = () => {
             fields={[
               { key: 'footerDesc', label: 'Texte', type: 'textarea', value: content.footerDesc || "L'excellence du photobooth premium en Normandie. Sublimez vos événements avec nos bornes photos innovantes et élégantes." }
             ]}
-            onSave={(vals) => updateContent({ ...content, ...vals })}
+            onSave={(vals) => updateContent(vals)}
           >
             <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6, maxWidth: '300px' }}>
               {content.footerDesc || "L'excellence du photobooth premium en Normandie. Sublimez vos événements avec nos bornes photos innovantes et élégantes."}
             </p>
           </EditableBlock>
           <div style={{ display: 'flex', gap: '12px' }}>
-            {content.socials?.instagram && <a href={content.socials.instagram} className="social-icon" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><Instagram size={20} /></a>}
-            {content.socials?.facebook && <a href={content.socials.facebook} className="social-icon" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><Facebook size={20} /></a>}
+            {content.socials?.instagram && <a href={safeUrl(content.socials.instagram)} className="social-icon" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><Instagram size={20} /></a>}
+            {content.socials?.facebook && <a href={safeUrl(content.socials.facebook)} className="social-icon" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><Facebook size={20} /></a>}
           </div>
         </div>
 
@@ -66,7 +76,7 @@ const Footer = () => {
               { key: 'email', label: 'Email', type: 'text', value: content.contact?.email || "contact@photoroots.fr" },
               { key: 'location', label: 'Zone', type: 'text', value: content.contact?.location || "Normandie : Le Havre, Rouen, Dieppe" },
             ]}
-            onSave={(vals) => updateContent({ ...content, contact: { ...content.contact, ...vals } })}
+            onSave={(vals) => updateContent({ contact: { ...content.contact, ...vals } })}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <a href={`tel:${content.contact?.phone || "0600000000"}`} style={{ ...infoStyle, textDecoration: 'none' }}><Phone size={16} /> {content.contact?.phone || "06 00 00 00 00"}</a>

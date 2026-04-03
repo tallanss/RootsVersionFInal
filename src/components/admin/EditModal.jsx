@@ -4,8 +4,17 @@ import { X, Save, Trash2, Upload, Loader2 } from 'lucide-react';
 import { showToast } from '../Toast';
 import { supabase } from '../../config/supabase';
 
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+
 const uploadImageToSupabase = async (file) => {
-  const ext = file.name.split('.').pop();
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+    throw new Error('Type de fichier non supporté. Utilisez JPG, PNG, WebP, GIF ou SVG.');
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error('Fichier trop volumineux (max 5 MB).');
+  }
+  const ext = file.name.split('.').pop().toLowerCase();
   const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const { data, error } = await supabase.storage.from('gallery').upload(path, file, { cacheControl: '3600', upsert: false });
   if (error) throw error;
