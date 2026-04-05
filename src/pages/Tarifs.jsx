@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { CheckCircle2, Tag, Star, Phone, X, Sliders, Heart, Briefcase, Gift } from 'lucide-react';
+import { CheckCircle2, Tag, Star, Phone, X } from 'lucide-react';
 import { haptic } from '../hooks/useHaptic';
 import { Helmet } from 'react-helmet-async';
 import AnimatedButton from '../components/AnimatedButton';
@@ -8,116 +8,6 @@ import FadeIn from '../components/FadeIn';
 import { useContent } from '../context/ContentContext';
 import EditableBlock from '../components/admin/EditableBlock';
 import { useAdmin } from '../context/AdminContext';
-
-/* ── Budget Estimator ── */
-const EVENT_TYPES = [
-  { id: 'mariage', label: 'Mariage', icon: Heart },
-  { id: 'anniversaire', label: 'Anniversaire', icon: Gift },
-  { id: 'entreprise', label: 'Entreprise', icon: Briefcase },
-];
-
-const BudgetEstimator = ({ plans }) => {
-  const [eventType, setEventType] = useState('mariage');
-  const [prints, setPrints] = useState(50);
-
-  const essentiel = plans.find(p => p.id === 'essentiel');
-  const premium = plans.find(p => p.id === 'premium');
-  const baseEssentiel = parseInt(essentiel?.price) || 189;
-  const basePremium = parseInt(premium?.price) || 289;
-
-  // Essentiel : impressions à 0,50€/unité. Premium : illimitées incluses.
-  const totalEssentiel = baseEssentiel + prints * 0.5;
-  const totalPremium = basePremium;
-
-  const recommended = totalEssentiel >= totalPremium || eventType === 'mariage' ? 'premium' : 'essentiel';
-
-  return (
-    <section className="container" style={{ padding: '0 20px 32px' }}>
-      <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', border: '1px solid var(--border-light)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-          <Sliders size={18} color="var(--primary)" />
-          <h2 style={{ fontSize: '17px', fontWeight: 800 }}>Estimez votre budget</h2>
-        </div>
-
-        {/* Event type */}
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '10px' }}>
-            Type d'événement
-          </label>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            {EVENT_TYPES.map(({ id, label, icon: Icon }) => (
-              <button
-                key={id}
-                onClick={() => setEventType(id)}
-                style={{
-                  flex: 1, padding: '10px 6px', borderRadius: '12px', border: 'none',
-                  background: eventType === id ? 'var(--primary)' : 'var(--bg-secondary)',
-                  color: eventType === id ? '#fff' : 'var(--text-muted)',
-                  fontWeight: 700, fontSize: '12px', cursor: 'pointer',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <Icon size={16} />
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Prints slider */}
-        <div style={{ marginBottom: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <label style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Impressions souhaitées
-            </label>
-            <span style={{ fontSize: '15px', fontWeight: 800, color: 'var(--primary)' }}>{prints}</span>
-          </div>
-          <input
-            type="range" min={0} max={300} step={25} value={prints}
-            onChange={e => setPrints(Number(e.target.value))}
-            style={{ width: '100%', accentColor: 'var(--primary)', height: '4px', cursor: 'pointer' }}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
-            <span>0</span><span>150</span><span>300</span>
-          </div>
-        </div>
-
-        {/* Results */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          {[
-            { plan: essentiel, total: Math.round(totalEssentiel), id: 'essentiel', note: `${prints} impression${prints > 1 ? 's' : ''}` },
-            { plan: premium, total: totalPremium, id: 'premium', note: 'impressions illimitées' },
-          ].map(({ plan, total, id, note }) => (
-            <div
-              key={id}
-              style={{
-                borderRadius: '14px', padding: '16px',
-                border: `2px solid ${recommended === id ? 'var(--primary)' : 'var(--border-light)'}`,
-                background: recommended === id ? 'rgba(197,160,89,0.06)' : 'var(--bg-secondary)',
-                position: 'relative', transition: 'all 0.3s ease',
-              }}
-            >
-              {recommended === id && (
-                <div style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', background: 'var(--primary)', color: '#fff', fontSize: '10px', fontWeight: 800, padding: '2px 10px', borderRadius: '20px', whiteSpace: 'nowrap' }}>
-                  Recommandé
-                </div>
-              )}
-              <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '4px' }}>{plan?.name}</div>
-              <div style={{ fontSize: '24px', fontWeight: 900, color: recommended === id ? 'var(--primary)' : 'var(--text-main)', lineHeight: 1 }}>
-                {total}€
-              </div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>{note}</div>
-            </div>
-          ))}
-        </div>
-        <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '12px', textAlign: 'center' }}>
-          Estimation indicative · 0,50€/impression pour Essentiel · options non incluses
-        </p>
-      </div>
-    </section>
-  );
-};
 
 /* ── Plan Comparator ── */
 const PlanComparator = ({ plans, onSelect }) => {
@@ -379,9 +269,6 @@ const Tarifs = () => {
           </FadeIn>
         </EditableBlock>
       </section>
-
-      {/* BUDGET ESTIMATOR */}
-      <BudgetEstimator plans={plans} />
 
       {/* COMPARE TOGGLE */}
       <section className="container" style={{ padding: '0 20px 16px' }}>
