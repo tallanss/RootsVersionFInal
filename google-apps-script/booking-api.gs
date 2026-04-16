@@ -48,15 +48,14 @@ function doPost(e) {
     const data = JSON.parse(e.postData.contents);
     
     // Valider les données requises
-    if (!data.date || !data.slot || !data.name || !data.email || !data.eventType) {
+    if (!data.date || !data.name || !data.email || !data.eventType) {
       return jsonResponse({ error: 'Données manquantes' }, 400);
     }
 
     // Vérifier que la date n'est pas déjà prise
     const busy = getBusyDatesArray();
-    const dateKey = data.date + '_' + data.slot;
-    if (busy.includes(dateKey)) {
-      return jsonResponse({ error: 'Ce créneau est déjà réservé. Veuillez choisir une autre date.' }, 409);
+    if (busy.includes(data.date)) {
+      return jsonResponse({ error: 'Cette date est déjà réservée. Veuillez choisir une autre date.' }, 409);
     }
 
     // Créer l'événement sur Google Calendar
@@ -93,27 +92,15 @@ function getBusyDatesArray() {
   const calendar = CalendarApp.getCalendarById(CALENDAR_ID);
   const events = calendar.getEvents(now, sixMonthsLater);
 
-  // Compter le nombre d'événements par jour (tous événements confondus)
-  const countPerDay = {};
-
+  // Toute date ayant au moins un événement est considérée comme réservée
+  const busyDates = new Set();
   events.forEach(function(event) {
     const start = event.getStartTime();
     const dateStr = Utilities.formatDate(start, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-    countPerDay[dateStr] = (countPerDay[dateStr] || 0) + 1;
+    busyDates.add(dateStr);
   });
 
-  // Si un jour a 2 événements ou plus → les deux créneaux sont complets
-  // (2 photobooths disponibles : 1 événement = encore 1 créneau libre)
-  const busySlots = [];
-
-  Object.keys(countPerDay).forEach(function(dateStr) {
-    if (countPerDay[dateStr] >= 2) {
-      busySlots.push(dateStr + '_afternoon');
-      busySlots.push(dateStr + '_evening');
-    }
-  });
-
-  return busySlots;
+  return Array.from(busyDates);
 }
 
 // ===== Créer un événement sur Google Calendar =====
@@ -125,49 +112,40 @@ function createCalendarEvent(data) {
   const month = parseInt(parts[1]) - 1;
   const day = parseInt(parts[2]);
 
-  const startHour = data.slot === 'afternoon' ? 14 : 19;
-  const endHour = data.slot === 'afternoon' ? 18 : 23;
+  const startDate = new Date(year, month, day);
+  const endDate = new Date(year, month, day + 1);
 
-  const startTime = new Date(year, month, day, startHour, 0, 0);
-  const endTime = new Date(year, month, day, endHour, 0, 0);
-
-  const slotLabel = data.slot === 'afternoon' ? 'Après-midi (14h-18h)' : 'Soirée (19h-23h)';
-
-  const description = 
+  const description =
     '📸 Réservation PhotoRoots\n\n' +
     'Client : ' + data.name + '\n' +
     'Email : ' + data.email + '\n' +
     'Téléphone : ' + (data.phone || 'Non renseigné') + '\n' +
     'Type : ' + data.eventType + '\n' +
-    'Formule : ' + (data.formula || 'Non précisée') + '\n' +
-    'Créneau : ' + slotLabel + '\n\n' +
+    'Formule : ' + (data.formula || 'Non précisée') + '\n\n' +
     'Message : ' + (data.message || 'Aucun');
 
-  const event = calendar.createEvent(
+  const event = calendar.createAllDayEvent(
     '📸 PhotoRoots — ' + data.name + ' (' + data.eventType + ')',
-    startTime,
-    endTime,
+    startDate,
+    endDate,
     {
       description: description,
       location: 'Seine-Maritime, France',
     }
   );
 
-  // Ajouter une couleur (orange/rouge pour bien voir)
   event.setColor(CalendarApp.EventColor.GREEN);
-
   return event;
 }
 
 // ===== Envoyer email de confirmation au client =====
 function sendClientEmail(data) {
-  const slotLabel = data.slot === 'afternoon' ? 'Après-midi (14h-18h)' : 'Soirée (19h-23h)';
   const parts = data.date.split('-');
   const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
   const dateFormatted = Utilities.formatDate(dateObj, Session.getScriptTimeZone(), 'EEEE d MMMM yyyy');
 
   const subject = '✅ Réservation confirmée — ' + BUSINESS_NAME;
-  const htmlBody = 
+  const htmlBody =
     '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">' +
     '<div style="background: #16a34a; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">' +
     '<h1 style="color: white; margin: 0; font-size: 24px;">✅ Réservation Confirmée</h1>' +
@@ -178,8 +156,6 @@ function sendClientEmail(data) {
     '<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">' +
     '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Date</td>' +
     '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + dateFormatted + '</td></tr>' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Créneau</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + slotLabel + '</td></tr>' +
     '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Formule</td>' +
     '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + (data.formula || '—') + '</td></tr>' +
     '<tr><td style="padding: 10px; color: #64748b;">Événement</td>' +
@@ -198,7 +174,6 @@ function sendClientEmail(data) {
 
 // ===== Envoyer email de notification au propriétaire =====
 function sendOwnerEmail(data) {
-  const slotLabel = data.slot === 'afternoon' ? 'Après-midi (14h-18h)' : 'Soirée (19h-23h)';
   const parts = data.date.split('-');
   const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
   const dateFormatted = Utilities.formatDate(dateObj, Session.getScriptTimeZone(), 'EEEE d MMMM yyyy');
@@ -219,8 +194,6 @@ function sendOwnerEmail(data) {
     '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + (data.phone || '—') + '</td></tr>' +
     '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Date</td>' +
     '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + dateFormatted + '</td></tr>' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Créneau</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + slotLabel + '</td></tr>' +
     '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Formule</td>' +
     '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + (data.formula || '—') + '</td></tr>' +
     '<tr><td style="padding: 10px; color: #64748b;">Événement</td>' +
