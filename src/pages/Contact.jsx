@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, CheckCircle2, Send, ChevronRight, ChevronLeft, Calendar, CalendarCheck, Loader2, Sun, Moon, AlertCircle, Lock } from 'lucide-react';
+import { Mail, Phone, MapPin, CheckCircle2, Send, ChevronRight, ChevronLeft, Calendar, CalendarCheck, Loader2, AlertCircle } from 'lucide-react';
 import { processBooking, formatDateFR, fetchBusySlots, invalidateBusySlotsCache } from '../services/emailService';
 import { isConfigured } from '../config/emailjs';
 import Confetti from '../components/Confetti';
@@ -9,11 +9,6 @@ import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
 
 import { useContent } from '../context/ContentContext';
-
-const SLOT_LABELS = {
-  afternoon: { label: 'Après-midi', time: '14h — 18h', icon: Sun },
-  evening: { label: 'Soirée', time: '19h — 23h', icon: Moon },
-};
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^[+\d\s()./-]{7,20}$/;
@@ -41,7 +36,6 @@ const Contact = () => {
   const eventTypes = content.formOptions?.eventTypes || ['Mariage', 'Anniversaire', 'Entreprise', 'Baptême', 'Autre'];
   const [step, setStep] = useState(1);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedFormula, setSelectedFormula] = useState('premium');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [loading, setLoading] = useState(false);
@@ -58,12 +52,10 @@ const Contact = () => {
     const loadBusySlots = async () => {
       setLoadingSlots(true);
       const slots = await fetchBusySlots();
-      // Convertir les dates bloquées CMS en slots (bloquer les deux créneaux)
-      const cmsBlocked = (content.blockedDates || []).flatMap(d => [
-        `${d}_afternoon`,
-        `${d}_evening`,
-      ]);
-      setBusySlots([...new Set([...slots, ...cmsBlocked])]);
+      // Extraire les dates (YYYY-MM-DD) depuis les slots éventuels au format "YYYY-MM-DD_xxx"
+      const busyDates = slots.map(s => s.split('_')[0]);
+      const cmsBlocked = content.blockedDates || [];
+      setBusySlots([...new Set([...busyDates, ...cmsBlocked])]);
       setLoadingSlots(false);
     };
     loadBusySlots();
@@ -86,12 +78,9 @@ const Contact = () => {
       const isPast = date < today;
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
-      // Vérifier si les deux créneaux sont occupés
-      const afternoonBusy = busySlots.includes(`${dateStr}_afternoon`);
-      const eveningBusy = busySlots.includes(`${dateStr}_evening`);
-      const isFullyBooked = afternoonBusy && eveningBusy;
+      const isFullyBooked = busySlots.includes(dateStr);
 
-      days.push({ day: d, date, isPast, dateStr, isFullyBooked, afternoonBusy, eveningBusy });
+      days.push({ day: d, date, isPast, dateStr, isFullyBooked });
     }
     return days;
   }, [currentMonth, busySlots]);
@@ -113,12 +102,6 @@ const Contact = () => {
     setCurrentMonth(d);
   };
 
-  // Quand une date est sélectionnée, vérifier les créneaux dispo
-  const selectedDayInfo = useMemo(() => {
-    if (!selectedDate) return null;
-    return calendarDays.find(d => d && d.dateStr === selectedDate);
-  }, [selectedDate, calendarDays]);
-
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = async () => {
@@ -139,7 +122,6 @@ const Contact = () => {
 
     const booking = {
       date: selectedDate,
-      slot: selectedSlot,
       formula: FORMULAS.find(f => f.id === selectedFormula)?.name || selectedFormula,
       name: formData.name,
       email: formData.email,
@@ -160,7 +142,7 @@ const Contact = () => {
         email: formData.email,
         phone: formData.phone,
         date: formatDateFR(selectedDate),
-        subject: `${formData.eventType} (${SLOT_LABELS[selectedSlot]?.label})`,
+        subject: formData.eventType,
         formula: booking.formula,
         fullMessage: formData.message,
         status: "Nouveau",
@@ -177,7 +159,7 @@ const Contact = () => {
     }
   };
 
-  const canProceedStep1 = selectedDate && selectedSlot;
+  const canProceedStep1 = Boolean(selectedDate);
   const canProceedStep2 = formData.name.trim() && EMAIL_REGEX.test(formData.email) && formData.eventType;
 
   // ===== STEP 4: SUCCESS =====
@@ -204,10 +186,6 @@ const Contact = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-light)' }}>
                 <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Date</span>
                 <span style={{ fontSize: '14px', fontWeight: 700 }}>{formatDateFR(selectedDate)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-light)' }}>
-                <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Créneau</span>
-                <span style={{ fontSize: '14px', fontWeight: 700 }}>{SLOT_LABELS[selectedSlot]?.label} ({SLOT_LABELS[selectedSlot]?.time})</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-light)' }}>
                 <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Formule</span>
@@ -251,13 +229,13 @@ const Contact = () => {
           modalTitle="Modifier le Titre"
           fields={[
             { key: 'title', label: 'Titre', type: 'text', value: content.contactPage?.title || "Réservez votre photobooth" },
-            { key: 'subtitle', label: 'Sous-titre', type: 'textarea', value: content.contactPage?.subtitle || "Choisissez votre date, votre créneau et recevez une confirmation instantanée par email." },
+            { key: 'subtitle', label: 'Sous-titre', type: 'textarea', value: content.contactPage?.subtitle || "Choisissez votre date et recevez une confirmation instantanée par email." },
           ]}
           onSave={(vals) => updateContent({ contactPage: { ...content.contactPage, ...vals } })}
         >
           <h1 className="section-title" style={{ fontSize: '28px' }}>{content.contactPage?.title || "Réservez votre photobooth"}</h1>
           <p className="section-subtitle" style={{ marginBottom: '20px' }}>
-            {content.contactPage?.subtitle || "Choisissez votre date, votre créneau et recevez une confirmation instantanée par email."}
+            {content.contactPage?.subtitle || "Choisissez votre date et recevez une confirmation instantanée par email."}
           </p>
         </EditableBlock>
 
@@ -283,10 +261,6 @@ const Contact = () => {
           }}>
             <span style={{ color: 'var(--primary)', fontWeight: 800 }}>
               {formatDateFR(selectedDate)}
-            </span>
-            <span style={{ color: 'var(--border-medium)' }}>·</span>
-            <span style={{ color: 'var(--text-main)' }}>
-              {SLOT_LABELS[selectedSlot]?.label} — {SLOT_LABELS[selectedSlot]?.time}
             </span>
             <span style={{ color: 'var(--border-medium)' }}>·</span>
             <span style={{ color: 'var(--primary)' }}>
@@ -423,7 +397,7 @@ const Contact = () => {
                   <button
                     key={day.dateStr}
                     disabled={isDisabled}
-                    onClick={() => { setSelectedDate(day.dateStr); setSelectedSlot(null); }}
+                    onClick={() => setSelectedDate(day.dateStr)}
                     style={{
                       width: '100%', aspectRatio: '1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                       fontSize: '14px', fontWeight: isSelected ? 700 : 500, position: 'relative',
@@ -450,33 +424,6 @@ const Contact = () => {
               {formatDateFR(selectedDate)}
             </div>
           )}
-
-          {/* Slot selection */}
-          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '12px' }}>Choisissez votre créneau</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
-            {Object.entries(SLOT_LABELS).map(([key, val]) => {
-              const Icon = val.icon;
-              const isActive = selectedSlot === key;
-              const isBusy = selectedDayInfo && selectedDayInfo[key === 'afternoon' ? 'afternoonBusy' : 'eveningBusy'];
-              return (
-                <button key={key} onClick={() => !isBusy && setSelectedSlot(key)} disabled={isBusy} style={{
-                  padding: '20px 16px', borderRadius: 'var(--radius-lg)', textAlign: 'center',
-                  background: isBusy ? '#fee2e2' : isActive ? 'var(--primary)' : 'var(--bg-app)',
-                  color: isBusy ? '#b91c1c' : isActive ? '#fff' : 'var(--text-main)',
-                  border: isBusy ? '2px solid #fca5a5' : isActive ? '2px solid var(--primary)' : '2px solid var(--border-light)',
-                  boxShadow: isActive ? '0 0 0 4px var(--accent-glow)' : 'var(--shadow-sm)',
-                  transition: 'all 0.2s',
-                  cursor: isBusy ? 'not-allowed' : 'pointer',
-                  opacity: isBusy ? 0.7 : 1,
-                  position: 'relative',
-                }}>
-                  {isBusy ? <Lock size={24} style={{ marginBottom: '8px' }} /> : <Icon size={24} style={{ marginBottom: '8px' }} />}
-                  <div style={{ fontWeight: 700, fontSize: '15px' }}>{val.label}</div>
-                  <div style={{ fontSize: '13px', opacity: 0.8 }}>{isBusy ? 'Réservé' : val.time}</div>
-                </button>
-              );
-            })}
-          </div>
 
           {/* Formula selection */}
           <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '12px' }}>Votre formule</h3>
@@ -557,14 +504,13 @@ const Contact = () => {
 
             {[
               ['Date', formatDateFR(selectedDate)],
-              ['Créneau', `${SLOT_LABELS[selectedSlot]?.label} (${SLOT_LABELS[selectedSlot]?.time})`],
               ['Formule', `${FORMULAS.find(f => f.id === selectedFormula)?.name} — ${FORMULAS.find(f => f.id === selectedFormula)?.price}`],
               ['Nom', formData.name],
               ['Email', formData.email],
               ['Téléphone', formData.phone || '—'],
               ['Événement', formData.eventType],
             ].map(([label, value], i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < 6 ? '1px solid var(--border-light)' : 'none' }}>
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < 5 ? '1px solid var(--border-light)' : 'none' }}>
                 <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>{label}</span>
                 <span style={{ fontSize: '14px', fontWeight: 600, textAlign: 'right', maxWidth: '60%' }}>{value}</span>
               </div>
