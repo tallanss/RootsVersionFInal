@@ -23,6 +23,10 @@ const OWNER_EMAIL = 'Jimmy.racine@outlook.fr'; // Votre email
 const BUSINESS_NAME = 'PhotoRoots';
 const BUSINESS_PHONE = '+33 6 12 34 56 78';
 
+// Adresse d'expédition (doit être configurée comme "Send As" dans Gmail)
+const FROM_EMAIL = 'noreply@photoroots.fr';
+const FROM_NAME = 'PhotoRoots';
+
 // ===== GET : Récupérer les dates occupées =====
 function doGet(e) {
   try {
@@ -185,10 +189,10 @@ function sendClientEmail(data) {
     '<p>À très vite !<br><strong>' + BUSINESS_NAME + '</strong><br>' + BUSINESS_PHONE + '</p>' +
     '</div></div>';
 
-  MailApp.sendEmail({
-    to: data.email,
-    subject: subject,
+  GmailApp.sendEmail(data.email, subject, '', {
     htmlBody: htmlBody,
+    from: FROM_EMAIL,
+    name: FROM_NAME,
   });
 }
 
@@ -226,10 +230,10 @@ function sendOwnerEmail(data) {
     '<p style="color: #64748b; font-size: 13px; margin-top: 16px;">L\'événement a été ajouté automatiquement à votre Google Calendar.</p>' +
     '</div></div>';
 
-  MailApp.sendEmail({
-    to: OWNER_EMAIL,
-    subject: subject,
+  GmailApp.sendEmail(OWNER_EMAIL, subject, '', {
     htmlBody: htmlBody,
+    from: FROM_EMAIL,
+    name: FROM_NAME,
   });
 }
 
