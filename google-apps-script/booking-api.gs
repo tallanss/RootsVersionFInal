@@ -1,31 +1,30 @@
 // ============================================================
-// Google Apps Script — PhotoRoots Booking API
+// Google Apps Script — PhotoRoots Booking API (Resend)
 // ============================================================
-// 
+//
 // INSTRUCTIONS DE DÉPLOIEMENT :
-// 
-// 1. Allez sur https://script.google.com/
-// 2. Créez un nouveau projet "PhotoRoots Booking"
-// 3. Collez TOUT ce code dans l'éditeur (remplacez le contenu par défaut)
-// 4. Modifiez les constantes ci-dessous avec vos infos
-// 5. Cliquez sur "Déployer" > "Nouveau déploiement"
-// 6. Type : "Application Web"
-//    - Exécuter en tant que : "Moi"
-//    - Qui a accès : "Tout le monde"
-// 7. Cliquez sur "Déployer" et copiez l'URL générée
-// 8. Collez cette URL dans src/config/emailjs.js > APPS_SCRIPT_URL
+//
+// 1. Ouvrez le projet "PhotoRoots Booking" sur https://script.google.com/
+// 2. Collez TOUT ce code (remplacez le contenu existant)
+// 3. Dans "Paramètres du projet" (roue crantée à gauche) → "Propriétés
+//    du script" → ajoutez une propriété :
+//        clé    : RESEND_API_KEY
+//        valeur : re_xxxxxxxxxxxxxxxxxxx (votre clé Resend)
+// 4. Déployer → Gérer les déploiements → crayon (Modifier) → Version :
+//    "Nouvelle version" → Déployer
+// 5. L'URL ne change pas : rien à modifier côté Vercel
 //
 // ============================================================
 
 // ===== CONFIGURATION (À MODIFIER) =====
-const CALENDAR_ID = 'primary'; // 'primary' = votre calendrier principal, ou ID spécifique
-const OWNER_EMAIL = 'Jimmy.racine@outlook.fr'; // Votre email
+const CALENDAR_ID = 'primary';
+const OWNER_EMAIL = 'Jimmy.racine@outlook.fr';
 const BUSINESS_NAME = 'PhotoRoots';
 const BUSINESS_PHONE = '+33 6 12 34 56 78';
 
-// Adresse d'expédition (doit être configurée comme "Send As" dans Gmail)
-const FROM_EMAIL = 'noreply@photoroots.fr';
-const FROM_NAME = 'PhotoRoots';
+// Adresse d'expédition (domaine doit être vérifié dans Resend)
+const FROM_EMAIL = 'PhotoRoots <noreply@photoroots.fr>';
+const REPLY_TO = 'contact@photoroots.fr';
 
 // ===== GET : Récupérer les dates occupées =====
 function doGet(e) {
@@ -165,11 +164,7 @@ function sendClientEmail(data) {
     '<p>À très vite !<br><strong>' + BUSINESS_NAME + '</strong><br>' + BUSINESS_PHONE + '</p>' +
     '</div></div>';
 
-  GmailApp.sendEmail(data.email, subject, '', {
-    htmlBody: htmlBody,
-    from: FROM_EMAIL,
-    name: FROM_NAME,
-  });
+  sendViaResend(data.email, subject, htmlBody);
 }
 
 // ===== Envoyer email de notification au propriétaire =====
@@ -203,11 +198,38 @@ function sendOwnerEmail(data) {
     '<p style="color: #64748b; font-size: 13px; margin-top: 16px;">L\'événement a été ajouté automatiquement à votre Google Calendar.</p>' +
     '</div></div>';
 
-  GmailApp.sendEmail(OWNER_EMAIL, subject, '', {
-    htmlBody: htmlBody,
+  sendViaResend(OWNER_EMAIL, subject, htmlBody);
+}
+
+// ===== Helper : Envoi d'email via l'API Resend =====
+function sendViaResend(to, subject, htmlBody) {
+  const apiKey = PropertiesService.getScriptProperties().getProperty('RESEND_API_KEY');
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY manquante dans les Propriétés du script');
+  }
+
+  const payload = {
     from: FROM_EMAIL,
-    name: FROM_NAME,
+    to: [to],
+    subject: subject,
+    html: htmlBody,
+    reply_to: REPLY_TO,
+  };
+
+  const response = UrlFetchApp.fetch('https://api.resend.com/emails', {
+    method: 'post',
+    contentType: 'application/json',
+    headers: { Authorization: 'Bearer ' + apiKey },
+    payload: JSON.stringify(payload),
+    muteHttpExceptions: true,
   });
+
+  const code = response.getResponseCode();
+  if (code < 200 || code >= 300) {
+    console.error('Resend API error ' + code + ': ' + response.getContentText());
+  } else {
+    console.log('Email envoyé à ' + to);
+  }
 }
 
 // ===== Helper : Réponse JSON avec CORS =====
