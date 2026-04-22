@@ -9,6 +9,28 @@ import { useContent } from '../context/ContentContext';
 import EditableBlock from '../components/admin/EditableBlock';
 import { useAdmin } from '../context/AdminContext';
 
+/* ── Helper : formate l'affichage du prix de façon robuste ──
+   - Prix numérique (ex: "249" ou 249)      → "249€" taille normale
+   - Prix déjà suffixé (ex: "249€")          → "249€" taille normale
+   - Prix textuel   (ex: "Sur devis")        → texte tel quel, taille réduite
+   Rend l'affichage résistant aux paramétrages CMS incohérents (ex: isCustom
+   activé par erreur sur un pack à prix numérique).
+*/
+const PriceDisplay = ({ price, isCustom }) => {
+  const raw = String(price ?? '').trim();
+  const numeric = /^\d+(?:[.,]\d+)?$/.test(raw);
+  const alreadyHasEuro = raw.includes('€');
+
+  if (numeric) {
+    return <div className="pricing-price">{raw}€</div>;
+  }
+  if (alreadyHasEuro) {
+    return <div className="pricing-price">{raw}</div>;
+  }
+  // Fallback texte (ex: "Sur devis") : on garde la taille réduite
+  return <div className="pricing-price" style={{ fontSize: '28px' }}>{raw}</div>;
+};
+
 /* ── Plan Comparator ── */
 const PlanComparator = ({ plans, onSelect }) => {
   const essentiel = plans.find(p => p.id === 'essentiel');
@@ -333,11 +355,7 @@ const Tarifs = () => {
                             updateContent({ ...content, pricing_plans: newPlans });
                           }}
                         >
-                          {plan.isCustom ? (
-                            <div className="pricing-price" style={{ fontSize: '28px' }}>{plan.price}</div>
-                          ) : (
-                            <div className="pricing-price">{plan.price}€</div>
-                          )}
+                          <PriceDisplay price={plan.price} isCustom={plan.isCustom} />
                         </EditableBlock>
 
                         <EditableBlock
@@ -471,11 +489,7 @@ const Tarifs = () => {
                           updateContent({ ...content, pricing_plans: newPlans });
                         }}
                       >
-                        {plan.isCustom ? (
-                          <div className="pricing-price" style={{ fontSize: '28px' }}>{plan.price}</div>
-                        ) : (
-                          <div className="pricing-price">{plan.price}€</div>
-                        )}
+                        <PriceDisplay price={plan.price} isCustom={plan.isCustom} />
                       </EditableBlock>
 
                       <EditableBlock
