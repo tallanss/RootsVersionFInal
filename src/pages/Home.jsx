@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Heart, Briefcase, PartyPopper, Phone, Shield, Clock, ChevronDown, ChevronUp, CheckCircle2, Sparkles, Camera, Tag, Image } from 'lucide-react';
+import { ArrowRight, Star, Heart, Briefcase, PartyPopper, Phone, Shield, Clock, ChevronDown, ChevronUp, CheckCircle2, Sparkles, Camera, Tag, Image, Users, GraduationCap, Gift, Cake } from 'lucide-react';
 import useScrollAnimation from '../hooks/useScrollAnimation';
 import SwipeCarousel from '../components/SwipeCarousel';
 import Lightbox from '../components/Lightbox';
@@ -212,76 +212,56 @@ const Home = () => {
         <h2 className="section-title">Pour chaque occasion</h2>
         <p className="section-subtitle">Notre photobooth s'adapte à tous les types d'événements avec un service clé en main.</p>
 
-        <div className="bento-grid">
-          <EditableBlock
-            label="Service 1"
-            modalTitle="Modifier Service 1"
-            fields={[
-              { key: 'title', label: 'Titre', type: 'text', value: content.services?.[0]?.title || 'Mariage' },
-              { key: 'desc', label: 'Texte', type: 'textarea', value: content.services?.[0]?.desc || 'Offrez à vos invités des souvenirs inoubliables pour le plus beau jour de votre vie.' }
-            ]}
-            onSave={(vals) => {
-              const newServices = [...(content.services || [{title:'Mariage',desc:'...'},{title:'Entreprise',desc:'...'},{title:'Anniversaire',desc:'...'}])];
-              newServices[0] = vals;
-              updateContent({ ...content, services: newServices });
-            }}
-          >
-            <Link to="/tarifs" className="bento-item bento-large" onClick={(e) => { if (isAdminMode) e.preventDefault(); }}>
-              <div className="bento-content" style={{ display: 'flex', flexDirection: 'inherit', gap: 'inherit', alignItems: 'inherit' }}>
-                <div className="bento-icon wedding"><Heart size={28} /></div>
-                <div className="bento-text">
-                  <h3>{content.services?.[0]?.title || 'Mariage'}</h3>
-                  <p>{content.services?.[0]?.desc || 'Offrez à vos invités des souvenirs inoubliables pour le plus beau jour de votre vie.'}</p>
-                </div>
-              </div>
-              <Heart className="bento-watermark" size={120} />
-            </Link>
-          </EditableBlock>
+        {(() => {
+          const ICON_MAP = {
+            wedding: Heart, corporate: Briefcase, birthday: Cake,
+            baptism: Sparkles, hen: Gift, seminar: Users,
+            prom: GraduationCap, xmas: PartyPopper,
+          };
+          const DEFAULT_SERVICES = [
+            { id: 'wedding',   icon: 'wedding',   title: 'Mariage',             desc: 'Des souvenirs inoubliables pour le plus beau jour.' },
+            { id: 'corporate', icon: 'corporate', title: 'Entreprise',          desc: 'Soirées d\'entreprise, inaugurations, salons.' },
+            { id: 'birthday',  icon: 'birthday',  title: 'Anniversaire',        desc: 'Petits et grands, rires garantis en famille.' },
+            { id: 'baptism',   icon: 'baptism',   title: 'Baptême',             desc: 'Un souvenir tendre pour les plus beaux moments.' },
+            { id: 'hen',       icon: 'hen',       title: 'EVJF / EVG',          desc: 'L\'ambiance idéale pour célébrer entre amis.' },
+            { id: 'seminar',   icon: 'seminar',   title: 'Séminaire',           desc: 'Cohésion d\'équipe et team-building animés.' },
+            { id: 'prom',      icon: 'prom',      title: 'Bal de promo',        desc: 'Immortalisez la fin de vos études en beauté.' },
+            { id: 'xmas',      icon: 'xmas',      title: 'Noël d\'entreprise',  desc: 'Ambiance festive garantie pour vos collaborateurs.' },
+          ];
+          const services = (content.services && content.services.length >= 4)
+            ? content.services
+            : DEFAULT_SERVICES;
 
-          <EditableBlock
-            label="Service 2"
-            modalTitle="Modifier Service 2"
-            fields={[
-              { key: 'title', label: 'Titre', type: 'text', value: content.services?.[1]?.title || 'Entreprise' },
-              { key: 'desc', label: 'Texte', type: 'text', value: content.services?.[1]?.desc || 'Cohésion et dynamisme.' }
-            ]}
-            onSave={(vals) => {
-              const newServices = [...(content.services || [{title:'Mariage',desc:'...'},{title:'Entreprise',desc:'...'},{title:'Anniversaire',desc:'...'}])];
-              newServices[1] = vals;
-              updateContent({ ...content, services: newServices });
-            }}
-          >
-            <Link to="/tarifs" className="bento-item bento-small" onClick={(e) => { if (isAdminMode) e.preventDefault(); }}>
-              <div className="bento-icon corporate"><Briefcase size={22} /></div>
-              <div className="bento-text">
-                <h3>{content.services?.[1]?.title || 'Entreprise'}</h3>
-                <p>{content.services?.[1]?.desc || 'Cohésion et dynamisme.'}</p>
-              </div>
-            </Link>
-          </EditableBlock>
+          // On duplique la liste pour un défilement infini sans coupure
+          const loop = [...services, ...services];
 
-          <EditableBlock
-            label="Service 3"
-            modalTitle="Modifier Service 3"
-            fields={[
-              { key: 'title', label: 'Titre', type: 'text', value: content.services?.[2]?.title || 'Anniversaire' },
-              { key: 'desc', label: 'Texte', type: 'text', value: content.services?.[2]?.desc || 'Rires garantis avec vos proches.' }
-            ]}
-            onSave={(vals) => {
-              const newServices = [...(content.services || [{title:'Mariage',desc:'...'},{title:'Entreprise',desc:'...'},{title:'Anniversaire',desc:'...'}])];
-              newServices[2] = vals;
-              updateContent({ ...content, services: newServices });
-            }}
-          >
-            <Link to="/tarifs" className="bento-item bento-small" onClick={(e) => { if (isAdminMode) e.preventDefault(); }}>
-              <div className="bento-icon birthday"><PartyPopper size={22} /></div>
-              <div className="bento-text">
-                <h3>{content.services?.[2]?.title || 'Anniversaire'}</h3>
-                <p>{content.services?.[2]?.desc || 'Rires garantis avec vos proches.'}</p>
+          return (
+            <div className="services-marquee" aria-label="Types d'événements que nous animons">
+              <div className="services-marquee-track">
+                {loop.map((s, i) => {
+                  const Icon = ICON_MAP[s.icon] || Sparkles;
+                  const isClone = i >= services.length;
+                  return (
+                    <Link
+                      key={`${s.id}-${i}`}
+                      to="/tarifs"
+                      className="service-card"
+                      aria-hidden={isClone ? 'true' : undefined}
+                      tabIndex={isClone ? -1 : 0}
+                      onClick={(e) => { if (isAdminMode) e.preventDefault(); }}
+                    >
+                      <div className={`service-card-icon ${s.icon}`}>
+                        <Icon size={22} />
+                      </div>
+                      <h3>{s.title}</h3>
+                      <p>{s.desc}</p>
+                    </Link>
+                  );
+                })}
               </div>
-            </Link>
-          </EditableBlock>
-        </div>
+            </div>
+          );
+        })()}
       </section>
       </FadeIn>
 

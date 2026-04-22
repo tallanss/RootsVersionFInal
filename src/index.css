@@ -672,6 +672,96 @@ button:active { transform: scale(0.97); }
   opacity: 0.7;
 }
 
+/* ===== SERVICES MARQUEE (carrousel infini) ===== */
+.services-marquee {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding: 8px 0 20px;
+  mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 6%, black 94%, transparent 100%);
+}
+
+.services-marquee-track {
+  display: flex;
+  gap: 14px;
+  width: max-content;
+  animation: services-marquee-scroll 50s linear infinite;
+  will-change: transform;
+}
+
+.services-marquee:hover .services-marquee-track,
+.services-marquee:focus-within .services-marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes services-marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .services-marquee-track { animation: none; }
+  .services-marquee { overflow-x: auto; scroll-snap-type: x mandatory; }
+}
+
+.service-card {
+  flex: 0 0 240px;
+  min-height: 170px;
+  padding: 22px 20px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-decoration: none;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s, box-shadow 0.3s, background 0.3s;
+  scroll-snap-align: start;
+}
+.service-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+}
+
+.service-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.service-card-icon.wedding    { background: #fce7f3; color: #ec4899; }
+.service-card-icon.corporate  { background: #dbeafe; color: #3b82f6; }
+.service-card-icon.birthday   { background: #fef3c7; color: #f59e0b; }
+.service-card-icon.baptism    { background: #e0f2fe; color: #0284c7; }
+.service-card-icon.hen        { background: #fae8ff; color: #a855f7; }
+.service-card-icon.seminar    { background: #dcfce7; color: #16a34a; }
+.service-card-icon.prom       { background: #ede9fe; color: #7c3aed; }
+.service-card-icon.xmas       { background: #fee2e2; color: #dc2626; }
+
+.service-card h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.2;
+}
+.service-card p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .bento-grid {
     grid-template-columns: 1fr;
