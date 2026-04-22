@@ -465,51 +465,58 @@ const Home = () => {
         </div>
 
         <div className="pricing-grid">
-          <EditableBlock
-            label="Formule Essentiel"
-            modalTitle="Modifier la formule Essentiel"
-            fields={[
-              { key: 'price', label: 'Prix (€)', type: 'text', value: content.pricing.essentiel.price },
-              { key: 'subtitle', label: 'Description courte', type: 'textarea', value: content.pricing.essentiel.subtitle },
-            ]}
-            onSave={(vals) => updateContent({ ...content, pricing: { ...content.pricing, essentiel: { ...content.pricing.essentiel, ...vals } } })}
-          >
-            <div className="pricing-card">
-              <div className="pricing-name">Essentiel</div>
-              <div className="pricing-price">{content.pricing.essentiel.price}€</div>
-              <div className="pricing-desc">Idéal pour les petits événements</div>
-              <ul className="pricing-features">
-                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Photos illimitées</li>
-                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Accessoires &amp; props fun</li>
-                <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Galerie en ligne</li>
-              </ul>
-              <AnimatedButton to="/tarifs?pack=essentiel" className="btn-secondary" style={{ width: '100%' }}>Choisir ce pack</AnimatedButton>
-            </div>
-          </EditableBlock>
+          {(() => {
+            const plans = (content.pricing_plans && content.pricing_plans.length > 0)
+              ? content.pricing_plans
+              : [];
 
-          <div className="animated-border-wrapper">
-            <EditableBlock
-              label="Formule Premium"
-              modalTitle="Modifier la formule Premium"
-              fields={[
-                { key: 'price', label: 'Prix (€)', type: 'text', value: content.pricing.premium.price },
-                { key: 'subtitle', label: 'Description courte', type: 'textarea', value: content.pricing.premium.subtitle },
-              ]}
-              onSave={(vals) => updateContent({ ...content, pricing: { ...content.pricing, premium: { ...content.pricing.premium, ...vals } } })}
-            >
-              <div className="pricing-card featured">
-                <div className="pricing-name">Premium</div>
-                <div className="pricing-price">{content.pricing.premium.price}€</div>
-                <div className="pricing-desc">Notre best-seller pour mariages</div>
+            // Source de vérité partagée avec la page Tarifs :
+            // pack mis en avant = celui marqué featured:true dans le CMS.
+            const featured = plans.find(p => p.featured) || plans[1] || null;
+            const basic = plans.find(p => !p.featured && !p.isCustom && p.id !== featured?.id)
+              || plans.find(p => p.id !== featured?.id)
+              || plans[0] || null;
+
+            const formatPrice = (price) => {
+              const raw = String(price ?? '').trim();
+              const numeric = /^\d+(?:[.,]\d+)?$/.test(raw);
+              if (numeric) return `${raw}€`;
+              return raw;
+            };
+
+            const renderCard = (plan, isFeatured) => (
+              <div className={`pricing-card${isFeatured ? ' featured' : ''}`}>
+                <div className="pricing-name">{plan.name}</div>
+                <div className="pricing-price">{formatPrice(plan.price)}</div>
+                <div className="pricing-desc">{plan.desc}</div>
                 <ul className="pricing-features">
-                  <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Photos illimitées &amp; impressions</li>
-                  <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Personnalisation totale</li>
-                  <li><span className="pricing-check"><CheckCircle2 size={14} /></span>Écran de diffusion</li>
+                  {(plan.features || []).slice(0, 3).map((f, j) => (
+                    <li key={j}>
+                      <span className="pricing-check"><CheckCircle2 size={14} /></span>{f}
+                    </li>
+                  ))}
                 </ul>
-                <AnimatedButton to="/tarifs?pack=premium" className="btn-primary" style={{ width: '100%' }}>Choisir ce pack</AnimatedButton>
+                <AnimatedButton
+                  to={`/tarifs?pack=${plan.id}`}
+                  className={isFeatured ? 'btn-primary' : 'btn-secondary'}
+                  style={{ width: '100%' }}
+                >
+                  {plan.isCustom ? 'Demander un Devis' : 'Choisir ce pack'}
+                </AnimatedButton>
               </div>
-            </EditableBlock>
-          </div>
+            );
+
+            return (
+              <>
+                {basic && renderCard(basic, false)}
+                {featured && (
+                  <div className="animated-border-wrapper">
+                    {renderCard(featured, true)}
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
 
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
