@@ -290,13 +290,13 @@ const Home = () => {
             background: 'var(--bg-card)'
           }}>
             <div style={{ position: 'absolute', inset: 0, opacity: activeStep === 0 ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-              <PremiumImage src="/step-booking.png" alt="Réservez en ligne" />
+              <PremiumImage src={content.scrolly?.step1?.image || '/step-booking.png'} alt={content.scrolly?.step1?.title || 'Réservez en ligne'} />
             </div>
             <div style={{ position: 'absolute', inset: 0, opacity: activeStep === 1 ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-              <PremiumImage src="/step-setup.png" alt="On s'occupe de tout" />
+              <PremiumImage src={content.scrolly?.step2?.image || '/step-setup.png'} alt={content.scrolly?.step2?.title || "On s'occupe de tout"} />
             </div>
             <div style={{ position: 'absolute', inset: 0, opacity: activeStep === 2 ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-              <PremiumImage src="/step-results.png" alt="Profitez de la fête" />
+              <PremiumImage src={content.scrolly?.step3?.image || '/step-results.png'} alt={content.scrolly?.step3?.title || 'Profitez de la fête'} />
             </div>
             <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '6px', zIndex: 20 }}>
               {[0, 1, 2].map((i) => (
@@ -325,6 +325,7 @@ const Home = () => {
                 fields={[
                   { key: 'title', label: 'Titre', type: 'text', value: data.title },
                   { key: 'desc', label: 'Description', type: 'textarea', value: data.desc },
+                  { key: 'image', label: "Image de l'étape", type: 'image', value: data.image || (num === 1 ? '/step-booking.png' : num === 2 ? '/step-setup.png' : '/step-results.png') },
                 ]}
                 onSave={(vals) => updateContent({
                   ...content,
