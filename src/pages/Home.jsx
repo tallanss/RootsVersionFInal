@@ -451,13 +451,6 @@ const Home = () => {
               ? content.pricing_plans
               : [];
 
-            // Source de vérité partagée avec la page Tarifs :
-            // pack mis en avant = celui marqué featured:true dans le CMS.
-            const featured = plans.find(p => p.featured) || plans[1] || null;
-            const basic = plans.find(p => !p.featured && !p.isCustom && p.id !== featured?.id)
-              || plans.find(p => p.id !== featured?.id)
-              || plans[0] || null;
-
             const formatPrice = (price) => {
               const raw = String(price ?? '').trim();
               const numeric = /^\d+(?:[.,]\d+)?$/.test(raw);
@@ -465,38 +458,38 @@ const Home = () => {
               return raw;
             };
 
-            const renderCard = (plan, isFeatured) => (
-              <div className={`pricing-card${isFeatured ? ' featured' : ''}`}>
-                <div className="pricing-name">{plan.name}</div>
-                <div className="pricing-price">{formatPrice(plan.price)}</div>
-                <div className="pricing-desc">{plan.desc}</div>
-                <ul className="pricing-features">
-                  {(plan.features || []).slice(0, 3).map((f, j) => (
-                    <li key={j}>
-                      <span className="pricing-check"><CheckCircle2 size={14} /></span>{f}
-                    </li>
-                  ))}
-                </ul>
-                <AnimatedButton
-                  to={`/tarifs?pack=${plan.id}`}
-                  className={isFeatured ? 'btn-primary' : 'btn-secondary'}
-                  style={{ width: '100%' }}
-                >
-                  {plan.isCustom ? 'Demander un Devis' : 'Choisir ce pack'}
-                </AnimatedButton>
-              </div>
-            );
+            return plans.map((plan) => {
+              const isFeatured = Boolean(plan.featured);
+              const card = (
+                <div className={`pricing-card${isFeatured ? ' featured' : ''}`}>
+                  <div className="pricing-name">{plan.name}</div>
+                  <div className="pricing-price">{formatPrice(plan.price)}</div>
+                  <div className="pricing-desc">{plan.desc}</div>
+                  <ul className="pricing-features">
+                    {(plan.features || []).slice(0, 3).map((f, j) => (
+                      <li key={j}>
+                        <span className="pricing-check"><CheckCircle2 size={14} /></span>{f}
+                      </li>
+                    ))}
+                  </ul>
+                  <AnimatedButton
+                    to={`/tarifs?pack=${plan.id}`}
+                    className={isFeatured ? 'btn-primary' : 'btn-secondary'}
+                    style={{ width: '100%' }}
+                  >
+                    Choisir ce pack
+                  </AnimatedButton>
+                </div>
+              );
 
-            return (
-              <>
-                {basic && renderCard(basic, false)}
-                {featured && (
-                  <div className="animated-border-wrapper">
-                    {renderCard(featured, true)}
-                  </div>
-                )}
-              </>
-            );
+              return isFeatured ? (
+                <div key={plan.id} className="animated-border-wrapper">
+                  {card}
+                </div>
+              ) : (
+                <div key={plan.id}>{card}</div>
+              );
+            });
           })()}
         </div>
 
