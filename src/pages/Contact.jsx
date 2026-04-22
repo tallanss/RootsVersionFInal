@@ -17,11 +17,20 @@ const Contact = () => {
   const { content, updateContent } = useContent();
 
   const FORMULAS = useMemo(() => {
+    // Formate un prix de façon robuste : ajoute € si numérique,
+    // laisse tel quel si texte (ex: "Sur devis"). Résistant à un flag
+    // isCustom coché par erreur dans le CMS.
+    const formatPrice = (price) => {
+      const raw = String(price ?? '').trim();
+      if (/^\d+(?:[.,]\d+)?$/.test(raw)) return `${raw}€`;
+      return raw;
+    };
+
     if (content.pricing_plans?.length > 0) {
       return content.pricing_plans.map(p => ({
         id: p.id,
         name: p.name,
-        price: p.isCustom ? p.price : `${p.price}€`,
+        price: formatPrice(p.price),
         desc: p.desc
       }));
     }
