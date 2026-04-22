@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -179,6 +180,7 @@ function App() {
           <PageContent />
         </AdminProvider>
       </Router>
+      <Analytics />
     </ErrorBoundary>
   );
 }
