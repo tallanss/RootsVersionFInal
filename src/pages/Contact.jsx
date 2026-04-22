@@ -44,7 +44,7 @@ const Contact = () => {
   const [result, setResult] = useState(null);
   const [busySlots, setBusySlots] = useState([]);
   const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', eventType: '', message: ''
+    name: '', email: '', phone: '', eventType: '', location: '', message: ''
   });
 
   // Scroll en haut de la page à chaque changement d'étape
@@ -132,6 +132,7 @@ const Contact = () => {
       email: formData.email,
       phone: formData.phone,
       eventType: formData.eventType,
+      location: formData.location,
       message: formData.message,
     };
 
@@ -148,6 +149,7 @@ const Contact = () => {
         phone: formData.phone,
         date: formatDateFR(selectedDate),
         subject: formData.eventType,
+        location: formData.location,
         formula: booking.formula,
         fullMessage: formData.message,
         status: "Nouveau",
@@ -196,10 +198,16 @@ const Contact = () => {
                 <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Formule</span>
                 <span style={{ fontSize: '14px', fontWeight: 700 }}>{FORMULAS.find(f => f.id === selectedFormula)?.name}</span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: formData.location ? '1px solid var(--border-light)' : 'none' }}>
                 <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Événement</span>
                 <span style={{ fontSize: '14px', fontWeight: 700 }}>{formData.eventType}</span>
               </div>
+              {formData.location && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0' }}>
+                  <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Lieu</span>
+                  <span style={{ fontSize: '14px', fontWeight: 700, textAlign: 'right', maxWidth: '60%' }}>{formData.location}</span>
+                </div>
+              )}
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', marginBottom: '20px', fontSize: '14px', color: 'var(--primary)', fontWeight: 600 }}>
@@ -486,6 +494,10 @@ const Contact = () => {
               </select>
             </div>
             <div className="form-group">
+              <label className="form-label" htmlFor="location">Lieu de l'événement</label>
+              <input className="form-input" type="text" id="location" name="location" placeholder="Salle des fêtes, Le Havre" value={formData.location} onChange={handleChange} />
+            </div>
+            <div className="form-group">
               <label className="form-label" htmlFor="message">Message (optionnel)</label>
               <textarea className="form-textarea" id="message" name="message" placeholder="Précisions sur votre événement..." value={formData.message} onChange={handleChange} />
             </div>
@@ -514,8 +526,9 @@ const Contact = () => {
               ['Email', formData.email],
               ['Téléphone', formData.phone || '—'],
               ['Événement', formData.eventType],
+              ['Lieu', formData.location || '—'],
             ].map(([label, value], i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < 5 ? '1px solid var(--border-light)' : 'none' }}>
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: i < 6 ? '1px solid var(--border-light)' : 'none' }}>
                 <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>{label}</span>
                 <span style={{ fontSize: '14px', fontWeight: 600, textAlign: 'right', maxWidth: '60%' }}>{value}</span>
               </div>

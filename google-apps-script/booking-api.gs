@@ -105,17 +105,28 @@ function getBusyDatesArray() {
   });
 }
 
+// ===== Helpers dates en français =====
+function parseDateFR(dateStr) {
+  const parts = dateStr.split('-');
+  return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+}
+
+function formatDateFR(dateObj) {
+  // Force la locale française (jour et mois en toutes lettres)
+  return dateObj.toLocaleDateString('fr-FR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+}
+
 // ===== Créer un événement sur Google Calendar =====
 function createCalendarEvent(data) {
   const calendar = CalendarApp.getCalendarById(CALENDAR_ID);
 
-  const parts = data.date.split('-');
-  const year = parseInt(parts[0]);
-  const month = parseInt(parts[1]) - 1;
-  const day = parseInt(parts[2]);
-
-  const startDate = new Date(year, month, day);
-  const endDate = new Date(year, month, day + 1);
+  const startDate = parseDateFR(data.date);
+  const endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
 
   const description =
     '📸 Réservation PhotoRoots\n\n' +
@@ -123,6 +134,7 @@ function createCalendarEvent(data) {
     'Email : ' + data.email + '\n' +
     'Téléphone : ' + (data.phone || 'Non renseigné') + '\n' +
     'Type : ' + data.eventType + '\n' +
+    'Lieu : ' + (data.location || 'Non renseigné') + '\n' +
     'Formule : ' + (data.formula || 'Non précisée') + '\n\n' +
     'Message : ' + (data.message || 'Aucun');
 
@@ -132,7 +144,7 @@ function createCalendarEvent(data) {
     endDate,
     {
       description: description,
-      location: 'Seine-Maritime, France',
+      location: data.location || 'Seine-Maritime, France',
     }
   );
 
@@ -142,29 +154,30 @@ function createCalendarEvent(data) {
 
 // ===== Envoyer email de confirmation au client =====
 function sendClientEmail(data) {
-  const parts = data.date.split('-');
-  const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-  const dateFormatted = Utilities.formatDate(dateObj, Session.getScriptTimeZone(), 'EEEE d MMMM yyyy');
+  const dateFormatted = formatDateFR(parseDateFR(data.date));
 
   const subject = '✅ Réservation confirmée — ' + BUSINESS_NAME;
   const htmlBody =
-    '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">' +
+    '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;" lang="fr">' +
     '<div style="background: #16a34a; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">' +
-    '<h1 style="color: white; margin: 0; font-size: 24px;">✅ Réservation Confirmée</h1>' +
+    '<h1 style="color: white; margin: 0; font-size: 24px;">✅ Réservation confirmée</h1>' +
     '</div>' +
     '<div style="background: #f8faf9; padding: 24px; border: 1px solid #e2e8f0; border-radius: 0 0 12px 12px;">' +
     '<p>Bonjour <strong>' + data.name + '</strong>,</p>' +
-    '<p>Votre réservation de photobooth a bien été enregistrée !</p>' +
+    '<p>Nous avons bien enregistré votre réservation de photobooth. Voici le récapitulatif :</p>' +
     '<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">' +
     '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Date</td>' +
     '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + dateFormatted + '</td></tr>' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Formule</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + (data.formula || '—') + '</td></tr>' +
-    '<tr><td style="padding: 10px; color: #64748b;">Événement</td>' +
-    '<td style="padding: 10px; font-weight: bold; text-align: right;">' + data.eventType + '</td></tr>' +
+    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Événement</td>' +
+    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + data.eventType + '</td></tr>' +
+    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Lieu</td>' +
+    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + (data.location || 'À préciser') + '</td></tr>' +
+    '<tr><td style="padding: 10px; color: #64748b;">Formule</td>' +
+    '<td style="padding: 10px; font-weight: bold; text-align: right;">' + (data.formula || '—') + '</td></tr>' +
     '</table>' +
-    '<p style="color: #64748b; font-size: 14px;">Nous vous contacterons bientôt pour finaliser les détails.</p>' +
-    '<p>À très vite !<br><strong>' + BUSINESS_NAME + '</strong><br>' + BUSINESS_PHONE + '</p>' +
+    '<p style="color: #64748b; font-size: 14px;">Nous vous recontacterons très vite pour finaliser ensemble les détails de votre événement.</p>' +
+    '<p style="color: #64748b; font-size: 14px;">Pour toute question, répondez simplement à cet email ou appelez-nous au ' + BUSINESS_PHONE + '.</p>' +
+    '<p>À très bientôt,<br><strong>L\'équipe ' + BUSINESS_NAME + '</strong></p>' +
     '</div></div>';
 
   sendViaResend(data.email, subject, htmlBody);
@@ -172,15 +185,13 @@ function sendClientEmail(data) {
 
 // ===== Envoyer email de notification au propriétaire =====
 function sendOwnerEmail(data) {
-  const parts = data.date.split('-');
-  const dateObj = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-  const dateFormatted = Utilities.formatDate(dateObj, Session.getScriptTimeZone(), 'EEEE d MMMM yyyy');
+  const dateFormatted = formatDateFR(parseDateFR(data.date));
 
   const subject = '🔔 Nouvelle réservation — ' + data.name + ' (' + data.eventType + ')';
-  const htmlBody = 
-    '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">' +
+  const htmlBody =
+    '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;" lang="fr">' +
     '<div style="background: #0f172a; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">' +
-    '<h1 style="color: #22c55e; margin: 0; font-size: 24px;">🔔 Nouvelle Réservation</h1>' +
+    '<h1 style="color: #22c55e; margin: 0; font-size: 24px;">🔔 Nouvelle réservation</h1>' +
     '</div>' +
     '<div style="background: #f8faf9; padding: 24px; border: 1px solid #e2e8f0; border-radius: 0 0 12px 12px;">' +
     '<table style="width: 100%; border-collapse: collapse; margin: 10px 0;">' +
@@ -192,10 +203,12 @@ function sendOwnerEmail(data) {
     '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + (data.phone || '—') + '</td></tr>' +
     '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Date</td>' +
     '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + dateFormatted + '</td></tr>' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Formule</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + (data.formula || '—') + '</td></tr>' +
-    '<tr><td style="padding: 10px; color: #64748b;">Événement</td>' +
-    '<td style="padding: 10px; font-weight: bold; text-align: right;">' + data.eventType + '</td></tr>' +
+    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Événement</td>' +
+    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + data.eventType + '</td></tr>' +
+    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Lieu</td>' +
+    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + (data.location || 'Non renseigné') + '</td></tr>' +
+    '<tr><td style="padding: 10px; color: #64748b;">Formule</td>' +
+    '<td style="padding: 10px; font-weight: bold; text-align: right;">' + (data.formula || '—') + '</td></tr>' +
     '</table>' +
     (data.message ? '<div style="background: white; padding: 14px; border-radius: 8px; margin-top: 12px; border: 1px solid #e2e8f0;"><strong>Message :</strong><br>' + data.message + '</div>' : '') +
     '<p style="color: #64748b; font-size: 13px; margin-top: 16px;">L\'événement a été ajouté automatiquement à votre Google Calendar.</p>' +
