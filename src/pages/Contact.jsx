@@ -47,6 +47,11 @@ const Contact = () => {
     name: '', email: '', phone: '', eventType: '', message: ''
   });
 
+  // Scroll en haut de la page à chaque changement d'étape
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [step]);
+
   // Charger les dates occupées au montage + fusionner avec blockedDates du CMS
   useEffect(() => {
     const loadBusySlots = async () => {
@@ -554,12 +559,12 @@ const Contact = () => {
             <EditableBlock
               label="Contact Téléphone"
               modalTitle="Modifier le Téléphone"
-              fields={[{ key: 'phone', label: 'Numéro', type: 'text', value: content.contact?.phone || '+33 6 12 34 56 78' }]}
+              fields={[{ key: 'phone', label: 'Numéro', type: 'text', value: content.contact?.phone || '06 03 16 36 21' }]}
               onSave={(vals) => updateContent({ ...content, contact: { ...content.contact, ...vals } })}
             >
               <div className="contact-info-card">
                 <div className="contact-info-icon"><Phone size={20} /></div>
-                <div><h3>Téléphone</h3><p>{content.contact?.phone || '+33 6 12 34 56 78'}</p></div>
+                <div><h3>Téléphone</h3><p>{content.contact?.phone || '06 03 16 36 21'}</p></div>
               </div>
             </EditableBlock>
 

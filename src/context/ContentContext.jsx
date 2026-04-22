@@ -105,7 +105,7 @@ const DEFAULT_CONTENT = {
     { id: 'contact', label: 'Contact', path: '/contact' }
   ],
   contact: {
-    phone: '+33 6 12 34 56 78',
+    phone: '06 03 16 36 21',
     email: 'contact@photoroots.fr',
     zone: 'Le Havre, Rouen, Dieppe — Seine-Maritime'
   },
@@ -116,15 +116,15 @@ const DEFAULT_CONTENT = {
   },
   seo: {
     global: {
-      title: "PhotoRoots | Location Photobooth Miroir Luxe Le Havre & Rouen",
-      description: "Sublimez vos événements avec notre borne photo miroir haut de gamme. Mariage, Corporate, Anniversaire en Normandie.",
+      title: "PhotoRoots | Location Photobooth à partir de 99€ — Le Havre & Rouen",
+      description: "Location photobooth à partir de 99€ — Bornes photo pour mariages, anniversaires et événements d'entreprise en Seine-Maritime. Devis gratuit en 24h.",
     },
     pages: {
-      '/': { title: 'PhotoRoots - Accueil', description: 'Photobooth premium Normandie' },
-      '/photobooth': { title: 'Notre Borne Miroir - PhotoRoots', description: 'Technologie et élégance' },
-      '/tarifs': { title: 'Tarifs & Formules - PhotoRoots', description: 'À partir de 189€' },
-      '/galerie': { title: 'Galerie Événements - PhotoRoots', description: 'Nos réalisations' },
-      '/contact': { title: 'Réserver - PhotoRoots', description: 'Contactez-nous' },
+      '/': { title: 'PhotoRoots | Location Photobooth à partir de 99€', description: "Location photobooth à partir de 99€ — Bornes photo pour mariages, anniversaires et événements d'entreprise en Seine-Maritime. Devis gratuit en 24h." },
+      '/photobooth': { title: 'Notre Borne Miroir - PhotoRoots', description: 'Location photobooth à partir de 99€ — Borne miroir haut de gamme pour tous vos événements en Seine-Maritime.' },
+      '/tarifs': { title: 'Tarifs & Formules - PhotoRoots', description: 'Location photobooth à partir de 99€ — Découvrez nos formules pour mariages, anniversaires et entreprises.' },
+      '/galerie': { title: 'Galerie Événements - PhotoRoots', description: 'Location photobooth à partir de 99€ — Découvrez nos réalisations en Seine-Maritime.' },
+      '/contact': { title: 'Réserver - PhotoRoots', description: 'Location photobooth à partir de 99€ — Contactez-nous pour un devis gratuit en 24h.' },
     }
   },
   messages: [],

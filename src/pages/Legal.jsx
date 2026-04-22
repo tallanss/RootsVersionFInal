@@ -30,7 +30,7 @@ const Legal = () => {
             Micro-entreprise — SIRET : [À compléter]<br />
             Siège social : Le Havre, Seine-Maritime (76)<br />
             Email : contact@photoroots.fr<br />
-            Téléphone : +33 6 12 34 56 78</p>
+            Téléphone : 06 03 16 36 21</p>
 
             <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>2. Hébergement</h3>
             <p>Ce site est hébergé par [À compléter — ex: OVH, Vercel, Netlify].</p>

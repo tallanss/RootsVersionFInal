@@ -56,8 +56,8 @@ const Home = () => {
   return (
     <div>
       <Helmet>
-        <title>PhotoRoots | Location Photobooth Le Havre, Rouen, Dieppe dès 189€</title>
-        <meta name="description" content="Louez un photobooth premium pour votre mariage, anniversaire ou événement d'entreprise en Seine-Maritime (76). Animation, accessoires et souvenirs imprimés." />
+        <title>PhotoRoots | Location Photobooth à partir de 99€ — Le Havre, Rouen, Dieppe</title>
+        <meta name="description" content="Location photobooth à partir de 99€ — Bornes photo pour mariages, anniversaires et événements d'entreprise en Seine-Maritime. Devis gratuit en 24h." />
         <meta name="keywords" content="location photobooth le havre, photobooth rouen, borne photo dieppe, photobooth mariage normandie, seine-maritime, 76" />
       </Helmet>
 

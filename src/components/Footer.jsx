@@ -72,14 +72,14 @@ const Footer = () => {
             label="Infos Contact"
             modalTitle="Informations de Contact"
             fields={[
-              { key: 'phone', label: 'Téléphone', type: 'text', value: content.contact?.phone || "06 00 00 00 00" },
+              { key: 'phone', label: 'Téléphone', type: 'text', value: content.contact?.phone || "06 03 16 36 21" },
               { key: 'email', label: 'Email', type: 'text', value: content.contact?.email || "contact@photoroots.fr" },
               { key: 'location', label: 'Zone', type: 'text', value: content.contact?.location || "Normandie : Le Havre, Rouen, Dieppe" },
             ]}
             onSave={(vals) => updateContent({ contact: { ...content.contact, ...vals } })}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <a href={`tel:${content.contact?.phone || "0600000000"}`} style={{ ...infoStyle, textDecoration: 'none' }}><Phone size={16} /> {content.contact?.phone || "06 00 00 00 00"}</a>
+              <a href={`tel:${content.contact?.phone || "0603163621"}`} style={{ ...infoStyle, textDecoration: 'none' }}><Phone size={16} /> {content.contact?.phone || "06 03 16 36 21"}</a>
               <a href={`mailto:${content.contact?.email || "contact@photoroots.fr"}`} style={{ ...infoStyle, textDecoration: 'none' }}><Mail size={16} /> {content.contact?.email || "contact@photoroots.fr"}</a>
               <div style={infoStyle}><MapPin size={16} /> {content.contact?.zone || content.contact?.location || "Normandie : Le Havre, Rouen, Dieppe"}</div>
             </div>

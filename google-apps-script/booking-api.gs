@@ -20,7 +20,7 @@
 const CALENDAR_ID = 'primary';
 const OWNER_EMAIL = 'Jimmy.racine@outlook.fr';
 const BUSINESS_NAME = 'PhotoRoots';
-const BUSINESS_PHONE = '+33 6 12 34 56 78';
+const BUSINESS_PHONE = '06 03 16 36 21';
 
 // Adresse d'expédition (domaine doit être vérifié dans Resend)
 const FROM_EMAIL = 'PhotoRoots <noreply@photoroots.fr>';
@@ -91,15 +91,18 @@ function getBusyDatesArray() {
   const calendar = CalendarApp.getCalendarById(CALENDAR_ID);
   const events = calendar.getEvents(now, sixMonthsLater);
 
-  // Toute date ayant au moins un événement est considérée comme réservée
-  const busyDates = new Set();
+  // Il y a 2 photobooths disponibles : une date n'est considérée comme
+  // complète que lorsqu'elle totalise au moins 2 événements.
+  const countPerDate = {};
   events.forEach(function(event) {
     const start = event.getStartTime();
     const dateStr = Utilities.formatDate(start, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-    busyDates.add(dateStr);
+    countPerDate[dateStr] = (countPerDate[dateStr] || 0) + 1;
   });
 
-  return Array.from(busyDates);
+  return Object.keys(countPerDate).filter(function(d) {
+    return countPerDate[d] >= 2;
+  });
 }
 
 // ===== Créer un événement sur Google Calendar =====
