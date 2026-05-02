@@ -29,12 +29,15 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="PhotoRoots | Location Photobooth à partir de 99€" />
     <meta name="twitter:description" content="Location photobooth à partir de 99€ pour mariages, anniversaires et événements d'entreprise en Seine-Maritime. Devis gratuit en 24h." />
-    
+    <meta name="twitter:image" content="https://photoroots.fr/photobooth-hero.png" />
+
     <meta name="robots" content="index, follow" />
     <meta name="author" content="PhotoRoots" />
     <meta name="geo.region" content="FR-76" />
     <meta name="geo.placename" content="Le Havre" />
-    
+    <meta name="geo.position" content="49.4944;0.1079" />
+    <meta name="ICBM" content="49.4944, 0.1079" />
+
     <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
     {
@@ -43,27 +46,50 @@
       "name": "PhotoRoots",
       "description": "Location de photobooth à partir de 99€ pour mariages, anniversaires et événements d'entreprise en Seine-Maritime.",
       "url": "https://photoroots.fr",
+      "image": "https://photoroots.fr/photobooth-hero.png",
+      "logo": "https://photoroots.fr/logo-gold.png",
       "telephone": "+33603163621",
       "email": "contact@photoroots.fr",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Le Havre",
         "addressRegion": "Seine-Maritime",
+        "postalCode": "76600",
         "addressCountry": "FR"
       },
-      "areaServed": ["Le Havre", "Rouen", "Dieppe", "Seine-Maritime"],
-      "priceRange": "€€",
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "5",
-        "reviewCount": "100"
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 49.4944,
+        "longitude": 0.1079
       },
+      "areaServed": [
+        { "@type": "City", "name": "Le Havre" },
+        { "@type": "City", "name": "Rouen" },
+        { "@type": "City", "name": "Dieppe" },
+        { "@type": "AdministrativeArea", "name": "Seine-Maritime" },
+        { "@type": "AdministrativeArea", "name": "Normandie" }
+      ],
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+          "opens": "09:00",
+          "closes": "22:00"
+        }
+      ],
+      "priceRange": "€€",
+      "currenciesAccepted": "EUR",
+      "paymentAccepted": "Carte bancaire, Virement, Espèces",
       "offers": {
         "@type": "AggregateOffer",
         "lowPrice": "99",
         "highPrice": "389",
-        "priceCurrency": "EUR"
-      }
+        "priceCurrency": "EUR",
+        "offerCount": "4"
+      },
+      "sameAs": [
+        "https://www.google.com/maps/place/PhotoRoots"
+      ]
     }
     </script>
     
