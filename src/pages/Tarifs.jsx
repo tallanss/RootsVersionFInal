@@ -259,6 +259,18 @@ const Tarifs = () => {
         <title>{content.tarifsSeoTitle || 'Prix Location Photobooth Le Havre & Rouen | Tarifs 2026'}</title>
         <meta name="description" content={content.tarifsSeoDesc || 'Découvrez nos formules Photobooth dès 189€ en Normandie. Mariage, Entreprise, Anniversaire. Impression illimitée, accessoires et livraison inclus.'} />
         <meta name="keywords" content={content.tarifsSeoKeywords || 'prix photobooth le havre, tarif photobooth normandie, location borne photo pas cher, devis photobooth rouen'} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://photoroots.fr/tarifs" />
+        <meta property="og:title" content={content.tarifsSeoTitle || 'Prix Location Photobooth Le Havre & Rouen | Tarifs 2026'} />
+        <meta property="og:description" content={content.tarifsSeoDesc || 'Découvrez nos formules Photobooth dès 189€ en Normandie. Mariage, Entreprise, Anniversaire. Impression illimitée, accessoires et livraison inclus.'} />
+        <meta property="og:image" content="https://photoroots.fr/photobooth-hero.png" />
+        <meta property="og:locale" content="fr_FR" />
+        <meta property="og:site_name" content="PhotoRoots" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={content.tarifsSeoTitle || 'Prix Location Photobooth Le Havre & Rouen | Tarifs 2026'} />
+        <meta name="twitter:description" content={content.tarifsSeoDesc || 'Découvrez nos formules Photobooth dès 189€ en Normandie. Mariage, Entreprise, Anniversaire. Impression illimitée, accessoires et livraison inclus.'} />
+        <meta name="twitter:image" content="https://photoroots.fr/photobooth-hero.png" />
+        <link rel="canonical" href="https://photoroots.fr/tarifs" />
       </Helmet>
 
       {/* HEADER */}

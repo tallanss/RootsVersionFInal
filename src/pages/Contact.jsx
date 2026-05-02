@@ -241,6 +241,18 @@ const Contact = () => {
         <title>Réserver un Photobooth | Devis gratuit Le Havre, Rouen</title>
         <meta name="description" content="Réservez votre borne photo pour votre événement en Seine-Maritime. Vérifiez nos disponibilités et obtenez un devis gratuit en 24h." />
         <meta name="keywords" content="réservation photobooth normandie, louer borne photo le havre, calendrier photobooth rouen" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://photoroots.fr/contact" />
+        <meta property="og:title" content="Réserver un Photobooth | Devis gratuit Le Havre, Rouen" />
+        <meta property="og:description" content="Réservez votre borne photo pour votre événement en Seine-Maritime. Vérifiez nos disponibilités et obtenez un devis gratuit en 24h." />
+        <meta property="og:image" content="https://photoroots.fr/photobooth-hero.png" />
+        <meta property="og:locale" content="fr_FR" />
+        <meta property="og:site_name" content="PhotoRoots" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Réserver un Photobooth | Devis gratuit Le Havre, Rouen" />
+        <meta name="twitter:description" content="Réservez votre borne photo pour votre événement en Seine-Maritime. Vérifiez nos disponibilités et obtenez un devis gratuit en 24h." />
+        <meta name="twitter:image" content="https://photoroots.fr/photobooth-hero.png" />
+        <link rel="canonical" href="https://photoroots.fr/contact" />
       </Helmet>
 
       {/* HEADER */}

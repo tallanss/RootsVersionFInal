@@ -59,6 +59,22 @@ const Home = () => {
         <title>PhotoRoots | Location Photobooth à partir de 99€ — Le Havre, Rouen, Dieppe</title>
         <meta name="description" content="Location photobooth à partir de 99€ — Bornes photo pour mariages, anniversaires et événements d'entreprise en Seine-Maritime. Devis gratuit en 24h." />
         <meta name="keywords" content="location photobooth le havre, photobooth rouen, borne photo dieppe, photobooth mariage normandie, seine-maritime, 76" />
+        {faqs && faqs.length > 0 && (
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              "mainEntity": faqs.map((faq) => ({
+                "@type": "Question",
+                "name": faq.q || faq.question,
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": faq.a || faq.answer
+                }
+              }))
+            })}
+          </script>
+        )}
       </Helmet>
 
       {/* ===== HERO ===== */}

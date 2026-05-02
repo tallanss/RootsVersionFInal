@@ -58,6 +58,18 @@ const Gallery = () => {
       <Helmet>
         <title>Galerie Événements | PhotoRoots Photobooth Normandie</title>
         <meta name="description" content="Découvrez nos derniers événements en Normandie. Photos de mariages, soirées d'entreprise et anniversaires avec notre photobooth premium." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://photoroots.fr/galerie" />
+        <meta property="og:title" content="Galerie Événements | PhotoRoots Photobooth Normandie" />
+        <meta property="og:description" content="Découvrez nos derniers événements en Normandie. Photos de mariages, soirées d'entreprise et anniversaires avec notre photobooth premium." />
+        <meta property="og:image" content="https://photoroots.fr/photobooth-hero.png" />
+        <meta property="og:locale" content="fr_FR" />
+        <meta property="og:site_name" content="PhotoRoots" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Galerie Événements | PhotoRoots Photobooth Normandie" />
+        <meta name="twitter:description" content="Découvrez nos derniers événements en Normandie. Photos de mariages, soirées d'entreprise et anniversaires avec notre photobooth premium." />
+        <meta name="twitter:image" content="https://photoroots.fr/photobooth-hero.png" />
+        <link rel="canonical" href="https://photoroots.fr/galerie" />
       </Helmet>
 
       {/* HEADER */}
