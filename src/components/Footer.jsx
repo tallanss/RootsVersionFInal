@@ -65,6 +65,16 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* ZONES DESSERVIES */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)' }}>Zones desservies</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <Link to="/le-havre" style={linkStyle}>Photobooth Le Havre</Link>
+            <Link to="/rouen" style={linkStyle}>Photobooth Rouen</Link>
+            <Link to="/dieppe" style={linkStyle}>Photobooth Dieppe</Link>
+          </div>
+        </div>
+
         {/* CONTACT INFO */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)' }}>Contact</h3>

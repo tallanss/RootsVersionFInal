@@ -43,6 +43,9 @@ import Legal from './pages/Legal';
 import SaveTheDate from './pages/SaveTheDate';
 import SaveTheDateEvent from './pages/SaveTheDateEvent';
 import NotFound from './pages/NotFound';
+import LeHavre from './pages/LeHavre';
+import Rouen from './pages/Rouen';
+import Dieppe from './pages/Dieppe';
 import BottomNav from './components/BottomNav';
 import Footer from './components/Footer';
 import Header from './components/Header';
@@ -128,6 +131,9 @@ function PageContent() {
             <Route path="/mentions-legales" element={<Legal />} />
             <Route path="/save-the-date" element={<SaveTheDate />} />
             <Route path="/save-the-date/:slug" element={<SaveTheDateEvent />} />
+            <Route path="/le-havre" element={<LeHavre />} />
+            <Route path="/rouen" element={<Rouen />} />
+            <Route path="/dieppe" element={<Dieppe />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
