@@ -276,6 +276,9 @@ export const AnalyticsHub = () => {
 /* ========================================== */
 /* 📸 MEDIA LIB                               */
 /* ========================================== */
+// Catégories de la galerie — doivent rester alignées avec src/pages/Gallery.jsx
+const GALLERY_CATEGORIES = ['Mariage', 'Corporate', 'Anniversaire', 'Gala'];
+
 export const MediaLib = () => {
   const { content, updateContent, saveStatus } = useContent();
   const gallery = content.gallery || [];
@@ -283,6 +286,9 @@ export const MediaLib = () => {
   const [uploadError, setUploadError] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [title, setTitle] = useState('');
+  const [category, setCategory] = useState(GALLERY_CATEGORIES[0]);
+  const [location, setLocation] = useState('');
+  const [date, setDate] = useState(new Date().getFullYear().toString());
   const fileInputRef = useState(null);
 
   const uploadFile = async (file) => {
@@ -301,14 +307,26 @@ export const MediaLib = () => {
         .upload(path, file, { cacheControl: '3600', upsert: false });
       if (error) throw error;
       const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(data.path);
-      const item = { id: Date.now(), image: publicUrl, title: title || file.name.replace(/\.[^.]+$/, '') };
+      const item = {
+        id: Date.now(),
+        image: publicUrl,
+        title: title || file.name.replace(/\.[^.]+$/, ''),
+        category: category || GALLERY_CATEGORIES[0],
+        location: location || 'Normandie',
+        date: date || new Date().getFullYear().toString(),
+      };
       updateContent({ gallery: [item, ...(content.gallery || [])] });
       setTitle('');
+      // On garde category, location et date pour faciliter les uploads en lot
     } catch (err) {
       setUploadError(`Erreur upload : ${err.message}`);
     } finally {
       setUploading(false);
     }
+  };
+
+  const updateItemCategory = (id, newCategory) => {
+    updateContent({ gallery: gallery.map(g => g.id === id ? { ...g, category: newCategory } : g) });
   };
 
   const handleFiles = (files) => {
@@ -382,8 +400,51 @@ export const MediaLib = () => {
           )}
         </div>
 
-        {/* Optional title */}
-        <div style={{ padding: '0 16px 16px', display: 'flex', gap: '10px' }}>
+        {/* Métadonnées appliquées aux prochains uploads */}
+        <div style={{ padding: '0 16px 16px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <div style={{ flex: '1 1 160px', minWidth: '140px' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#94a3b8', marginBottom: '4px' }}>
+                Onglet *
+              </label>
+              <select
+                className="cms-input"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                style={{ fontSize: '13px', width: '100%' }}
+              >
+                {GALLERY_CATEGORIES.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ flex: '1 1 140px', minWidth: '120px' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#94a3b8', marginBottom: '4px' }}>
+                Lieu
+              </label>
+              <input
+                type="text"
+                className="cms-input"
+                placeholder="ex: Le Havre"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                style={{ fontSize: '13px', width: '100%' }}
+              />
+            </div>
+            <div style={{ flex: '0 0 90px' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: '#94a3b8', marginBottom: '4px' }}>
+                Année
+              </label>
+              <input
+                type="text"
+                className="cms-input"
+                placeholder="2026"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                style={{ fontSize: '13px', width: '100%' }}
+              />
+            </div>
+          </div>
           <input
             type="text"
             className="cms-input"
@@ -392,6 +453,9 @@ export const MediaLib = () => {
             onChange={(e) => setTitle(e.target.value)}
             style={{ fontSize: '13px' }}
           />
+          <p style={{ margin: 0, fontSize: '11px', color: '#64748b' }}>
+            Les photos uploadées apparaîtront dans l'onglet « <strong style={{ color: '#cbd5e1' }}>{category}</strong> » de la galerie.
+          </p>
         </div>
 
         {uploadError && (
@@ -416,6 +480,27 @@ export const MediaLib = () => {
                 style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '10px', marginBottom: '6px', display: 'block' }}
               />
               <p style={{ fontSize: '11px', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', padding: '0 4px', color: '#94a3b8' }}>{img.title}</p>
+              <select
+                value={img.category || GALLERY_CATEGORIES[0]}
+                onChange={(e) => updateItemCategory(img.id, e.target.value)}
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  width: '100%',
+                  marginTop: '4px',
+                  padding: '4px 6px',
+                  background: 'rgba(255,255,255,0.05)',
+                  color: '#cbd5e1',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '6px',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                {GALLERY_CATEGORIES.map(c => (
+                  <option key={c} value={c} style={{ background: '#0f172a' }}>{c}</option>
+                ))}
+              </select>
               <button
                 onClick={() => deleteImage(img)}
                 style={{ position: 'absolute', top: '10px', right: '10px', background: 'rgba(239,68,68,0.9)', color: '#fff', border: 'none', padding: '5px', borderRadius: '7px', cursor: 'pointer' }}
