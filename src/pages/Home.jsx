@@ -46,7 +46,18 @@ const Home = () => {
 
   // Data now comes from ContentContext
   const faqs = content.faqs || [];
-  const galleryImages = content.gallery?.length > 0 ? content.gallery.map(img => ({ src: img.image, alt: img.title })) : [
+  // Détecte les titres "placeholder" (IMG_6241, DSC_…, screenshots, dates brutes…)
+  const isPlaceholderTitle = (t) => {
+    if (!t) return true;
+    const s = String(t).trim();
+    if (!s) return true;
+    return /^(img|dsc|dscn|p|photo|image|capture|screenshot|untitled|sans[_\s-]?titre)[_\s-]*\d+/i.test(s)
+      || /^\d{4}[_\s-]?\d{2}[_\s-]?\d{2}/.test(s);
+  };
+  const galleryImages = content.gallery?.length > 0 ? content.gallery.map(img => ({
+    src: img.image,
+    alt: isPlaceholderTitle(img.title) ? `Photobooth ${img.category || ''} ${img.location || ''}`.trim() : img.title,
+  })) : [
     { src: '/gallery-1.png', alt: 'Photobooth mariage premium Le Havre' },
     { src: '/gallery-2.png', alt: 'Photobooth événement entreprise moderne Rouen' },
     { src: '/gallery-3.png', alt: 'Photobooth anniversaire festif Dieppe' },

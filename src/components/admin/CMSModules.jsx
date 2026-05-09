@@ -310,7 +310,10 @@ export const MediaLib = () => {
       const item = {
         id: Date.now(),
         image: publicUrl,
-        title: title || file.name.replace(/\.[^.]+$/, ''),
+        // Si l'admin n'a pas saisi de titre, on laisse vide plutôt
+        // que de mettre le nom de fichier (ex: "IMG_6241") qui apparaîtrait
+        // sur la galerie publique.
+        title: title.trim() || '',
         category: category || GALLERY_CATEGORIES[0],
         location: location || 'Normandie',
         date: date || new Date().getFullYear().toString(),

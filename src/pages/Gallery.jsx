@@ -12,6 +12,34 @@ import EditableBlock from '../components/admin/EditableBlock';
 
 const CATEGORIES = ["Tous", "Mariage", "Corporate", "Anniversaire", "Gala"];
 
+/**
+ * Détecte les titres qui ressemblent à un nom de fichier brut
+ * (ex: "img_6241", "DSC_0123", "photo-2024-10-15", "Capture d'écran 2025…").
+ * Ces titres ne doivent pas s'afficher sur la galerie publique.
+ */
+const isPlaceholderTitle = (title) => {
+  if (!title) return true;
+  const t = String(title).trim();
+  if (!t) return true;
+  // patterns courants des noms de fichiers d'appareils photo / téléphones
+  const patterns = [
+    /^img[_\s-]*\d+/i,
+    /^dsc[_\s-]*\d+/i,
+    /^dscn[_\s-]*\d+/i,
+    /^p\d{6,}/i,
+    /^photo[_\s-]*\d+/i,
+    /^image[_\s-]*\d+/i,
+    /^capture/i,
+    /^screenshot/i,
+    /^untitled/i,
+    /^sans[_\s-]?titre/i,
+    /^\d{4}[_\s-]?\d{2}[_\s-]?\d{2}/, // dates style 2025-04-19
+  ];
+  return patterns.some(rx => rx.test(t));
+};
+
+const displayTitle = (title) => (isPlaceholderTitle(title) ? '' : title);
+
 const Gallery = () => {
   const { content, updateContent } = useContent();
   const { isAdminMode } = useAdmin();
@@ -164,10 +192,15 @@ const Gallery = () => {
                   onClick={() => !isAdminMode && setLightboxIndex(index)}
                   style={{ cursor: isAdminMode ? 'default' : 'pointer' }}
                 >
-                  <PremiumImage src={item.image} alt={item.title} />
+                  <PremiumImage
+                    src={item.image}
+                    alt={displayTitle(item.title) || `Photobooth ${item.category || ''} ${item.location || ''}`.trim()}
+                  />
                   <div className="masonry-overlay">
                     <span className="masonry-tag">{item.category}</span>
-                    <h3 className="masonry-title">{item.title}</h3>
+                    {displayTitle(item.title) && (
+                      <h3 className="masonry-title">{displayTitle(item.title)}</h3>
+                    )}
                     <div style={{ display: 'flex', gap: '12px', color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <MapPin size={12} /> {item.location}
@@ -225,7 +258,10 @@ const Gallery = () => {
       {/* LIGHTBOX (mode public uniquement) */}
       {lightboxIndex !== null && !isAdminMode && (
         <Lightbox
-          images={filteredData.map(d => ({ src: d.image, alt: d.title }))}
+          images={filteredData.map(d => ({
+            src: d.image,
+            alt: displayTitle(d.title) || `Photobooth ${d.category || ''} ${d.location || ''}`.trim(),
+          }))}
           initialIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
         />
