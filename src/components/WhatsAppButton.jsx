@@ -1,17 +1,20 @@
-import { Link } from 'react-router-dom';
-import { Mail } from 'lucide-react';
+import { Phone } from 'lucide-react';
+import { useContent } from '../context/ContentContext';
 
 const ContactButton = () => {
+  const { content } = useContent();
+  const phone = (content?.contact?.phone || '0603163621').replace(/\s/g, '');
 
   return (
-    <Link
-      to="/contact"
-      aria-label="Nous contacter"
+    <a
+      href={`tel:${phone}`}
+      aria-label="Nous appeler"
+      title="Appelez-nous"
       className="contact-float"
     >
-      <Mail size={24} color="white" />
+      <Phone size={24} color="white" />
       <span className="contact-pulse" />
-    </Link>
+    </a>
   );
 };
 

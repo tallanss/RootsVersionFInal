@@ -50,7 +50,7 @@ const NotFound = () => (
         </Link>
         <Link to="/contact">
           <button className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 24px' }}>
-            Réserver
+            Obtenir un devis
             <ArrowRight size={16} />
           </button>
         </Link>

@@ -31,85 +31,134 @@ const PriceDisplay = ({ price, isCustom }) => {
   return <div className="pricing-price" style={{ fontSize: '28px' }}>{raw}</div>;
 };
 
-/* ── Plan Comparator ── */
-const PlanComparator = ({ plans, onSelect }) => {
-  const essentiel = plans.find(p => p.id === 'essentiel');
-  const premium = plans.find(p => p.id === 'premium');
+/* ── Plan Comparator ──
+   Compares ALL plans (excluding isCustom ones). The table is N+1 columns wide:
+   - 1 sticky feature-label column
+   - N plan columns (header + feature rows + CTA)
+   The plan with featured:true gets the gold-tinted column and the "POPULAIRE" badge.
+*/
+const formatPlanPrice = (price) => {
+  const raw = String(price ?? '').trim();
+  const numeric = /^\d+(?:[.,]\d+)?$/.test(raw);
+  if (numeric) return `${raw}€`;
+  return raw;
+};
 
-  // Build feature rows dynamically from plan data
+const PlanComparator = ({ plans, onSelect }) => {
+  // Exclude custom (quote-only) plans — they have no fixed feature grid
+  const comparablePlans = (plans || []).filter(p => !p.isCustom);
+
+  if (comparablePlans.length === 0) return null;
+
+  // Build the union of all feature labels across compared plans
   const allFeatureLabels = [
-    ...new Set([
-      ...(essentiel?.features || []),
-      ...(premium?.features || []),
-      ...(essentiel?.excluded || []),
-      ...(premium?.excluded || []),
-    ])
+    ...new Set(
+      comparablePlans.flatMap(p => [
+        ...(p.features || []),
+        ...(p.excluded || []),
+      ])
+    )
   ];
 
-  const dynamicFeatures = allFeatureLabels.map(label => ({
-    label,
-    essentiel: essentiel?.features?.includes(label) ?? false,
-    premium: premium?.features?.includes(label) ?? false,
-  }));
+  const n = comparablePlans.length;
+  // Sticky 180px label column + equal-width plan columns. Min plan column 130px so 4+ cols
+  // overflow horizontally rather than crushing content.
+  const labelColWidth = 180;
+  const planColMinWidth = 130;
+  const gridTemplate = `${labelColWidth}px repeat(${n}, minmax(${planColMinWidth}px, 1fr))`;
+
+  const stickyLabelStyle = {
+    position: 'sticky',
+    left: 0,
+    background: 'var(--bg-card)',
+    zIndex: 1,
+  };
+
+  const planColBg = (plan) => plan.featured ? 'rgba(197,160,89,0.04)' : 'transparent';
 
   return (
     <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)', overflow: 'hidden' }}>
-      {/* Header row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid var(--border-light)' }}>
-        <div style={{ padding: '16px 14px', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)' }}>Inclus</div>
-        <div style={{ padding: '16px 14px', textAlign: 'center', borderLeft: '1px solid var(--border-light)' }}>
-          <div style={{ fontSize: '13px', fontWeight: 800 }}>{essentiel?.name}</div>
-          <div style={{ fontSize: '18px', fontWeight: 900, color: 'var(--primary)' }}>{essentiel?.price}€</div>
-        </div>
-        <div style={{ padding: '16px 14px', textAlign: 'center', borderLeft: '1px solid var(--border-light)', background: 'rgba(197,160,89,0.04)' }}>
-          <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary)', marginBottom: '2px' }}>⭐ POPULAIRE</div>
-          <div style={{ fontSize: '13px', fontWeight: 800 }}>{premium?.name}</div>
-          <div style={{ fontSize: '18px', fontWeight: 900, color: 'var(--primary)' }}>{premium?.price}€</div>
-        </div>
-      </div>
-
-      {/* Feature rows */}
-      {dynamicFeatures.map((f, i) => (
-        <div
-          key={i}
-          style={{
-            display: 'grid', gridTemplateColumns: '1fr 1fr 1fr',
-            borderBottom: i < dynamicFeatures.length - 1 ? '1px solid var(--border-light)' : 'none',
-            background: i % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.01)',
-          }}
-        >
-          <div style={{ padding: '12px 14px', fontSize: '13px', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }}>{f.label}</div>
-          <div style={{ padding: '12px 14px', textAlign: 'center', borderLeft: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            {typeof f.essentiel === 'boolean'
-              ? f.essentiel
-                ? <CheckCircle2 size={18} color="#22c55e" />
-                : <X size={16} color="var(--text-muted)" strokeWidth={2.5} />
-              : <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--primary)' }}>{f.essentiel}</span>
-            }
+      <div style={{ overflowX: 'auto' }}>
+        <div style={{ minWidth: `${labelColWidth + n * planColMinWidth}px` }}>
+          {/* Header row */}
+          <div style={{ display: 'grid', gridTemplateColumns: gridTemplate, borderBottom: '1px solid var(--border-light)' }}>
+            <div style={{ ...stickyLabelStyle, padding: '16px 14px', fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)' }}>Inclus</div>
+            {comparablePlans.map((plan) => (
+              <div
+                key={plan.id}
+                style={{
+                  padding: '16px 14px',
+                  textAlign: 'center',
+                  borderLeft: '1px solid var(--border-light)',
+                  background: planColBg(plan),
+                }}
+              >
+                {plan.featured && (
+                  <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary)', marginBottom: '2px' }}>⭐ POPULAIRE</div>
+                )}
+                <div style={{ fontSize: '13px', fontWeight: 800 }}>{plan.name}</div>
+                <div style={{ fontSize: '18px', fontWeight: 900, color: 'var(--primary)' }}>{formatPlanPrice(plan.price)}</div>
+              </div>
+            ))}
           </div>
-          <div style={{ padding: '12px 14px', textAlign: 'center', borderLeft: '1px solid var(--border-light)', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(197,160,89,0.03)' }}>
-            {typeof f.premium === 'boolean'
-              ? f.premium
-                ? <CheckCircle2 size={18} color="#22c55e" />
-                : <X size={16} color="var(--text-muted)" strokeWidth={2.5} />
-              : <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--primary)' }}>{f.premium}</span>
-            }
-          </div>
-        </div>
-      ))}
 
-      {/* CTA row */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderTop: '1px solid var(--border-light)', padding: '16px 14px', gap: '8px' }}>
-        <div />
-        <div style={{ borderLeft: '1px solid transparent', paddingLeft: '14px' }}>
-          <button onClick={() => onSelect('essentiel')} className="btn-secondary" style={{ width: '100%', fontSize: '12px', padding: '10px 8px', border: '1px solid var(--border-medium)' }}>
-            Choisir
-          </button>
-        </div>
-        <div style={{ paddingLeft: '14px' }}>
-          <button onClick={() => onSelect('premium')} className="btn-primary" style={{ width: '100%', fontSize: '12px', padding: '10px 8px' }}>
-            Choisir
-          </button>
+          {/* Feature rows */}
+          {allFeatureLabels.map((label, i) => {
+            const rowBg = i % 2 === 0 ? 'transparent' : 'rgba(0,0,0,0.01)';
+            return (
+              <div
+                key={label}
+                style={{
+                  display: 'grid', gridTemplateColumns: gridTemplate,
+                  borderBottom: i < allFeatureLabels.length - 1 ? '1px solid var(--border-light)' : 'none',
+                  background: rowBg,
+                }}
+              >
+                <div style={{ ...stickyLabelStyle, background: rowBg === 'transparent' ? 'var(--bg-card)' : 'var(--bg-card)', padding: '12px 14px', fontSize: '13px', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }}>{label}</div>
+                {comparablePlans.map((plan) => {
+                  const has = plan.features?.includes(label) ?? false;
+                  return (
+                    <div
+                      key={plan.id}
+                      style={{
+                        padding: '12px 14px',
+                        textAlign: 'center',
+                        borderLeft: '1px solid var(--border-light)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: plan.featured ? 'rgba(197,160,89,0.03)' : 'transparent',
+                      }}
+                    >
+                      {has
+                        ? <CheckCircle2 size={18} color="#22c55e" />
+                        : <X size={16} color="var(--text-muted)" strokeWidth={2.5} />
+                      }
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+
+          {/* CTA row */}
+          <div style={{ display: 'grid', gridTemplateColumns: gridTemplate, borderTop: '1px solid var(--border-light)', padding: '16px 14px', gap: '8px' }}>
+            <div style={stickyLabelStyle} />
+            {comparablePlans.map((plan) => (
+              <div key={plan.id} style={{ paddingLeft: '14px' }}>
+                <button
+                  onClick={() => onSelect(plan.id)}
+                  className={plan.featured ? 'btn-primary' : 'btn-secondary'}
+                  style={{
+                    width: '100%',
+                    fontSize: '12px',
+                    padding: '10px 8px',
+                    ...(plan.featured ? {} : { border: '1px solid var(--border-medium)' }),
+                  }}
+                >
+                  Choisir
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
@@ -685,7 +734,7 @@ const Tarifs = () => {
               <X size={18} />
             </button>
             <AnimatedButton to="/contact" className="btn-primary" style={{ width: 'auto', padding: '10px 20px', fontSize: '14px', borderRadius: 'var(--radius-full)' }}>
-              Réserver →
+              Obtenir un devis →
             </AnimatedButton>
           </div>
         </div>

@@ -240,7 +240,7 @@ export default function CityLanding({ cityData }) {
           <p>Une date en tête ? Vérifions ensemble nos disponibilités et préparons votre événement à {name}.</p>
           <AnimatedButton to="/contact" className="btn-primary" style={{ background: '#ffffff', color: 'var(--primary)', width: 'auto', padding: '16px 36px', fontWeight: 800 }}>
             <Phone size={18} />
-            Réserver mon photobooth à {name}
+            Obtenir un devis pour {name}
           </AnimatedButton>
         </div>
 

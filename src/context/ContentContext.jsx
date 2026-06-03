@@ -6,7 +6,7 @@ const ContentContext = createContext();
 const DEFAULT_CONTENT = {
   heroBadge: "N°1 en Seine-Maritime",
   heroImg: "/hero-premium.png",
-  heroBtn: "Réserver maintenant",
+  heroBtn: "Obtenir un devis",
   ctaTitle: "Prêt à créer des souvenirs ?",
   ctaDesc: "Réservez votre date en ligne et recevez une confirmation instantanée.",
   footerDesc: "L'excellence du photobooth premium en Normandie. Sublimez vos événements avec nos bornes photos innovantes et élégantes.",

@@ -171,7 +171,7 @@ const DateChecker = () => {
                   className="btn-primary"
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 20px', textDecoration: 'none', borderRadius: 'var(--radius-full)', fontSize: '15px', fontWeight: 700 }}
                 >
-                  Réserver cette date <ChevronRight size={16} />
+                  Obtenir un devis pour cette date <ChevronRight size={16} />
                 </Link>
                 <button
                   onClick={reset}

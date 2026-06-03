@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Heart, Briefcase, PartyPopper, Phone, Shield, Clock, ChevronDown, ChevronUp, CheckCircle2, Sparkles, Camera, Tag, Image, Users, GraduationCap, Gift, Cake } from 'lucide-react';
+import { ArrowRight, Star, Heart, Briefcase, PartyPopper, Phone, Shield, Clock, ChevronDown, ChevronUp, CheckCircle2, Sparkles, Camera, Tag, Users, GraduationCap, Gift, Cake } from 'lucide-react';
 import useScrollAnimation from '../hooks/useScrollAnimation';
 import SwipeCarousel from '../components/SwipeCarousel';
 import Lightbox from '../components/Lightbox';
@@ -136,11 +136,11 @@ const Home = () => {
             <EditableBlock
               label="Bouton"
               modalTitle="Modifier le Bouton"
-              fields={[{ key: 'heroBtn', label: 'Texte', type: 'text', value: content.heroBtn || "Réserver maintenant" }]}
+              fields={[{ key: 'heroBtn', label: 'Texte', type: 'text', value: content.heroBtn || "Obtenir un devis" }]}
               onSave={(vals) => updateContent({ ...content, ...vals })}
             >
               <AnimatedButton to="/contact">
-                {content.heroBtn || "Réserver maintenant"}
+                {content.heroBtn || "Obtenir un devis"}
                 <ArrowRight size={18} />
               </AnimatedButton>
             </EditableBlock>
@@ -528,47 +528,6 @@ const Home = () => {
       </section>
       </FadeIn>
 
-      {/* ===== GALLERY TEASER ===== */}
-      <FadeIn direction="up">
-      <section className="container" style={{ padding: '48px 24px' }}>
-        <div className="section-tag"><Image size={14} /> Souvenirs</div>
-        <h2 className="section-title">Derniers Événements</h2>
-        <p className="section-subtitle">Aperçu des moments capturés récemment par nos clients.</p>
-
-        <div className="gallery-teaser-grid">
-          {(content.gallery || []).slice(0, 4).map((item) => (
-            <EditableBlock
-              key={item.id}
-              label="Photo"
-              modalTitle="Modifier la photo"
-              fields={[
-                { key: 'title', label: 'Titre', type: 'text', value: item.title },
-                { key: 'image', label: 'URL de l\'image', type: 'image', value: item.image },
-              ]}
-              onSave={(vals) => {
-                const newGallery = content.gallery.map(g => g.id === item.id ? { ...g, ...vals } : g);
-                updateContent({ ...content, gallery: newGallery });
-              }}
-              onDelete={() => {
-                const newGallery = content.gallery.filter(g => g.id !== item.id);
-                updateContent({ ...content, gallery: newGallery });
-              }}
-            >
-              <div className="masonry-item" style={{ borderRadius: 'var(--radius-md)' }}>
-                <PremiumImage src={item.image} alt={item.title} />
-              </div>
-            </EditableBlock>
-          ))}
-        </div>
-
-        <div style={{ textAlign: 'center', marginTop: '24px' }}>
-          <AnimatedButton to="/galerie" style={{ width: 'auto', padding: '16px 36px' }}>
-            Accéder à la Galerie <ArrowRight size={18} />
-          </AnimatedButton>
-        </div>
-      </section>
-      </FadeIn>
-
       {/* ===== FAQ ===== */}
       <FadeIn direction="up">
       <section className="container" style={{ padding: '32px 24px' }} id="faq">
@@ -632,7 +591,7 @@ const Home = () => {
 
             <AnimatedButton to="/contact" className="btn-primary" style={{ background: '#ffffff', color: 'var(--primary)', width: 'auto', padding: '16px 36px', fontWeight: 800 }}>
               <Phone size={18} />
-              Réserver maintenant
+              Obtenir un devis
             </AnimatedButton>
           </div>
         </section>

@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Camera, Tag, Heart, Image as ImageIcon } from 'lucide-react';
+import { Home, Camera, Tag, Heart, Image as ImageIcon, Mail } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 
 const BottomNav = () => {
@@ -12,7 +12,7 @@ const BottomNav = () => {
     tarifs: Tag,
     galerie: ImageIcon,
     invite: Heart,
-    contact: Tag // Fallback
+    contact: Mail
   };
 
   const navStyle = (isActive) => ({
@@ -27,8 +27,8 @@ const BottomNav = () => {
     ...(isActive ? { filter: 'drop-shadow(0 0 6px rgba(197,160,89,0.2))' } : {}),
   });
 
-  // Filter only main navigation items for bottom nav (usually 5 max)
-  const navItems = content.navigation?.filter(n => n.id !== 'contact') || [];
+  // Show all navigation items in bottom nav
+  const navItems = content.navigation || [];
 
   return (
     <nav className="ios-nav" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, padding: '8px 16px 0' }}>

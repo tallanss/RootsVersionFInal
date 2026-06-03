@@ -9,7 +9,7 @@ const Header = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const location = useLocation();
   const { content } = useContent();
-  const contactNav = { label: 'Réservez' };
+  const contactNav = { label: 'Obtenir un devis' };
   const isAdmin = location.pathname.startsWith('/admin');
 
   useEffect(() => {
