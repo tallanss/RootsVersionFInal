@@ -646,19 +646,19 @@ const Contact = () => {
                     <Calendar size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
                   </button>
 
-                  <AnimatePresence>
+                  <AnimatePresence initial={false}>
                     {calendarOpen && (
                       <motion.div
                         role="dialog"
                         aria-label="Choisir une date"
-                        initial={{ opacity: 0, y: -8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -8 }}
-                        transition={{ duration: 0.18 }}
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.22, ease: 'easeOut' }}
                         style={{
-                          position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 50,
+                          position: 'relative', marginTop: '8px',
                           background: '#ffffff', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0',
-                          boxShadow: '0 20px 50px rgba(15, 23, 42, 0.18)', overflow: 'hidden',
+                          boxShadow: '0 10px 30px rgba(15, 23, 42, 0.12)', overflow: 'hidden',
                         }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', background: '#ffffff' }}>
