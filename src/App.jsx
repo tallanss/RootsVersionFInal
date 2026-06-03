@@ -53,7 +53,6 @@ import ContactButton from './components/WhatsAppButton';
 import CookieBanner from './components/CookieBanner';
 import AdminToolbar from './components/admin/AdminToolbar';
 import AdminSidebar from './components/AdminSidebar';
-import DateChecker from './components/DateChecker';
 
 import { useContent } from './context/ContentContext';
 import { AdminProvider, useAdmin } from './context/AdminContext';
@@ -141,7 +140,6 @@ function PageContent() {
       {!isStandalonePage && <Footer />}
       {!isStandalonePage && <BottomNav />}
       {!isStandalonePage && <ContactButton />}
-      {!isStandalonePage && !isAdminMode && <DateChecker />}
       {!isStandalonePage && <AdminToolbar onOpenDashboard={() => setIsSidebarOpen(true)} />}
       
       {isAdminMode && (
