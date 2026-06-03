@@ -16,11 +16,8 @@ import {
   Download,
   Image as ImageIcon,
   Star,
-  HelpCircle,
   Hash,
   Share2,
-  Trash,
-  Edit2,
   Save,
   X,
   Settings,
@@ -28,7 +25,6 @@ import {
   RotateCcw,
   Heart,
   Copy,
-  Link as LinkIcon,
   Loader2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -290,7 +286,6 @@ export const MediaLib = () => {
   const [category, setCategory] = useState(GALLERY_CATEGORIES[0]);
   const [location, setLocation] = useState('');
   const [date, setDate] = useState(new Date().getFullYear().toString());
-  const fileInputRef = useState(null);
 
   const uploadFile = async (file) => {
     if (!file || !file.type.startsWith('image/')) {

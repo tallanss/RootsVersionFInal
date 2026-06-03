@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { CheckCircle2, Tag, Star, Phone, X } from 'lucide-react';
 import { haptic } from '../hooks/useHaptic';
@@ -17,7 +17,7 @@ import { formatPrice, priceToNumber } from '../utils/galleryFormat';
    Rend l'affichage résistant aux paramétrages CMS incohérents (ex: isCustom
    activé par erreur sur un pack à prix numérique).
 */
-const PriceDisplay = ({ price, isCustom }) => {
+const PriceDisplay = ({ price }) => {
   const raw = String(price ?? '').trim();
   // Prix numérique ou déjà suffixé "€" → taille normale.
   // Prix purement textuel (ex: "Sur devis") → taille réduite.
@@ -145,7 +145,7 @@ const PlanComparator = ({ plans, onSelect }) => {
                     ...(plan.featured ? {} : { border: '1px solid var(--border-medium)' }),
                   }}
                 >
-                  Choisir
+                  Choisir ce pack
                 </button>
               </div>
             ))}
@@ -409,7 +409,7 @@ const Tarifs = () => {
                             updateContent({ ...content, pricing_plans: newPlans });
                           }}
                         >
-                          <PriceDisplay price={plan.price} isCustom={plan.isCustom} />
+                          <PriceDisplay price={plan.price} />
                         </EditableBlock>
 
                         <EditableBlock
@@ -543,7 +543,7 @@ const Tarifs = () => {
                           updateContent({ ...content, pricing_plans: newPlans });
                         }}
                       >
-                        <PriceDisplay price={plan.price} isCustom={plan.isCustom} />
+                        <PriceDisplay price={plan.price} />
                       </EditableBlock>
 
                       <EditableBlock

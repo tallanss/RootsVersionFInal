@@ -15,24 +15,25 @@ const DateChecker = () => {
 
   const blockedDates = content.blockedDates || [];
 
-  // Charger les créneaux occupés depuis Google Calendar au montage
+  // Charger les dates occupées depuis Google Calendar au montage.
+  // fetchBusySlots() renvoie des dates au format simple "YYYY-MM-DD"
+  // (une date est "complète" dès qu'elle totalise 2+ événements).
   useEffect(() => {
     fetchBusySlots().then(slots => {
-      const cmsBlocked = blockedDates.flatMap(d => [`${d}_afternoon`, `${d}_evening`]);
-      busySlotsRef.current = [...new Set([...slots, ...cmsBlocked])];
+      const busyDates = slots.map(s => s.split('_')[0]); // robustesse si format legacy
+      busySlotsRef.current = [...new Set([...busyDates, ...blockedDates])];
     }).catch(() => {
       // Fallback sur les dates bloquées manuellement uniquement
-      busySlotsRef.current = blockedDates.flatMap(d => [`${d}_afternoon`, `${d}_evening`]);
+      busySlotsRef.current = [...blockedDates];
     });
   }, [blockedDates]);
 
   const checkDate = () => {
     if (!date) return;
     haptic(12);
-    // Une date est complète si les deux créneaux (matin et soir) sont occupés
-    const afternoonBusy = busySlotsRef.current.includes(`${date}_afternoon`);
-    const eveningBusy = busySlotsRef.current.includes(`${date}_evening`);
-    setResult(afternoonBusy && eveningBusy ? 'unavailable' : 'available');
+    // Une date est indisponible si elle figure dans les dates occupées/bloquées
+    const isBusy = busySlotsRef.current.includes(date);
+    setResult(isBusy ? 'unavailable' : 'available');
   };
 
   const reset = () => { setDate(''); setResult(null); };
@@ -163,7 +164,7 @@ const DateChecker = () => {
                   Disponible !
                 </h4>
                 <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '28px', lineHeight: 1.6 }}>
-                  Cette date est libre. Réservez avant qu'elle ne parte !
+                  Cette date est libre. Demandez votre devis avant qu'elle ne parte !
                 </p>
                 <Link
                   to="/contact"
@@ -194,7 +195,7 @@ const DateChecker = () => {
                   <AlertCircle size={32} color="#ef4444" />
                 </div>
                 <h4 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '8px', color: '#ef4444' }}>
-                  Déjà réservée
+                  Date indisponible
                 </h4>
                 <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '28px', lineHeight: 1.6 }}>
                   Cette date n'est plus disponible. Essayez une date voisine ou contactez-nous pour trouver une solution.

@@ -8,6 +8,23 @@
 // uniquement côté affichage public, pas dans la liste éditable admin.
 export const GALLERY_CATEGORIES = ['Mariage', 'Corporate', 'Anniversaire', 'Gala'];
 
+// Mappe d'anciennes catégories (données legacy) vers les catégories actuelles.
+const CATEGORY_ALIASES = {
+  Entreprise: 'Corporate',
+  Pro: 'Corporate',
+  Soirée: 'Gala',
+  Soiree: 'Gala',
+  Anniv: 'Anniversaire',
+};
+
+/** Normalise une catégorie de photo (gère les valeurs legacy). */
+export const normalizeCategory = (cat) => {
+  if (!cat) return GALLERY_CATEGORIES[0];
+  const c = String(cat).trim();
+  if (GALLERY_CATEGORIES.includes(c)) return c;
+  return CATEGORY_ALIASES[c] || c; // inconnue → on la garde telle quelle (restera filtrable)
+};
+
 /**
  * Détecte les titres qui ressemblent à un nom de fichier brut
  * (ex: "img_6241", "DSC_0123", "P10234567", "photo-2024-10-15",

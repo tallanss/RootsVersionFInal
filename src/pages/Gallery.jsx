@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Camera, Calendar, MapPin, Plus } from 'lucide-react';
 import { haptic } from '../hooks/useHaptic';
-import { GALLERY_CATEGORIES, displayTitle, galleryAlt } from '../utils/galleryFormat';
+import { GALLERY_CATEGORIES, displayTitle, galleryAlt, normalizeCategory } from '../utils/galleryFormat';
 import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
 import Lightbox from '../components/Lightbox';
@@ -10,8 +10,6 @@ import { useContent } from '../context/ContentContext';
 import { useAdmin } from '../context/AdminContext';
 import EditModal from '../components/admin/EditModal';
 import EditableBlock from '../components/admin/EditableBlock';
-
-const CATEGORIES = ["Tous", ...GALLERY_CATEGORIES];
 
 const Gallery = () => {
   const { content, updateContent } = useContent();
@@ -22,14 +20,21 @@ const Gallery = () => {
 
   const gallery = content.gallery || [];
 
+  // Liste de filtres = "Tous" + catégories officielles + toute catégorie
+  // présente dans les données (legacy comprise) → aucune photo invisible.
+  const CATEGORIES = ["Tous", ...new Set([
+    ...GALLERY_CATEGORIES,
+    ...gallery.map(g => normalizeCategory(g.category)),
+  ])];
+
   const filteredData = filter === "Tous"
     ? gallery
-    : gallery.filter(item => item.category === filter);
+    : gallery.filter(item => normalizeCategory(item.category) === filter);
 
   const categoryCounts = CATEGORIES.reduce((acc, cat) => {
     acc[cat] = cat === 'Tous'
       ? gallery.length
-      : gallery.filter(g => g.category === cat).length;
+      : gallery.filter(g => normalizeCategory(g.category) === cat).length;
     return acc;
   }, {});
 

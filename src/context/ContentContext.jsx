@@ -82,12 +82,6 @@ const DEFAULT_CONTENT = {
       featured: false
     }
   ],
-  pricing: {
-    essentiel: { price: "189", subtitle: "Parfait pour les petits événements et les fêtes entre amis." },
-    premium: { price: "289", subtitle: "Notre formule la plus populaire pour les mariages et grands événements." },
-    excellence: { price: "389", subtitle: "La formule complète pour les mariages et événements d'entreprise haut de gamme." },
-    custom: { price: "Sur devis", subtitle: "Pour les événements d'exception qui méritent une prestation unique." }
-  },
   theme: {
     primary: "#c5a059",
     accent: "#e3c18c",
@@ -159,12 +153,6 @@ const buildMergedContent = (parsed = {}) => {
       ...DEFAULT_CONTENT.seo,
       ...(parsed.seo || {}),
       pages: { ...DEFAULT_CONTENT.seo.pages, ...(parsed.seo?.pages || {}) }
-    },
-    pricing: {
-      essentiel: { ...DEFAULT_CONTENT.pricing.essentiel, ...(parsed.pricing?.essentiel || {}) },
-      premium: { ...DEFAULT_CONTENT.pricing.premium, ...(parsed.pricing?.premium || {}) },
-      excellence: { ...DEFAULT_CONTENT.pricing.excellence, ...(parsed.pricing?.excellence || {}) },
-      custom: { ...DEFAULT_CONTENT.pricing.custom, ...(parsed.pricing?.custom || {}) },
     },
     formOptions: { ...DEFAULT_CONTENT.formOptions, ...(parsed.formOptions || {}) },
     analytics: { ...DEFAULT_CONTENT.analytics, ...(parsed.analytics || {}) },

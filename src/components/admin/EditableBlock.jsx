@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Pencil, Trash2, Plus } from 'lucide-react';
 import { useAdmin } from '../../context/AdminContext';
 import EditModal from './EditModal';

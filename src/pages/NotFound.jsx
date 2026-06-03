@@ -6,7 +6,7 @@ const NotFound = () => (
   <div className="animate-in">
     <Helmet>
       <title>Page introuvable — PhotoRoots</title>
-      <meta name="description" content="Cette page n'existe pas. Retournez à l'accueil ou réservez votre photobooth." />
+      <meta name="description" content="Cette page n'existe pas. Retournez à l'accueil ou demandez votre devis photobooth." />
       <meta name="robots" content="noindex, nofollow" />
     </Helmet>
 

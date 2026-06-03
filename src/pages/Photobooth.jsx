@@ -432,10 +432,10 @@ const Photobooth = () => {
           <EditableBlock
             label="Texte CTA"
             modalTitle="Modifier le texte"
-            fields={[{ key: 'photoboothCtaDesc', label: 'Texte', type: 'text', value: content.photoboothCtaDesc || 'Demandez une démonstration gratuite ou réservez pour votre événement.' }]}
+            fields={[{ key: 'photoboothCtaDesc', label: 'Texte', type: 'text', value: content.photoboothCtaDesc || 'Demandez une démonstration gratuite ou obtenez votre devis personnalisé.' }]}
             onSave={(vals) => updateContent({ ...content, ...vals })}
           >
-            <p>{content.photoboothCtaDesc || 'Demandez une démonstration gratuite ou réservez pour votre événement.'}</p>
+            <p>{content.photoboothCtaDesc || 'Demandez une démonstration gratuite ou obtenez votre devis personnalisé.'}</p>
           </EditableBlock>
 
           <Link to="/contact">
