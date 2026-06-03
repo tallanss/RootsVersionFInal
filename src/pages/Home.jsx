@@ -122,17 +122,27 @@ const Home = () => {
           </FadeIn>
 
           <FadeIn direction="up" delay={0.4}>
-            <EditableBlock
-              label="Bouton"
-              modalTitle="Modifier le Bouton"
-              fields={[{ key: 'heroBtn', label: 'Texte', type: 'text', value: content.heroBtn || "Obtenir un devis" }]}
-              onSave={(vals) => updateContent({ ...content, ...vals })}
-            >
-              <AnimatedButton to="/contact">
-                {content.heroBtn || "Obtenir un devis"}
-                <ArrowRight size={18} />
-              </AnimatedButton>
-            </EditableBlock>
+            {(() => {
+              // Migration : on remplace les anciennes valeurs CMS ("Réserver maintenant",
+              // "Réservez", etc.) par le nouveau libellé "Obtenir un devis".
+              const OLD_HERO_LABELS = /^(réserve(z|r)?(\s+maintenant)?|réservation)$/i;
+              const heroLabel = (!content.heroBtn || OLD_HERO_LABELS.test(content.heroBtn.trim()))
+                ? 'Obtenir un devis'
+                : content.heroBtn;
+              return (
+                <EditableBlock
+                  label="Bouton"
+                  modalTitle="Modifier le Bouton"
+                  fields={[{ key: 'heroBtn', label: 'Texte', type: 'text', value: heroLabel }]}
+                  onSave={(vals) => updateContent({ ...content, ...vals })}
+                >
+                  <AnimatedButton to="/contact">
+                    {heroLabel}
+                    <ArrowRight size={18} />
+                  </AnimatedButton>
+                </EditableBlock>
+              );
+            })()}
           </FadeIn>
 
           <FadeIn direction="up" delay={0.6} duration={1.2}>

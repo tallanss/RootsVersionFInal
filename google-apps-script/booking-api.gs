@@ -129,17 +129,18 @@ function createCalendarEvent(data) {
   const endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
 
   const description =
-    '📸 Réservation PhotoRoots\n\n' +
+    '📩 Demande de devis PhotoRoots\n\n' +
     'Client : ' + data.name + '\n' +
     'Email : ' + data.email + '\n' +
     'Téléphone : ' + (data.phone || 'Non renseigné') + '\n' +
-    'Type : ' + data.eventType + '\n' +
+    'Type : ' + (data.eventType || 'Non précisé') + '\n' +
     'Lieu : ' + (data.location || 'Non renseigné') + '\n' +
-    'Formule : ' + (data.formula || 'Non précisée') + '\n\n' +
+    'Préférence de contact : ' + (data.contactPreference || 'Non précisée') + '\n' +
+    'Connu via : ' + (data.referralSource || 'Non précisé') + '\n\n' +
     'Message : ' + (data.message || 'Aucun');
 
   const event = calendar.createAllDayEvent(
-    '📸 PhotoRoots — ' + data.name + ' (' + data.eventType + ')',
+    '📩 Devis — ' + data.name + (data.eventType ? ' (' + data.eventType + ')' : ''),
     startDate,
     endDate,
     {
@@ -148,36 +149,45 @@ function createCalendarEvent(data) {
     }
   );
 
-  event.setColor(CalendarApp.EventColor.GREEN);
+  // Orange = devis en attente. Une fois confirmé, le propriétaire peut
+  // changer la couleur manuellement (ex: GREEN pour confirmé).
+  event.setColor(CalendarApp.EventColor.ORANGE);
   return event;
 }
 
-// ===== Envoyer email de confirmation au client =====
+// ===== Envoyer email de confirmation de demande de devis au client =====
 function sendClientEmail(data) {
   const dateFormatted = formatDateFR(parseDateFR(data.date));
 
-  const subject = '✅ Réservation confirmée — ' + BUSINESS_NAME;
+  const subject = '📩 Demande de devis bien reçue — ' + BUSINESS_NAME;
+  const rows = [
+    ['Date de l\'événement', dateFormatted],
+    ['Type d\'événement',   data.eventType || 'À préciser'],
+    ['Lieu',                data.location || 'À préciser'],
+    ['Téléphone',           data.phone || '—'],
+    ['Préférence de contact', data.contactPreference || '—'],
+  ];
+
+  const tableRows = rows.map(function(r, i) {
+    var border = i < rows.length - 1 ? 'border-bottom: 1px solid #e2e8f0;' : '';
+    return '<tr>' +
+      '<td style="padding: 10px; ' + border + ' color: #64748b;">' + r[0] + '</td>' +
+      '<td style="padding: 10px; ' + border + ' font-weight: bold; text-align: right;">' + r[1] + '</td>' +
+    '</tr>';
+  }).join('');
+
   const htmlBody =
     '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;" lang="fr">' +
-    '<div style="background: #16a34a; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">' +
-    '<h1 style="color: white; margin: 0; font-size: 24px;">✅ Réservation confirmée</h1>' +
+    '<div style="background: #c5a059; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">' +
+    '<h1 style="color: white; margin: 0; font-size: 24px;">📩 Nous avons bien reçu votre demande de devis</h1>' +
     '</div>' +
     '<div style="background: #f8faf9; padding: 24px; border: 1px solid #e2e8f0; border-radius: 0 0 12px 12px;">' +
     '<p>Bonjour <strong>' + data.name + '</strong>,</p>' +
-    '<p>Nous avons bien enregistré votre réservation de photobooth. Voici le récapitulatif :</p>' +
-    '<table style="width: 100%; border-collapse: collapse; margin: 20px 0;">' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Date</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + dateFormatted + '</td></tr>' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Événement</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + data.eventType + '</td></tr>' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Lieu</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + (data.location || 'À préciser') + '</td></tr>' +
-    '<tr><td style="padding: 10px; color: #64748b;">Formule</td>' +
-    '<td style="padding: 10px; font-weight: bold; text-align: right;">' + (data.formula || '—') + '</td></tr>' +
-    '</table>' +
-    '<p style="color: #64748b; font-size: 14px;">Nous vous recontacterons très vite pour finaliser ensemble les détails de votre événement.</p>' +
-    '<p style="color: #64748b; font-size: 14px;">Pour toute question, répondez simplement à cet email ou appelez-nous au ' + BUSINESS_PHONE + '.</p>' +
-    '<p>À très bientôt,<br><strong>L\'équipe ' + BUSINESS_NAME + '</strong></p>' +
+    '<p>Merci de nous avoir contactés. Nous avons bien reçu votre demande de devis et nous reviendrons vers vous <strong>sous 24h</strong> avec une proposition personnalisée.</p>' +
+    '<p style="color: #64748b; font-size: 14px; margin-top: 16px;">Voici les informations que vous nous avez transmises :</p>' +
+    '<table style="width: 100%; border-collapse: collapse; margin: 12px 0 20px;">' + tableRows + '</table>' +
+    '<p style="color: #64748b; font-size: 14px;">Pour toute question urgente, répondez directement à cet email ou appelez-nous au <strong>' + BUSINESS_PHONE + '</strong>.</p>' +
+    '<p>À très vite,<br><strong>L\'équipe ' + BUSINESS_NAME + '</strong></p>' +
     '</div></div>';
 
   sendViaResend(data.email, subject, htmlBody);
@@ -187,31 +197,36 @@ function sendClientEmail(data) {
 function sendOwnerEmail(data) {
   const dateFormatted = formatDateFR(parseDateFR(data.date));
 
-  const subject = '🔔 Nouvelle réservation — ' + data.name + ' (' + data.eventType + ')';
+  const subject = '🔔 Nouvelle demande de devis — ' + data.name + (data.eventType ? ' (' + data.eventType + ')' : '');
+
+  const rows = [
+    ['Client',                data.name],
+    ['Email',                 '<a href="mailto:' + data.email + '">' + data.email + '</a>'],
+    ['Téléphone',             data.phone || '—'],
+    ['Date',                  dateFormatted],
+    ['Événement',             data.eventType || '—'],
+    ['Lieu',                  data.location || 'Non renseigné'],
+    ['Préférence de contact', data.contactPreference || '—'],
+    ['Connu via',             data.referralSource || '—'],
+  ];
+
+  const tableRows = rows.map(function(r, i) {
+    var border = i < rows.length - 1 ? 'border-bottom: 1px solid #e2e8f0;' : '';
+    return '<tr>' +
+      '<td style="padding: 10px; ' + border + ' color: #64748b;">' + r[0] + '</td>' +
+      '<td style="padding: 10px; ' + border + ' font-weight: bold; text-align: right;">' + r[1] + '</td>' +
+    '</tr>';
+  }).join('');
+
   const htmlBody =
     '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;" lang="fr">' +
     '<div style="background: #0f172a; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">' +
-    '<h1 style="color: #22c55e; margin: 0; font-size: 24px;">🔔 Nouvelle réservation</h1>' +
+    '<h1 style="color: #c5a059; margin: 0; font-size: 24px;">🔔 Nouvelle demande de devis</h1>' +
     '</div>' +
     '<div style="background: #f8faf9; padding: 24px; border: 1px solid #e2e8f0; border-radius: 0 0 12px 12px;">' +
-    '<table style="width: 100%; border-collapse: collapse; margin: 10px 0;">' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Client</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + data.name + '</td></tr>' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Email</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; text-align: right;"><a href="mailto:' + data.email + '">' + data.email + '</a></td></tr>' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Téléphone</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + (data.phone || '—') + '</td></tr>' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Date</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + dateFormatted + '</td></tr>' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Événement</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + data.eventType + '</td></tr>' +
-    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Lieu</td>' +
-    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + (data.location || 'Non renseigné') + '</td></tr>' +
-    '<tr><td style="padding: 10px; color: #64748b;">Formule</td>' +
-    '<td style="padding: 10px; font-weight: bold; text-align: right;">' + (data.formula || '—') + '</td></tr>' +
-    '</table>' +
+    '<table style="width: 100%; border-collapse: collapse; margin: 10px 0;">' + tableRows + '</table>' +
     (data.message ? '<div style="background: white; padding: 14px; border-radius: 8px; margin-top: 12px; border: 1px solid #e2e8f0;"><strong>Message :</strong><br>' + data.message + '</div>' : '') +
-    '<p style="color: #64748b; font-size: 13px; margin-top: 16px;">L\'événement a été ajouté automatiquement à votre Google Calendar.</p>' +
+    '<p style="color: #64748b; font-size: 13px; margin-top: 16px;">Une entrée pré-réservation a été ajoutée à votre Google Calendar — pensez à confirmer ou retirer après envoi du devis.</p>' +
     '</div></div>';
 
   sendViaResend(OWNER_EMAIL, subject, htmlBody);

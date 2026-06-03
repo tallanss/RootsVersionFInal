@@ -356,26 +356,26 @@ const Contact = () => {
                       left: 0,
                       right: 0,
                       zIndex: 50,
-                      background: 'var(--bg-card)',
+                      background: '#ffffff',
                       borderRadius: 'var(--radius-lg)',
-                      border: '1px solid var(--border-light)',
-                      boxShadow: 'var(--shadow-lg)',
+                      border: '1px solid #e2e8f0',
+                      boxShadow: '0 20px 50px rgba(15, 23, 42, 0.18)',
                       overflow: 'hidden',
                     }}
                   >
                     {/* Month nav */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border-light)' }}>
-                      <button type="button" onClick={prevMonth} style={{ background: 'var(--bg-secondary)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', background: '#ffffff' }}>
+                      <button type="button" onClick={prevMonth} style={{ background: '#f1f5f9', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', color: '#0f172a' }}>
                         <ChevronLeft size={16} />
                       </button>
-                      <span style={{ fontWeight: 700, fontSize: '14px', textTransform: 'capitalize' }}>{monthLabel}</span>
-                      <button type="button" onClick={nextMonth} style={{ background: 'var(--bg-secondary)', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer' }}>
+                      <span style={{ fontWeight: 700, fontSize: '14px', textTransform: 'capitalize', color: '#0f172a' }}>{monthLabel}</span>
+                      <button type="button" onClick={nextMonth} style={{ background: '#f1f5f9', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', color: '#0f172a' }}>
                         <ChevronRight size={16} />
                       </button>
                     </div>
 
                     {/* Legend */}
-                    <div style={{ display: 'flex', gap: '14px', padding: '8px 16px', fontSize: '11px', color: 'var(--text-muted)', borderBottom: '1px solid var(--border-light)' }}>
+                    <div style={{ display: 'flex', gap: '14px', padding: '8px 16px', fontSize: '11px', color: '#64748b', borderBottom: '1px solid #e2e8f0', background: '#ffffff' }}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                         <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', display: 'inline-block' }} /> Disponible
                       </span>
@@ -384,9 +384,9 @@ const Contact = () => {
                       </span>
                     </div>
 
-                    <div style={{ position: 'relative', minHeight: '240px' }}>
+                    <div style={{ position: 'relative', minHeight: '240px', background: '#ffffff' }}>
                       {loadingSlots && (
-                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(6px)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(6px)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                           <Loader2 size={20} style={{ color: 'var(--primary)', animation: 'spin 1s linear infinite' }} />
                           <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary)' }}>Chargement...</span>
                         </div>
@@ -395,7 +395,7 @@ const Contact = () => {
                       {/* Day headers */}
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '10px 10px 4px' }}>
                         {['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'].map(d => (
-                          <div key={d} style={{ textAlign: 'center', fontSize: '11px', fontWeight: 700, color: 'var(--text-light)', padding: '4px' }}>{d}</div>
+                          <div key={d} style={{ textAlign: 'center', fontSize: '11px', fontWeight: 700, color: '#94a3b8', padding: '4px' }}>{d}</div>
                         ))}
                       </div>
 
@@ -415,10 +415,11 @@ const Contact = () => {
                                 width: '100%', aspectRatio: '1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
                                 fontSize: '13px', fontWeight: isSelected ? 700 : 500,
                                 background: isSelected ? 'var(--primary)' : day.isFullyBooked ? '#fee2e2' : 'transparent',
-                                color: isSelected ? '#fff' : day.isFullyBooked ? '#ef4444' : day.isPast ? 'var(--text-light)' : 'var(--text-main)',
-                                opacity: day.isPast ? 0.3 : 1,
+                                color: isSelected ? '#fff' : day.isFullyBooked ? '#ef4444' : day.isPast ? '#cbd5e1' : '#0f172a',
+                                opacity: day.isPast ? 0.5 : 1,
                                 cursor: isDisabled ? 'not-allowed' : 'pointer',
                                 transition: 'all 0.2s',
+                                border: day.isFullyBooked ? '1px solid #fca5a5' : 'none',
                                 border: day.isFullyBooked ? '1px solid #fca5a5' : 'none',
                               }}
                             >
