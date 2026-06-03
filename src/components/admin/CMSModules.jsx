@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../../context/ContentContext';
+import { GALLERY_CATEGORIES } from '../../utils/galleryFormat';
 import EditModal from './EditModal';
 import { showToast } from '../Toast';
 
@@ -198,7 +199,7 @@ export const AnalyticsHub = () => {
   ];
 
   const newLeads = messages.filter(m => m.status === 'Nouveau').length;
-  const bookedLeads = messages.filter(m => m.status === 'Réserver' || m.status === 'Confirmé').length;
+  const bookedLeads = messages.filter(m => m.status === 'Réservé').length;
 
   const updateStat = (index, field, value) => {
     const newStats = [...stats];
@@ -276,8 +277,8 @@ export const AnalyticsHub = () => {
 /* ========================================== */
 /* 📸 MEDIA LIB                               */
 /* ========================================== */
-// Catégories de la galerie — doivent rester alignées avec src/pages/Gallery.jsx
-const GALLERY_CATEGORIES = ['Mariage', 'Corporate', 'Anniversaire', 'Gala'];
+// Catégories de la galerie — source unique de vérité dans src/utils/galleryFormat.js
+// (doivent rester alignées avec src/pages/Gallery.jsx)
 
 export const MediaLib = () => {
   const { content, updateContent, saveStatus } = useContent();

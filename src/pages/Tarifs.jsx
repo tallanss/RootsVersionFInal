@@ -8,6 +8,7 @@ import FadeIn from '../components/FadeIn';
 import { useContent } from '../context/ContentContext';
 import EditableBlock from '../components/admin/EditableBlock';
 import { useAdmin } from '../context/AdminContext';
+import { formatPrice, priceToNumber } from '../utils/galleryFormat';
 
 /* ── Helper : formate l'affichage du prix de façon robuste ──
    - Prix numérique (ex: "249" ou 249)      → "249€" taille normale
@@ -18,17 +19,14 @@ import { useAdmin } from '../context/AdminContext';
 */
 const PriceDisplay = ({ price, isCustom }) => {
   const raw = String(price ?? '').trim();
-  const numeric = /^\d+(?:[.,]\d+)?$/.test(raw);
-  const alreadyHasEuro = raw.includes('€');
-
-  if (numeric) {
-    return <div className="pricing-price">{raw}€</div>;
-  }
-  if (alreadyHasEuro) {
-    return <div className="pricing-price">{raw}</div>;
-  }
-  // Fallback texte (ex: "Sur devis") : on garde la taille réduite
-  return <div className="pricing-price" style={{ fontSize: '28px' }}>{raw}</div>;
+  // Prix numérique ou déjà suffixé "€" → taille normale.
+  // Prix purement textuel (ex: "Sur devis") → taille réduite.
+  const isNumericOrEuro = /^\d/.test(raw) || raw.includes('€');
+  return (
+    <div className="pricing-price" style={isNumericOrEuro ? undefined : { fontSize: '28px' }}>
+      {formatPrice(price)}
+    </div>
+  );
 };
 
 /* ── Plan Comparator ──
@@ -37,13 +35,6 @@ const PriceDisplay = ({ price, isCustom }) => {
    - N plan columns (header + feature rows + CTA)
    The plan with featured:true gets the gold-tinted column and the "POPULAIRE" badge.
 */
-const formatPlanPrice = (price) => {
-  const raw = String(price ?? '').trim();
-  const numeric = /^\d+(?:[.,]\d+)?$/.test(raw);
-  if (numeric) return `${raw}€`;
-  return raw;
-};
-
 const PlanComparator = ({ plans, onSelect }) => {
   // Exclude custom (quote-only) plans — they have no fixed feature grid
   const comparablePlans = (plans || []).filter(p => !p.isCustom);
@@ -97,7 +88,7 @@ const PlanComparator = ({ plans, onSelect }) => {
                   <div style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary)', marginBottom: '2px' }}>⭐ POPULAIRE</div>
                 )}
                 <div style={{ fontSize: '13px', fontWeight: 800 }}>{plan.name}</div>
-                <div style={{ fontSize: '18px', fontWeight: 900, color: 'var(--primary)' }}>{formatPlanPrice(plan.price)}</div>
+                <div style={{ fontSize: '18px', fontWeight: 900, color: 'var(--primary)' }}>{formatPrice(plan.price)}</div>
               </div>
             ))}
           </div>
@@ -178,8 +169,10 @@ const Tarifs = () => {
     const params = new URLSearchParams(location.search);
     const pack = params.get('pack');
     if (pack) {
-      // Find if valid pack
-      const validPacks = ['essentiel', 'premium', 'excellence'];
+      // Dérive dynamiquement les packs valides depuis les plans réels
+      // (CMS ou défauts) pour que tout pack défini soit deep-linkable.
+      const activePlans = content.pricing_plans || defaultPlans;
+      const validPacks = activePlans.map(p => String(p.id).toLowerCase());
       if (validPacks.includes(pack.toLowerCase())) {
         setSelectedPlanId(pack.toLowerCase());
         // Small delay to ensure render is complete before scrolling
@@ -292,7 +285,7 @@ const Tarifs = () => {
     if (selectedPlanId === null) return 0;
     const plan = plans.find(p => p.id === selectedPlanId);
     if (!plan) return 0;
-    const planPrice = parseInt(plan.price) || 0;
+    const planPrice = priceToNumber(plan.price);
     const optionsPrice = selectedOptions.reduce((total, optId) => {
       const option = options.find(o => o.id === optId);
       return total + (option ? option.price : 0);
@@ -521,7 +514,7 @@ const Tarifs = () => {
                             marginTop: '16px'
                           }}
                         >
-                          {isSelected(plan.id) ? 'Pack sélectionné ✓' : (plan.isCustom ? 'Demander un Devis' : 'Choisir ce pack')}
+                          {isSelected(plan.id) ? 'Pack sélectionné ✓' : 'Choisir ce pack'}
                         </button>
                       </div>
                     </div>
@@ -650,7 +643,7 @@ const Tarifs = () => {
                           marginTop: '16px'
                         }}
                       >
-                        {isSelected(plan.id) ? 'Pack sélectionné ✓' : (plan.isCustom ? 'Demander un Devis' : 'Choisir ce pack')}
+                        {isSelected(plan.id) ? 'Pack sélectionné ✓' : 'Choisir ce pack'}
                       </button>
                     </div>
                   )}

@@ -236,7 +236,7 @@ export default function CityLanding({ cityData }) {
       {/* FINAL CTA */}
       <section className="container" style={{ padding: '32px 20px 48px' }}>
         <div className="cta-section">
-          <h2>Réserver mon photobooth à {name}</h2>
+          <h2>Obtenez votre devis à {name}</h2>
           <p>Une date en tête ? Vérifions ensemble nos disponibilités et préparons votre événement à {name}.</p>
           <AnimatedButton to="/contact" className="btn-primary" style={{ background: '#ffffff', color: 'var(--primary)', width: 'auto', padding: '16px 36px', fontWeight: 800 }}>
             <Phone size={18} />

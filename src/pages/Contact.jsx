@@ -57,7 +57,7 @@ const Contact = () => {
     loadBusySlots();
   }, [content.blockedDates]);
 
-  // Click outside closes calendar
+  // Click outside or Escape closes calendar
   useEffect(() => {
     if (!calendarOpen) return;
     const handler = (e) => {
@@ -65,8 +65,15 @@ const Contact = () => {
         setCalendarOpen(false);
       }
     };
+    const keyHandler = (e) => {
+      if (e.key === 'Escape') setCalendarOpen(false);
+    };
     document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener('keydown', keyHandler);
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('keydown', keyHandler);
+    };
   }, [calendarOpen]);
 
   // Calendar logic
@@ -328,6 +335,8 @@ const Contact = () => {
                 type="button"
                 id="date"
                 onClick={() => setCalendarOpen(o => !o)}
+                aria-haspopup="dialog"
+                aria-expanded={calendarOpen}
                 className="form-input"
                 style={{
                   textAlign: 'left',
@@ -346,6 +355,8 @@ const Contact = () => {
               <AnimatePresence>
                 {calendarOpen && (
                   <motion.div
+                    role="dialog"
+                    aria-label="Choisir une date"
                     initial={{ opacity: 0, y: -8 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
@@ -419,7 +430,6 @@ const Contact = () => {
                                 opacity: day.isPast ? 0.5 : 1,
                                 cursor: isDisabled ? 'not-allowed' : 'pointer',
                                 transition: 'all 0.2s',
-                                border: day.isFullyBooked ? '1px solid #fca5a5' : 'none',
                                 border: day.isFullyBooked ? '1px solid #fca5a5' : 'none',
                               }}
                             >

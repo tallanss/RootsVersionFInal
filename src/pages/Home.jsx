@@ -10,6 +10,7 @@ import { useContent } from '../context/ContentContext';
 import { useAdmin } from '../context/AdminContext';
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
+import { isPlaceholderTitle, formatPrice } from '../utils/galleryFormat';
 
 // Local fallbacks moved to context
 
@@ -44,14 +45,6 @@ const Home = () => {
 
   // Data now comes from ContentContext
   const faqs = content.faqs || [];
-  // Détecte les titres "placeholder" (IMG_6241, DSC_…, screenshots, dates brutes…)
-  const isPlaceholderTitle = (t) => {
-    if (!t) return true;
-    const s = String(t).trim();
-    if (!s) return true;
-    return /^(img|dsc|dscn|p|photo|image|capture|screenshot|untitled|sans[_\s-]?titre)[_\s-]*\d+/i.test(s)
-      || /^\d{4}[_\s-]?\d{2}[_\s-]?\d{2}/.test(s);
-  };
 
   return (
     <div>
@@ -316,7 +309,7 @@ const Home = () => {
             background: 'var(--bg-card)'
           }}>
             <div style={{ position: 'absolute', inset: 0, opacity: activeStep === 0 ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-              <PremiumImage src={content.scrolly?.step1?.image || '/step-booking.png'} alt={content.scrolly?.step1?.title || 'Réservez en ligne'} />
+              <PremiumImage src={content.scrolly?.step1?.image || '/step-booking.png'} alt={content.scrolly?.step1?.title || 'Demandez votre devis'} />
             </div>
             <div style={{ position: 'absolute', inset: 0, opacity: activeStep === 1 ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
               <PremiumImage src={content.scrolly?.step2?.image || '/step-setup.png'} alt={content.scrolly?.step2?.title || "On s'occupe de tout"} />
@@ -446,13 +439,6 @@ const Home = () => {
               ? content.pricing_plans
               : [];
 
-            const formatPrice = (price) => {
-              const raw = String(price ?? '').trim();
-              const numeric = /^\d+(?:[.,]\d+)?$/.test(raw);
-              if (numeric) return `${raw}€`;
-              return raw;
-            };
-
             return plans.map((plan) => {
               const isFeatured = Boolean(plan.featured);
               const card = (
@@ -544,7 +530,7 @@ const Home = () => {
       <FadeIn direction="up">
       <section className="container" style={{ padding: '32px 24px' }} id="faq">
         <h2 className="section-title">Questions fréquentes</h2>
-        <p className="section-subtitle">Tout ce que vous devez savoir avant de réserver.</p>
+        <p className="section-subtitle">Tout ce que vous devez savoir avant de demander votre devis.</p>
         <div>
           {(content.faqs || faqs).map((faq, i) => (
             <EditableBlock
@@ -595,10 +581,10 @@ const Home = () => {
             <EditableBlock
               label="Texte CTA"
               modalTitle="Modifier la description"
-              fields={[{ key: 'ctaDesc', label: 'Description', type: 'text', value: content.ctaDesc || 'Réservez votre date en ligne et recevez une confirmation instantanée.' }]}
+              fields={[{ key: 'ctaDesc', label: 'Description', type: 'text', value: content.ctaDesc || 'Demandez votre devis gratuit en ligne et recevez une réponse personnalisée sous 24h.' }]}
               onSave={(vals) => updateContent({ ...content, ...vals })}
             >
-              <p>{content.ctaDesc || 'Réservez votre date en ligne et recevez une confirmation instantanée.'}</p>
+              <p>{content.ctaDesc || 'Demandez votre devis gratuit en ligne et recevez une réponse personnalisée sous 24h.'}</p>
             </EditableBlock>
 
             <AnimatedButton to="/contact" className="btn-primary" style={{ background: '#ffffff', color: 'var(--primary)', width: 'auto', padding: '16px 36px', fontWeight: 800 }}>
@@ -611,7 +597,7 @@ const Home = () => {
       {/* ===== TRUST FOOTER ===== */}
       <section className="container" style={{ paddingBottom: '24px' }}>
         <div className="trust-row">
-          <div className="trust-badge"><Shield size={14} /> Paiement sécurisé</div>
+          <div className="trust-badge"><Shield size={14} /> Devis gratuit en 24h</div>
           <div className="trust-badge"><Clock size={14} /> Réponse 24h</div>
           <div className="trust-badge"><CheckCircle2 size={14} /> Satisfaction 100%</div>
         </div>

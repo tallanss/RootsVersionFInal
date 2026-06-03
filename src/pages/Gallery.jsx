@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Camera, Filter, X, Calendar, MapPin, Plus } from 'lucide-react';
+import { Camera, Calendar, MapPin, Plus } from 'lucide-react';
 import { haptic } from '../hooks/useHaptic';
+import { GALLERY_CATEGORIES, displayTitle, galleryAlt } from '../utils/galleryFormat';
 import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
 import Lightbox from '../components/Lightbox';
@@ -10,35 +11,7 @@ import { useAdmin } from '../context/AdminContext';
 import EditModal from '../components/admin/EditModal';
 import EditableBlock from '../components/admin/EditableBlock';
 
-const CATEGORIES = ["Tous", "Mariage", "Corporate", "Anniversaire", "Gala"];
-
-/**
- * Détecte les titres qui ressemblent à un nom de fichier brut
- * (ex: "img_6241", "DSC_0123", "photo-2024-10-15", "Capture d'écran 2025…").
- * Ces titres ne doivent pas s'afficher sur la galerie publique.
- */
-const isPlaceholderTitle = (title) => {
-  if (!title) return true;
-  const t = String(title).trim();
-  if (!t) return true;
-  // patterns courants des noms de fichiers d'appareils photo / téléphones
-  const patterns = [
-    /^img[_\s-]*\d+/i,
-    /^dsc[_\s-]*\d+/i,
-    /^dscn[_\s-]*\d+/i,
-    /^p\d{6,}/i,
-    /^photo[_\s-]*\d+/i,
-    /^image[_\s-]*\d+/i,
-    /^capture/i,
-    /^screenshot/i,
-    /^untitled/i,
-    /^sans[_\s-]?titre/i,
-    /^\d{4}[_\s-]?\d{2}[_\s-]?\d{2}/, // dates style 2025-04-19
-  ];
-  return patterns.some(rx => rx.test(t));
-};
-
-const displayTitle = (title) => (isPlaceholderTitle(title) ? '' : title);
+const CATEGORIES = ["Tous", ...GALLERY_CATEGORIES];
 
 const Gallery = () => {
   const { content, updateContent } = useContent();
@@ -194,7 +167,7 @@ const Gallery = () => {
                 >
                   <PremiumImage
                     src={item.image}
-                    alt={displayTitle(item.title) || `Photobooth ${item.category || ''} ${item.location || ''}`.trim()}
+                    alt={galleryAlt(item)}
                   />
                   <div className="masonry-overlay">
                     <span className="masonry-tag">{item.category}</span>
@@ -260,7 +233,7 @@ const Gallery = () => {
         <Lightbox
           images={filteredData.map(d => ({
             src: d.image,
-            alt: displayTitle(d.title) || `Photobooth ${d.category || ''} ${d.location || ''}`.trim(),
+            alt: galleryAlt(d),
           }))}
           initialIndex={lightboxIndex}
           onClose={() => setLightboxIndex(null)}

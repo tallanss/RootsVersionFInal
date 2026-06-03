@@ -124,7 +124,7 @@ const DEFAULT_CONTENT = {
       '/photobooth': { title: 'Notre Borne Miroir - PhotoRoots', description: 'Location photobooth à partir de 99€ — Borne miroir haut de gamme pour tous vos événements en Seine-Maritime.' },
       '/tarifs': { title: 'Tarifs & Formules - PhotoRoots', description: 'Location photobooth à partir de 99€ — Découvrez nos formules pour mariages, anniversaires et entreprises.' },
       '/galerie': { title: 'Galerie Événements - PhotoRoots', description: 'Location photobooth à partir de 99€ — Découvrez nos réalisations en Seine-Maritime.' },
-      '/contact': { title: 'Réserver - PhotoRoots', description: 'Location photobooth à partir de 99€ — Contactez-nous pour un devis gratuit en 24h.' },
+      '/contact': { title: 'Contact & devis - PhotoRoots', description: 'Location photobooth à partir de 99€ — Faites votre demande de devis gratuit, réponse sous 24h.' },
     }
   },
   messages: [],
