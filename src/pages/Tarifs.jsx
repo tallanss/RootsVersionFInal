@@ -37,7 +37,16 @@ const PriceDisplay = ({ price }) => {
 */
 const PlanComparator = ({ plans, onSelect }) => {
   // Exclude custom (quote-only) plans — they have no fixed feature grid
-  const comparablePlans = (plans || []).filter(p => !p.isCustom);
+  // Un pack apparaît dans le comparateur dès qu'il a des fonctionnalités
+  // OU un prix numérique. On n'exclut que les vrais "sur devis" (aucune
+  // feature ET prix non numérique). Cela évite qu'un pack populaire marqué
+  // isCustom par erreur dans le CMS disparaisse du tableau.
+  const isComparable = (p) => {
+    const hasFeatures = Array.isArray(p.features) && p.features.length > 0;
+    const numericPrice = /^\s*\d/.test(String(p.price ?? ''));
+    return hasFeatures || numericPrice;
+  };
+  const comparablePlans = (plans || []).filter(isComparable);
 
   if (comparablePlans.length === 0) return null;
 
