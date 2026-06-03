@@ -41,13 +41,22 @@ function doGet(e) {
   }
 }
 
-// ===== POST : Enregistrer une demande de devis =====
+// ===== POST : Enregistrer une demande de devis OU un message simple =====
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
 
-    // Valider les données requises (eventType, location, etc. sont optionnels
-    // dans le nouveau formulaire de demande de devis)
+    // ----- Message simple (nom, email, message — sans date ni calendrier) -----
+    if (data.type === 'message') {
+      if (!data.name || !data.email || !data.message) {
+        return jsonResponse({ error: 'Données manquantes (nom, email ou message)' }, 400);
+      }
+      sendContactMessageEmails(data);
+      return jsonResponse({ success: true, message: 'Message bien reçu !' });
+    }
+
+    // ----- Demande de devis (parcours complet) -----
+    // Valider les données requises (eventType, location, etc. sont optionnels)
     if (!data.date || !data.name || !data.email) {
       return jsonResponse({ error: 'Données manquantes (nom, email ou date)' }, 400);
     }
@@ -237,6 +246,43 @@ function sendOwnerEmail(data) {
     '</div></div>';
 
   sendViaResend(OWNER_EMAIL, subject, htmlBody);
+}
+
+// ===== Emails pour un message simple (sans réservation) =====
+function sendContactMessageEmails(data) {
+  // 1) Notification au propriétaire
+  const ownerSubject = '✉️ Nouveau message — ' + data.name;
+  const ownerBody =
+    '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;" lang="fr">' +
+    '<div style="background: #0f172a; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">' +
+    '<h1 style="color: #c5a059; margin: 0; font-size: 24px;">✉️ Nouveau message</h1>' +
+    '</div>' +
+    '<div style="background: #f8faf9; padding: 24px; border: 1px solid #e2e8f0; border-radius: 0 0 12px 12px;">' +
+    '<table style="width: 100%; border-collapse: collapse; margin: 10px 0;">' +
+    '<tr><td style="padding: 10px; border-bottom: 1px solid #e2e8f0; color: #64748b;">Nom</td>' +
+    '<td style="padding: 10px; border-bottom: 1px solid #e2e8f0; font-weight: bold; text-align: right;">' + data.name + '</td></tr>' +
+    '<tr><td style="padding: 10px; color: #64748b;">Email</td>' +
+    '<td style="padding: 10px; text-align: right;"><a href="mailto:' + data.email + '">' + data.email + '</a></td></tr>' +
+    '</table>' +
+    '<div style="background: white; padding: 14px; border-radius: 8px; margin-top: 12px; border: 1px solid #e2e8f0;"><strong>Message :</strong><br>' + data.message + '</div>' +
+    '</div></div>';
+  sendViaResend(OWNER_EMAIL, ownerSubject, ownerBody);
+
+  // 2) Accusé de réception au client
+  const clientSubject = '✅ Votre message est bien reçu — ' + BUSINESS_NAME;
+  const clientBody =
+    '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;" lang="fr">' +
+    '<div style="background: #c5a059; padding: 24px; text-align: center; border-radius: 12px 12px 0 0;">' +
+    '<h1 style="color: white; margin: 0; font-size: 24px;">✅ Message bien reçu</h1>' +
+    '</div>' +
+    '<div style="background: #f8faf9; padding: 24px; border: 1px solid #e2e8f0; border-radius: 0 0 12px 12px;">' +
+    '<p>Bonjour <strong>' + data.name + '</strong>,</p>' +
+    '<p>Merci pour votre message, nous y répondrons dans les plus brefs délais.</p>' +
+    '<div style="background: white; padding: 14px; border-radius: 8px; margin: 12px 0; border: 1px solid #e2e8f0; color: #64748b;"><em>« ' + data.message + ' »</em></div>' +
+    '<p style="color: #64748b; font-size: 14px;">Besoin d\'une réponse rapide ? Appelez-nous au <strong>' + BUSINESS_PHONE + '</strong>.</p>' +
+    '<p>À très vite,<br><strong>L\'équipe ' + BUSINESS_NAME + '</strong></p>' +
+    '</div></div>';
+  sendViaResend(data.email, clientSubject, clientBody);
 }
 
 // ===== Helper : Envoi d'email via l'API Resend =====
