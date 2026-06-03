@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Heart, Briefcase, PartyPopper, Phone, Shield, Clock, ChevronDown, ChevronUp, CheckCircle2, Sparkles, Camera, Tag, Image, Users, GraduationCap, Gift, Cake } from 'lucide-react';
+import { ArrowRight, Star, Heart, Briefcase, PartyPopper, Phone, Shield, Clock, ChevronDown, CheckCircle2, BadgeCheck, Sparkles, Camera, Tag, Image, Users, GraduationCap, Gift, Cake } from 'lucide-react';
+import { useInView } from 'framer-motion';
 import useScrollAnimation from '../hooks/useScrollAnimation';
+import useCountUp from '../hooks/useCountUp';
 import SwipeCarousel from '../components/SwipeCarousel';
 import PremiumImage from '../components/PremiumImage';
 import AnimatedButton from '../components/AnimatedButton';
@@ -14,11 +16,19 @@ import { isPlaceholderTitle, formatPrice } from '../utils/galleryFormat';
 
 // Local fallbacks moved to context
 
+// Affiche un nombre animé (count-up) à partir de content.stats, en conservant le suffixe (ex: "150+")
+const StatNumber = ({ value, trigger }) => {
+  const display = useCountUp(value, trigger);
+  return <div className="stat-number">{display}</div>;
+};
+
 const Home = () => {
   const { content, updateContent } = useContent();
   const { isAdminMode } = useAdmin();
   const [openFaq, setOpenFaq] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
+  const statsRef = useRef(null);
+  const statsInView = useInView(statsRef, { once: true, margin: '0px 0px -80px 0px' });
 
   useScrollAnimation();
 
@@ -157,7 +167,7 @@ const Home = () => {
 
       {/* ===== TRUST BAR ===== */}
       <section className="container" style={{ paddingBottom: '16px' }}>
-        <div className="stats-bar">
+        <div className="stats-bar" ref={statsRef}>
           <FadeIn delay={0}>
             <EditableBlock
               label="Stat 1"
@@ -173,7 +183,7 @@ const Home = () => {
               }}
             >
               <div className="stat-item">
-                <div className="stat-number">{content.stats?.[0]?.num || '150+'}</div>
+                <StatNumber value={content.stats?.[0]?.num || '150+'} trigger={statsInView} />
                 <div className="stat-label">{content.stats?.[0]?.label || 'Événements'}</div>
               </div>
             </EditableBlock>
@@ -193,7 +203,7 @@ const Home = () => {
               }}
             >
               <div className="stat-item">
-                <div className="stat-number">{content.stats?.[1]?.num || '500+'}</div>
+                <StatNumber value={content.stats?.[1]?.num || '500+'} trigger={statsInView} />
                 <div className="stat-label">{content.stats?.[1]?.label || 'Clients'}</div>
               </div>
             </EditableBlock>
@@ -213,7 +223,7 @@ const Home = () => {
               }}
             >
               <div className="stat-item">
-                <div className="stat-number">{content.stats?.[2]?.num || '1000+'}</div>
+                <StatNumber value={content.stats?.[2]?.num || '1000+'} trigger={statsInView} />
                 <div className="stat-label">{content.stats?.[2]?.label || 'Sourires'}</div>
               </div>
             </EditableBlock>
@@ -405,8 +415,27 @@ const Home = () => {
               }}
             >
               <div className="testimonial-card">
-                <div className="testimonial-stars">★★★★★</div>
+                <div className="testimonial-stars" aria-hidden="true" style={{ display: 'flex', gap: '2px' }}>
+                  {[0, 1, 2, 3, 4].map((s) => (
+                    <Star key={s} size={14} fill="var(--primary)" color="var(--primary)" strokeWidth={0} />
+                  ))}
+                </div>
                 <p className="testimonial-text">"{t.text}"</p>
+                <span
+                  className="testimonial-verified"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    color: 'var(--text-muted)',
+                    marginBottom: '12px'
+                  }}
+                >
+                  <BadgeCheck size={13} color="var(--primary)" />
+                  Avis vérifié
+                </span>
                 <div className="testimonial-author">
                   <div className="testimonial-avatar">{t.avatar}</div>
                   <div>
@@ -442,7 +471,14 @@ const Home = () => {
             return plans.map((plan) => {
               const isFeatured = Boolean(plan.featured);
               const card = (
-                <div className={`pricing-card${isFeatured ? ' featured' : ''}`}>
+                <div
+                  className={`pricing-card spotlight-card${isFeatured ? ' featured' : ''}`}
+                  onMouseMove={(e) => {
+                    const r = e.currentTarget.getBoundingClientRect();
+                    e.currentTarget.style.setProperty('--spot-x', `${e.clientX - r.left}px`);
+                    e.currentTarget.style.setProperty('--spot-y', `${e.clientY - r.top}px`);
+                  }}
+                >
                   <div className="pricing-name">{plan.name}</div>
                   <div className="pricing-price">{formatPrice(plan.price)}</div>
                   <div className="pricing-desc">{plan.desc}</div>
@@ -551,10 +587,10 @@ const Home = () => {
                 updateContent({ ...content, faqs: newFaqs });
               }}
             >
-              <div className="faq-item">
+              <div className={`faq-item${openFaq === i ? ' open' : ''}`}>
                 <button className="faq-question" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
                   <span>{faq.q}</span>
-                  {openFaq === i ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  <ChevronDown size={18} />
                 </button>
                 {openFaq === i && (
                   <div className="faq-answer">{faq.a}</div>

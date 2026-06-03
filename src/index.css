@@ -2425,3 +2425,57 @@ body.cookie-banner-visible .date-checker-pill {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
+
+/* ============================================================ */
+/* ===== UI/UX ENHANCEMENTS ===================================  */
+/* ============================================================ */
+
+/* #11 — Accessibilité : anneau de focus visible (clavier uniquement) */
+:where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* #11 — Cibles tactiles minimales sur les boutons d'action */
+.btn-primary, .btn-secondary { min-height: 46px; }
+
+/* #6 — Retour visuel au clic (boutons secondaires + filtres + chips) */
+.btn-secondary:active,
+.filter-btn:active { transform: scale(0.96); }
+
+/* #4 — Effet "spotlight" doré au survol (suit le curseur via --spot-x/--spot-y) */
+.spotlight-card { position: relative; }
+.spotlight-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(240px circle at var(--spot-x, 50%) var(--spot-y, 50%),
+              rgba(197, 160, 89, 0.15), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.spotlight-card:hover::after { opacity: 1; }
+
+/* #7 — Renfort visuel de la carte tarif "Populaire" */
+@media (min-width: 768px) {
+  .animated-border-wrapper .pricing-card.featured {
+    transform: scale(1.04);
+  }
+  .animated-border-wrapper .pricing-card.featured:hover {
+    transform: scale(1.04) translateY(-6px);
+  }
+}
+
+/* #9 — FAQ : chevron qui pivote en douceur */
+.faq-question svg { transition: transform 0.3s ease; }
+.faq-item.open .faq-question svg { transform: rotate(180deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-card::after,
+  .faq-question svg,
+  .btn-secondary,
+  .filter-btn { transition: none; }
+  .animated-border-wrapper .pricing-card.featured { transform: none; }
+}

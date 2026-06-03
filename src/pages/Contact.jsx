@@ -535,16 +535,28 @@ const Contact = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 18px' }}>
               <div className="form-group">
                 <label className="form-label" htmlFor="msgName">Nom et prénom *</label>
-                <input className="form-input" type="text" id="msgName" placeholder="Jean Dupont" value={msg.name} onChange={(e) => setMsg({ ...msg, name: e.target.value })} required />
+                <div style={{ position: 'relative' }}>
+                  <input className="form-input" type="text" id="msgName" placeholder="Jean Dupont" value={msg.name} onChange={(e) => setMsg({ ...msg, name: e.target.value })} required style={{ paddingRight: '38px' }} />
+                  <ValidCheck show={msg.name.trim().length >= 2} />
+                </div>
               </div>
               <div className="form-group">
                 <label className="form-label" htmlFor="msgEmail">Email *</label>
-                <input className="form-input" type="email" id="msgEmail" placeholder="jean@exemple.com" value={msg.email} onChange={(e) => setMsg({ ...msg, email: e.target.value })} required />
+                <div style={{ position: 'relative' }}>
+                  <input className="form-input" type="email" id="msgEmail" placeholder="jean@exemple.com" value={msg.email} onChange={(e) => setMsg({ ...msg, email: e.target.value })} required style={{ paddingRight: '38px' }} />
+                  <ValidCheck show={EMAIL_REGEX.test(msg.email)} />
+                </div>
+                {msg.email.length > 0 && !EMAIL_REGEX.test(msg.email) && <FieldHint>Adresse email invalide</FieldHint>}
               </div>
             </div>
             <div className="form-group">
               <label className="form-label" htmlFor="msgBody">Votre message *</label>
-              <textarea className="form-textarea" id="msgBody" rows={5} placeholder="Bonjour, j'aimerais savoir..." value={msg.message} onChange={(e) => setMsg({ ...msg, message: e.target.value })} required />
+              <div style={{ position: 'relative' }}>
+                <textarea className="form-textarea" id="msgBody" rows={5} placeholder="Bonjour, j'aimerais savoir..." value={msg.message} onChange={(e) => setMsg({ ...msg, message: e.target.value })} required style={{ paddingRight: '38px' }} />
+                {msg.message.trim().length >= 5 && (
+                  <CheckCircle2 size={16} style={{ position: 'absolute', right: '12px', top: '14px', color: '#22c55e', pointerEvents: 'none' }} />
+                )}
+              </div>
             </div>
 
             {error && (
@@ -833,15 +845,26 @@ const Contact = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 18px' }}>
                   <div className="form-group">
                     <label className="form-label" htmlFor="name">Nom et prénom *</label>
-                    <input className="form-input" type="text" id="name" name="name" placeholder="Jean Dupont" value={formData.name} onChange={handleChange} required />
+                    <div style={{ position: 'relative' }}>
+                      <input className="form-input" type="text" id="name" name="name" placeholder="Jean Dupont" value={formData.name} onChange={handleChange} required style={{ paddingRight: '38px' }} />
+                      <ValidCheck show={formData.name.trim().length >= 2} />
+                    </div>
                   </div>
                   <div className="form-group">
                     <label className="form-label" htmlFor="email">Email *</label>
-                    <input className="form-input" type="email" id="email" name="email" placeholder="jean@exemple.com" value={formData.email} onChange={handleChange} required />
+                    <div style={{ position: 'relative' }}>
+                      <input className="form-input" type="email" id="email" name="email" placeholder="jean@exemple.com" value={formData.email} onChange={handleChange} required style={{ paddingRight: '38px' }} />
+                      <ValidCheck show={EMAIL_REGEX.test(formData.email)} />
+                    </div>
+                    {formData.email.length > 0 && !EMAIL_REGEX.test(formData.email) && <FieldHint>Adresse email invalide</FieldHint>}
                   </div>
                   <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                     <label className="form-label" htmlFor="phone">Numéro de téléphone <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
-                    <input className="form-input" type="tel" id="phone" name="phone" placeholder="06 12 34 56 78" value={formData.phone} onChange={handleChange} />
+                    <div style={{ position: 'relative' }}>
+                      <input className="form-input" type="tel" id="phone" name="phone" placeholder="06 12 34 56 78" value={formData.phone} onChange={handleChange} style={{ paddingRight: '38px' }} />
+                      <ValidCheck show={formData.phone.length > 0 && PHONE_REGEX.test(formData.phone)} />
+                    </div>
+                    {formData.phone.length > 0 && !PHONE_REGEX.test(formData.phone) && <FieldHint>Numéro invalide</FieldHint>}
                   </div>
                 </div>
 
@@ -968,6 +991,21 @@ const Contact = () => {
     </div>
   );
 };
+
+// ===== Feedback de validation inline =====
+// Coche verte positionnée en absolu à droite de l'input (le wrapper doit être position:relative)
+const ValidCheck = ({ show, right = '12px' }) =>
+  show ? (
+    <CheckCircle2
+      size={16}
+      style={{ position: 'absolute', right, top: '50%', transform: 'translateY(-50%)', color: '#22c55e', pointerEvents: 'none' }}
+    />
+  ) : null;
+
+// Petit indice rouge sous le champ
+const FieldHint = ({ children }) => (
+  <p style={{ margin: '4px 0 0', fontSize: '12px', color: '#b91c1c' }}>{children}</p>
+);
 
 // ===== Petits composants de présentation =====
 const StepHeading = ({ n, title, subtitle }) => (

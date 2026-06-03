@@ -388,13 +388,43 @@ const Tarifs = () => {
 
       {/* PRICING CARDS */}
       {!compareMode && <section className="container" style={{ padding: '0 0 32px' }}>
-        <div className="pricing-grid">
+        {/* Padding vertical : laisse respirer la carte "Populaire" agrandie (scale 1.04 desktop) sans qu'elle soit rognée par ses voisines */}
+        <div className="pricing-grid" style={{ paddingTop: '12px', paddingBottom: '12px' }}>
           {plans.map((plan, i) => {
             return (
               <div key={plan.id} className="pricing-wrapper" style={{ position: 'relative' }}>
                   {plan.featured ? (
                     <div className="animated-border-wrapper">
-                      <div className={`pricing-card featured ${isSelected(plan.id) ? 'selected' : ''}`}>
+                      <div
+                        className={`pricing-card featured spotlight-card ${isSelected(plan.id) ? 'selected' : ''}`}
+                        onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); e.currentTarget.style.setProperty('--spot-x', `${e.clientX - r.left}px`); e.currentTarget.style.setProperty('--spot-y', `${e.clientY - r.top}px`); }}
+                      >
+                        {/* Badge "Populaire" renforcé (couvre le badge CSS ::before) */}
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: '12px',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                            background: 'var(--primary)',
+                            color: '#fff',
+                            fontSize: '12px',
+                            fontWeight: 800,
+                            letterSpacing: '0.06em',
+                            textTransform: 'uppercase',
+                            padding: '5px 16px',
+                            borderRadius: 'var(--radius-full)',
+                            boxShadow: '0 4px 14px rgba(197,160,89,0.45)',
+                            whiteSpace: 'nowrap',
+                            zIndex: 2,
+                          }}
+                        >
+                          <Star size={13} fill="#fff" color="#fff" strokeWidth={0} />
+                          Populaire
+                        </div>
                         <EditableBlock
                           label="Nom"
                           modalTitle="Nom de la formule"
@@ -528,7 +558,10 @@ const Tarifs = () => {
                       </div>
                     </div>
                   ) : (
-                    <div className={`pricing-card ${isSelected(plan.id) ? 'selected' : ''}`}>
+                    <div
+                      className={`pricing-card spotlight-card ${isSelected(plan.id) ? 'selected' : ''}`}
+                      onMouseMove={(e) => { const r = e.currentTarget.getBoundingClientRect(); e.currentTarget.style.setProperty('--spot-x', `${e.clientX - r.left}px`); e.currentTarget.style.setProperty('--spot-y', `${e.clientY - r.top}px`); }}
+                    >
                       <EditableBlock
                         label="Nom"
                         modalTitle="Nom de la formule"

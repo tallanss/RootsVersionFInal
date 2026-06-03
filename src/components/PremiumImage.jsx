@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 
+const prefersReducedMotion =
+  typeof window !== 'undefined' &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -7,9 +12,13 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) =
   return (
     <div className={`premium-image-wrapper ${className}`} style={{ position: 'relative', overflow: 'hidden', ...style }}>
       {!isLoaded && !hasError && (
-        <div className="skeleton-shimmer" style={{
+        <div aria-hidden="true" style={{
           position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-          backgroundColor: 'var(--bg-secondary)',
+          borderRadius: 'inherit',
+          backgroundColor: 'rgba(255, 255, 255, 0.04)',
+          backgroundImage: 'linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 100%)',
+          backgroundSize: '200% 100%',
+          animation: prefersReducedMotion ? 'none' : 'shimmer-swipe 1.5s infinite linear',
           zIndex: 1
         }} />
       )}
@@ -33,8 +42,10 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) =
             width: '100%',
             height: '100%',
             objectFit: 'cover',
+            position: 'relative',
+            zIndex: 2,
             opacity: isLoaded ? 1 : 0,
-            transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+            transition: 'opacity 0.4s ease',
             display: 'block'
           }}
           loading="lazy"

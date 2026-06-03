@@ -4,7 +4,14 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 const Lightbox = ({ images, initialIndex = 0, onClose }) => {
   const [current, setCurrent] = useState(initialIndex);
   const [touchStart, setTouchStart] = useState(null);
+  const [showSwipeHint, setShowSwipeHint] = useState(false);
   const closeRef = useRef(null);
+
+  // Caption = alt text only when it is meaningful (not a generic fallback)
+  const rawAlt = images[current]?.alt;
+  const caption = (typeof rawAlt === 'string' && rawAlt.trim() && !/^Photo\s+\d+$/i.test(rawAlt.trim()))
+    ? rawAlt.trim()
+    : '';
 
   const next = useCallback(() => setCurrent(c => (c + 1) % images.length), [images.length]);
   const prev = useCallback(() => setCurrent(c => (c - 1 + images.length) % images.length), [images.length]);
@@ -25,7 +32,20 @@ const Lightbox = ({ images, initialIndex = 0, onClose }) => {
     };
   }, [onClose, next, prev]);
 
-  const handleTouchStart = (e) => setTouchStart(e.touches[0].clientX);
+  // One-time "swipe" hint on touch devices (only if there is more than one image)
+  useEffect(() => {
+    const isTouch = typeof window !== 'undefined' &&
+      ('ontouchstart' in window || (navigator.maxTouchPoints || 0) > 0);
+    if (!isTouch || images.length <= 1) return;
+    setShowSwipeHint(true);
+    const t = setTimeout(() => setShowSwipeHint(false), 2600);
+    return () => clearTimeout(t);
+  }, [images.length]);
+
+  const handleTouchStart = (e) => {
+    setShowSwipeHint(false);
+    setTouchStart(e.touches[0].clientX);
+  };
   const handleTouchEnd = (e) => {
     if (!touchStart) return;
     const diff = touchStart - e.changedTouches[0].clientX;
@@ -69,10 +89,61 @@ const Lightbox = ({ images, initialIndex = 0, onClose }) => {
           alt={images[current]?.alt || `Photo ${current + 1}`}
           className="lightbox-image"
         />
-        <div className="lightbox-counter" aria-live="polite">
+        {caption && (
+          <div
+            className="lightbox-caption"
+            style={{
+              marginTop: '12px',
+              maxWidth: '90vw',
+              padding: '8px 16px',
+              borderRadius: '999px',
+              background: 'rgba(0,0,0,0.55)',
+              color: '#fff',
+              fontSize: '13px',
+              lineHeight: 1.4,
+              textAlign: 'center',
+              backdropFilter: 'blur(4px)',
+            }}
+          >
+            {caption}
+          </div>
+        )}
+        <div
+          className="lightbox-counter"
+          aria-live="polite"
+          style={{ marginTop: caption ? '8px' : '12px' }}
+        >
           {current + 1} / {images.length}
         </div>
       </div>
+
+      {showSwipeHint && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            bottom: 'calc(24px + var(--safe-area-bottom, 0px))',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '8px 16px',
+            borderRadius: '999px',
+            background: 'rgba(0,0,0,0.55)',
+            color: 'rgba(255,255,255,0.85)',
+            fontSize: '12px',
+            fontWeight: 600,
+            pointerEvents: 'none',
+            zIndex: 3,
+            animation: 'fadeIn 0.3s ease',
+          }}
+        >
+          <ChevronLeft size={16} color="var(--primary)" />
+          Glissez pour naviguer
+          <ChevronRight size={16} color="var(--primary)" />
+        </div>
+      )}
 
       <button
         className="lightbox-nav lightbox-nav-next"

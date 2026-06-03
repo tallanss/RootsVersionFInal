@@ -20,8 +20,11 @@ const BottomNav = () => {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '4px',
-    width: '64px',
+    gap: '3px',
+    flex: '1 1 0',
+    minWidth: 0,
+    maxWidth: '72px',
+    padding: '0 2px',
     transition: 'color 0.2s',
     color: isActive ? 'var(--primary)' : 'var(--text-light)',
     ...(isActive ? { filter: 'drop-shadow(0 0 6px rgba(197,160,89,0.2))' } : {}),
@@ -32,18 +35,26 @@ const BottomNav = () => {
 
   return (
     <nav className="ios-nav" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, padding: '8px 16px 0' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', height: '56px', maxWidth: '480px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '2px', height: '56px', maxWidth: '480px', margin: '0 auto' }}>
         {navItems.map((item) => {
           const Icon = iconMap[item.id] || Home;
           const isActive = location.pathname === item.path;
           return (
             <NavLink key={item.id} to={item.path} end={item.path === '/'} style={navStyle(isActive)}>
-              <Icon 
-                size={22} 
-                strokeWidth={2.5} 
-                fill={item.id === 'invite' && isActive ? 'var(--primary)' : 'transparent'} 
+              <Icon
+                size={20}
+                strokeWidth={2.5}
+                fill={item.id === 'invite' && isActive ? 'var(--primary)' : 'transparent'}
               />
-              <span style={{ fontSize: '10px', fontWeight: 600 }}>{item.label}</span>
+              <span style={{
+                fontSize: '10px',
+                fontWeight: 600,
+                lineHeight: 1.1,
+                maxWidth: '100%',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}>{item.label}</span>
             </NavLink>
           );
         })}
