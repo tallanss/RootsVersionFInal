@@ -136,6 +136,8 @@ function createCalendarEvent(data) {
     'Téléphone : ' + (data.phone || 'Non renseigné') + '\n' +
     'Type : ' + (data.eventType || 'Non précisé') + '\n' +
     'Lieu : ' + (data.location || 'Non renseigné') + '\n' +
+    'Nombre d\'invités : ' + (data.guests || 'Non précisé') + '\n' +
+    'Pack souhaité : ' + (data.formula || 'Non précisé') + '\n' +
     'Préférence de contact : ' + (data.contactPreference || 'Non précisée') + '\n' +
     'Connu via : ' + (data.referralSource || 'Non précisé') + '\n\n' +
     'Message : ' + (data.message || 'Aucun');
@@ -165,6 +167,8 @@ function sendClientEmail(data) {
     ['Date de l\'événement', dateFormatted],
     ['Type d\'événement',   data.eventType || 'À préciser'],
     ['Lieu',                data.location || 'À préciser'],
+    ['Nombre d\'invités',   data.guests || 'À préciser'],
+    ['Pack souhaité',       data.formula || 'À préciser'],
     ['Téléphone',           data.phone || '—'],
     ['Préférence de contact', data.contactPreference || '—'],
   ];
@@ -207,6 +211,8 @@ function sendOwnerEmail(data) {
     ['Date',                  dateFormatted],
     ['Événement',             data.eventType || '—'],
     ['Lieu',                  data.location || 'Non renseigné'],
+    ['Nombre d\'invités',     data.guests || '—'],
+    ['Pack souhaité',         data.formula || '—'],
     ['Préférence de contact', data.contactPreference || '—'],
     ['Connu via',             data.referralSource || '—'],
   ];

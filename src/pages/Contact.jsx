@@ -40,9 +40,16 @@ const Contact = () => {
     eventType: '',
     date: '', // YYYY-MM-DD
     location: '',
+    guests: '',
+    formula: '',
     contactPreference: '',
     referralSource: '',
   });
+
+  // Formules disponibles (depuis le CMS, avec fallback)
+  const formulas = (content.pricing_plans?.length > 0
+    ? content.pricing_plans.map(p => p.name)
+    : ['Essentiel', 'Premium', 'Excellence', 'Sur-Mesure']);
 
   // Charger les dates occupées au montage
   useEffect(() => {
@@ -142,18 +149,21 @@ const Contact = () => {
 
     // Compose un message lisible si l'utilisateur n'a rien écrit (et inclut les nouveaux champs)
     const autoMessage = [
+      formData.guests ? `Nombre d'invités : ${formData.guests}` : null,
+      formData.formula ? `Pack souhaité : ${formData.formula}` : null,
       formData.contactPreference ? `Contact préféré : ${formData.contactPreference}` : null,
       formData.referralSource ? `Connu via : ${formData.referralSource}` : null,
     ].filter(Boolean).join('\n');
 
     const booking = {
       date: formData.date,
-      formula: 'Demande de devis',
+      formula: formData.formula || 'Demande de devis',
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
       eventType: formData.eventType,
       location: formData.location,
+      guests: formData.guests,
       message: autoMessage,
       contactPreference: formData.contactPreference,
       referralSource: formData.referralSource,
@@ -172,7 +182,8 @@ const Contact = () => {
         date: formatDateFR(formData.date),
         subject: formData.eventType || 'Demande de devis',
         location: formData.location,
-        formula: 'Demande de devis',
+        guests: formData.guests,
+        formula: formData.formula || 'Demande de devis',
         fullMessage: autoMessage,
         contactPreference: formData.contactPreference,
         referralSource: formData.referralSource,
@@ -448,6 +459,21 @@ const Contact = () => {
             <div className="form-group" style={{ gridColumn: '1 / -1' }}>
               <label className="form-label" htmlFor="location">Adresse de l'événement</label>
               <input className="form-input" type="text" id="location" name="location" placeholder="Salle des fêtes, Le Havre" value={formData.location} onChange={handleChange} />
+            </div>
+
+            {/* Nombre d'invités */}
+            <div className="form-group">
+              <label className="form-label" htmlFor="guests">Nombre d'invités à l'événement</label>
+              <input className="form-input" type="number" min="0" id="guests" name="guests" placeholder="Ex : 80" value={formData.guests} onChange={handleChange} />
+            </div>
+
+            {/* Pack souhaité */}
+            <div className="form-group">
+              <label className="form-label" htmlFor="formula">Pack souhaité pour l'événement</label>
+              <select className="form-select" id="formula" name="formula" value={formData.formula} onChange={handleChange}>
+                <option value="">Sélectionnez...</option>
+                {formulas.map(f => <option key={f} value={f}>{f}</option>)}
+              </select>
             </div>
 
             {/* Préférence de contact */}
