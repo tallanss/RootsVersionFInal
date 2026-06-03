@@ -29,8 +29,8 @@ const Legal = () => {
             <p><strong>PhotoRoots</strong><br />
             Micro-entreprise — SIRET : [À compléter]<br />
             Siège social : Le Havre, Seine-Maritime (76)<br />
-            Email : contact@photoroots.fr<br />
-            Téléphone : 06 03 16 36 21</p>
+            Email : <a href="mailto:contact@photoroots.fr" style={{ color: 'inherit', textDecoration: 'none' }}>contact@photoroots.fr</a><br />
+            Téléphone : <a href="tel:0603163621" style={{ color: 'inherit', textDecoration: 'none' }}>06 03 16 36 21</a></p>
 
             <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>2. Hébergement</h3>
             <p>Ce site est hébergé par [À compléter — ex: OVH, Vercel, Netlify].</p>
@@ -39,7 +39,7 @@ const Legal = () => {
             <p>L'ensemble des contenus (textes, images, photos, vidéos, logos) présents sur ce site sont protégés par le droit d'auteur. Toute reproduction, même partielle, est interdite sans autorisation préalable.</p>
 
             <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>4. Données personnelles (RGPD)</h3>
-            <p>Les informations collectées via le formulaire de réservation sont destinées exclusivement à PhotoRoots pour le traitement de votre demande. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ce droit, contactez-nous à : contact@photoroots.fr</p>
+            <p>Les informations collectées via le formulaire de réservation sont destinées exclusivement à PhotoRoots pour le traitement de votre demande. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ce droit, contactez-nous à : <a href="mailto:contact@photoroots.fr" style={{ color: 'inherit', textDecoration: 'none' }}>contact@photoroots.fr</a></p>
             <p style={{ marginTop: '8px' }}>Aucune donnée n'est transmise à des tiers. Les données sont conservées pendant une durée maximale de 36 mois après votre dernière interaction.</p>
 
             <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>5. Cookies</h3>

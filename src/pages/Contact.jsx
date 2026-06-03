@@ -959,7 +959,7 @@ const Contact = () => {
           >
             <div className="contact-info-card">
               <div className="contact-info-icon"><Phone size={20} /></div>
-              <div><h3>Téléphone</h3><p>{content.contact?.phone || '06 03 16 36 21'}</p></div>
+              <div><h3>Téléphone</h3><p><a href={`tel:${(content.contact?.phone || '06 03 16 36 21').replace(/\s/g, '')}`} style={{ color: 'inherit', textDecoration: 'none' }}>{content.contact?.phone || '06 03 16 36 21'}</a></p></div>
             </div>
           </EditableBlock>
 
@@ -971,7 +971,7 @@ const Contact = () => {
           >
             <div className="contact-info-card">
               <div className="contact-info-icon"><Mail size={20} /></div>
-              <div><h3>Email</h3><p>{content.contact?.email || 'contact@photoroots.fr'}</p></div>
+              <div><h3>Email</h3><p><a href={`mailto:${content.contact?.email || 'contact@photoroots.fr'}`} style={{ color: 'inherit', textDecoration: 'none' }}>{content.contact?.email || 'contact@photoroots.fr'}</a></p></div>
             </div>
           </EditableBlock>
 
@@ -983,7 +983,7 @@ const Contact = () => {
           >
             <div className="contact-info-card">
               <div className="contact-info-icon"><MapPin size={20} /></div>
-              <div><h3>Zone</h3><p>{content.contact?.zone || 'Le Havre, Rouen, Dieppe — Seine-Maritime'}</p></div>
+              <div><h3>Zone</h3><p><a href="https://www.google.com/search?q=photoroots" target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>{content.contact?.zone || 'Le Havre, Rouen, Dieppe — Seine-Maritime'}</a></p></div>
             </div>
           </EditableBlock>
         </div>
