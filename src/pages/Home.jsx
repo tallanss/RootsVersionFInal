@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Heart, Briefcase, PartyPopper, Phone, Shield, Clock, ChevronDown, ChevronUp, CheckCircle2, Sparkles, Camera, Tag, Users, GraduationCap, Gift, Cake } from 'lucide-react';
+import { ArrowRight, Star, Heart, Briefcase, PartyPopper, Phone, Shield, Clock, ChevronDown, ChevronUp, CheckCircle2, Sparkles, Camera, Tag, Image, Users, GraduationCap, Gift, Cake } from 'lucide-react';
 import useScrollAnimation from '../hooks/useScrollAnimation';
 import SwipeCarousel from '../components/SwipeCarousel';
-import Lightbox from '../components/Lightbox';
 import PremiumImage from '../components/PremiumImage';
 import AnimatedButton from '../components/AnimatedButton';
 import FadeIn from '../components/FadeIn';
@@ -18,7 +17,6 @@ const Home = () => {
   const { content, updateContent } = useContent();
   const { isAdminMode } = useAdmin();
   const [openFaq, setOpenFaq] = useState(null);
-  const [lightboxIndex, setLightboxIndex] = useState(null);
   const [activeStep, setActiveStep] = useState(0);
 
   useScrollAnimation();
@@ -54,15 +52,6 @@ const Home = () => {
     return /^(img|dsc|dscn|p|photo|image|capture|screenshot|untitled|sans[_\s-]?titre)[_\s-]*\d+/i.test(s)
       || /^\d{4}[_\s-]?\d{2}[_\s-]?\d{2}/.test(s);
   };
-  const galleryImages = content.gallery?.length > 0 ? content.gallery.map(img => ({
-    src: img.image,
-    alt: isPlaceholderTitle(img.title) ? `Photobooth ${img.category || ''} ${img.location || ''}`.trim() : img.title,
-  })) : [
-    { src: '/gallery-1.png', alt: 'Photobooth mariage premium Le Havre' },
-    { src: '/gallery-2.png', alt: 'Photobooth événement entreprise moderne Rouen' },
-    { src: '/gallery-3.png', alt: 'Photobooth anniversaire festif Dieppe' },
-    { src: '/mirror-premium.png', alt: 'Borne photo miroir magique PhotoRoots' },
-  ];
 
   return (
     <div>
@@ -376,37 +365,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== GALERIE AVEC LIGHTBOX ===== */}
-      <FadeIn direction="up">
-      <section className="container" style={{ padding: '16px 24px' }}>
-        <div className="gallery-grid">
-          {galleryImages.map((img, i) => (
-            <div
-              className="gallery-item gallery-item-clickable"
-              key={i}
-              onClick={() => setLightboxIndex(i)}
-              role="button"
-              tabIndex={0}
-              aria-label={`Voir ${img.alt} en plein écran`}
-            >
-              <PremiumImage src={img.src} alt={img.alt} />
-              <div className="gallery-overlay">
-                <Camera size={24} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-      </FadeIn>
-
-      {lightboxIndex !== null && (
-        <Lightbox
-          images={galleryImages}
-          initialIndex={lightboxIndex}
-          onClose={() => setLightboxIndex(null)}
-        />
-      )}
-
       {/* ===== TESTIMONIALS CAROUSEL ===== */}
       <FadeIn direction="up">
       <section className="container" style={{ padding: '32px 24px' }} id="avis">
@@ -524,6 +482,50 @@ const Home = () => {
           <Link to="/tarifs" style={{ color: 'var(--primary)', fontWeight: 700, fontSize: '15px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             Voir tous les tarifs <ArrowRight size={16} />
           </Link>
+        </div>
+      </section>
+      </FadeIn>
+
+      {/* ===== GALLERY TEASER — Derniers Événements ===== */}
+      <FadeIn direction="up">
+      <section className="container" style={{ padding: '48px 24px' }}>
+        <div className="section-tag"><Image size={14} /> Souvenirs</div>
+        <h2 className="section-title">Derniers Événements</h2>
+        <p className="section-subtitle">Aperçu des moments capturés récemment par nos clients.</p>
+
+        <div className="gallery-teaser-grid">
+          {(content.gallery || []).slice(0, 4).map((item) => (
+            <EditableBlock
+              key={item.id}
+              label="Photo"
+              modalTitle="Modifier la photo"
+              fields={[
+                { key: 'title', label: 'Titre', type: 'text', value: item.title },
+                { key: 'image', label: 'URL de l\'image', type: 'image', value: item.image },
+              ]}
+              onSave={(vals) => {
+                const newGallery = content.gallery.map(g => g.id === item.id ? { ...g, ...vals } : g);
+                updateContent({ ...content, gallery: newGallery });
+              }}
+              onDelete={() => {
+                const newGallery = content.gallery.filter(g => g.id !== item.id);
+                updateContent({ ...content, gallery: newGallery });
+              }}
+            >
+              <div className="masonry-item" style={{ borderRadius: 'var(--radius-md)' }}>
+                <PremiumImage
+                  src={item.image}
+                  alt={isPlaceholderTitle(item.title) ? `Photobooth ${item.category || ''} ${item.location || ''}`.trim() : item.title}
+                />
+              </div>
+            </EditableBlock>
+          ))}
+        </div>
+
+        <div style={{ textAlign: 'center', marginTop: '24px' }}>
+          <AnimatedButton to="/galerie" style={{ width: 'auto', padding: '16px 36px' }}>
+            Accéder à la Galerie <ArrowRight size={18} />
+          </AnimatedButton>
         </div>
       </section>
       </FadeIn>
