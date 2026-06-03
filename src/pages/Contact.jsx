@@ -1,9 +1,14 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, CheckCircle2, Send, ChevronRight, ChevronLeft, Calendar, CalendarCheck, Loader2, AlertCircle } from 'lucide-react';
+import {
+  Mail, Phone, MapPin, CheckCircle2, Send, ChevronRight, ChevronLeft,
+  Calendar, CalendarCheck, Loader2, AlertCircle, Users, Heart, Cake,
+  Briefcase, Sparkles, Gift, PartyPopper, MoreHorizontal, MessageCircle,
+} from 'lucide-react';
 import { processBooking, formatDateFR, fetchBusySlots, invalidateBusySlotsCache } from '../services/emailService';
 import { isConfigured } from '../config/emailjs';
+import { formatPrice } from '../utils/galleryFormat';
 import Confetti from '../components/Confetti';
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
@@ -16,11 +21,30 @@ const PHONE_REGEX = /^[+\d\s()./-]{7,20}$/;
 const CONTACT_PREFERENCES = ['Par email', 'Par téléphone', 'Par SMS', 'WhatsApp', 'Peu importe'];
 const REFERRAL_SOURCES = ['Google', 'Bouche à oreille', 'Réseaux sociaux (Instagram, Facebook…)', 'Salle de réception', 'Wedding planner', 'Autre'];
 
+// Icône associée à chaque type d'événement (fallback : PartyPopper)
+const EVENT_ICONS = {
+  Mariage: Heart,
+  Anniversaire: Cake,
+  Entreprise: Briefcase,
+  Baptême: Sparkles,
+  'EVJF/EVG': Gift,
+  Séminaire: Users,
+  Autre: MoreHorizontal,
+};
+
+const STEPS = [
+  { n: 1, label: 'Événement' },
+  { n: 2, label: 'Formule' },
+  { n: 3, label: 'Coordonnées' },
+];
+
 const Contact = () => {
   const { content, updateContent } = useContent();
 
   const eventTypes = content.formOptions?.eventTypes || ['Mariage', 'Anniversaire', 'Entreprise', 'Baptême', 'EVJF/EVG', 'Autre'];
 
+  const [step, setStep] = useState(1);
+  const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
   const [loading, setLoading] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState(true);
   const [error, setError] = useState(null);
@@ -46,10 +70,23 @@ const Contact = () => {
     referralSource: '',
   });
 
-  // Formules disponibles (depuis le CMS, avec fallback)
-  const formulas = (content.pricing_plans?.length > 0
-    ? content.pricing_plans.map(p => p.name)
-    : ['Essentiel', 'Premium', 'Excellence', 'Sur-Mesure']);
+  // Formules disponibles (depuis le CMS, avec fallback) — incluent prix + desc
+  const formulaOptions = useMemo(() => {
+    if (content.pricing_plans?.length > 0) {
+      return content.pricing_plans.map(p => ({
+        name: p.name,
+        price: formatPrice(p.price),
+        desc: p.desc,
+        featured: !!p.featured,
+      }));
+    }
+    return [
+      { name: 'Essentiel', price: '189€', desc: 'Idéal pour les petits événements' },
+      { name: 'Premium', price: '289€', desc: 'Notre best-seller, impressions incluses', featured: true },
+      { name: 'Excellence', price: '389€', desc: 'Personnalisation totale & technicien dédié' },
+      { name: 'Sur-Mesure', price: 'Sur devis', desc: 'Une prestation 100% sur mesure' },
+    ];
+  }, [content.pricing_plans]);
 
   // Charger les dates occupées au montage
   useEffect(() => {
@@ -123,11 +160,29 @@ const Contact = () => {
   };
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const setField = (key, value) => setFormData(prev => ({ ...prev, [key]: value }));
 
   const selectDate = (dateStr) => {
-    setFormData({ ...formData, date: dateStr });
+    setField('date', dateStr);
     setCalendarOpen(false);
   };
+
+  // ===== Navigation entre étapes =====
+  const goTo = (target, dir) => {
+    setError(null);
+    setDirection(dir);
+    setStep(target);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const goNext = () => {
+    if (step === 1) {
+      if (!formData.date) { setError('Veuillez sélectionner une date pour votre événement.'); return; }
+    }
+    goTo(Math.min(3, step + 1), 1);
+  };
+
+  const goBack = () => goTo(Math.max(1, step - 1), -1);
 
   const handleSubmit = async (e) => {
     if (e) e.preventDefault();
@@ -147,7 +202,6 @@ const Contact = () => {
     sessionStorage.setItem('pr_last_submit', String(Date.now()));
     setLoading(true);
 
-    // Compose un message lisible si l'utilisateur n'a rien écrit (et inclut les nouveaux champs)
     const autoMessage = [
       formData.guests ? `Nombre d'invités : ${formData.guests}` : null,
       formData.formula ? `Pack souhaité : ${formData.formula}` : null,
@@ -210,10 +264,20 @@ const Contact = () => {
           <title>Demande envoyée | PhotoRoots</title>
         </Helmet>
         <section className="container" style={{ padding: '32px 24px' }}>
-          <div style={{ textAlign: 'center', padding: '32px 24px', background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-lg)' }}>
-            <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'var(--bg-secondary)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
-              <CheckCircle2 size={36} />
-            </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            style={{ textAlign: 'center', padding: '36px 24px', background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-lg)' }}
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.15, type: 'spring', stiffness: 200, damping: 14 }}
+              style={{ width: '76px', height: '76px', borderRadius: '50%', background: 'var(--bg-secondary)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '0 0 0 8px var(--accent-glow)' }}
+            >
+              <CheckCircle2 size={38} />
+            </motion.div>
             <h1 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '8px', color: 'var(--text-main)' }}>Merci, votre demande est bien reçue !</h1>
             <p style={{ fontSize: '15px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '24px' }}>
               {result?.isDemo ? (
@@ -224,34 +288,28 @@ const Contact = () => {
             </p>
 
             <div style={{ background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)', padding: '20px', border: '1px solid var(--border-light)', textAlign: 'left', marginBottom: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid var(--border-light)' }}>
-                <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Date envisagée</span>
-                <span style={{ fontSize: '14px', fontWeight: 700 }}>{formatDateFR(formData.date)}</span>
-              </div>
-              {formData.eventType && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: formData.location ? '1px solid var(--border-light)' : 'none' }}>
-                  <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Événement</span>
-                  <span style={{ fontSize: '14px', fontWeight: 700 }}>{formData.eventType}</span>
-                </div>
-              )}
-              {formData.location && (
-                <div style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0' }}>
-                  <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>Lieu</span>
-                  <span style={{ fontSize: '14px', fontWeight: 700, textAlign: 'right', maxWidth: '60%' }}>{formData.location}</span>
-                </div>
-              )}
+              <SummaryRow label="Date envisagée" value={formatDateFR(formData.date)} border />
+              {formData.eventType && <SummaryRow label="Événement" value={formData.eventType} border />}
+              {formData.formula && <SummaryRow label="Formule" value={formData.formula} border={!!formData.location || !!formData.guests} />}
+              {formData.guests && <SummaryRow label="Invités" value={`${formData.guests} personnes`} border={!!formData.location} />}
+              {formData.location && <SummaryRow label="Lieu" value={formData.location} />}
             </div>
 
             <Link to="/">
-              <button className="btn-primary" style={{ width: '100%' }}>
-                Retour à l'accueil
-              </button>
+              <button className="btn-primary" style={{ width: '100%' }}>Retour à l'accueil</button>
             </Link>
-          </div>
+          </motion.div>
         </section>
       </div>
     );
   }
+
+  // ===== Récap latéral (pills) à partir de l'étape 2 =====
+  const recapPills = [
+    formData.date && { icon: Calendar, text: formatDateFR(formData.date) },
+    formData.eventType && { icon: EVENT_ICONS[formData.eventType] || PartyPopper, text: formData.eventType },
+    formData.formula && { icon: CheckCircle2, text: formData.formula },
+  ].filter(Boolean);
 
   return (
     <div className="animate-in">
@@ -274,245 +332,426 @@ const Contact = () => {
       </Helmet>
 
       {/* HEADER */}
-      <section className="container" style={{ padding: '32px 20px 16px' }}>
-        <div className="section-tag"><Calendar size={14} /> Contact</div>
+      <section className="container" style={{ padding: '32px 20px 8px' }}>
+        <div className="section-tag"><MessageCircle size={14} /> Devis gratuit</div>
         <EditableBlock
           label="Header Contact"
           modalTitle="Modifier le Titre"
           fields={[
             { key: 'title', label: 'Titre', type: 'text', value: content.contactPage?.title || 'Demande de devis' },
-            { key: 'subtitle', label: 'Sous-titre', type: 'textarea', value: content.contactPage?.subtitle || 'Parlez-nous de votre événement, nous revenons vers vous sous 24h avec une proposition personnalisée.' },
+            { key: 'subtitle', label: 'Sous-titre', type: 'textarea', value: content.contactPage?.subtitle || 'Quelques infos sur votre événement et nous revenons vers vous sous 24h avec une proposition personnalisée.' },
           ]}
           onSave={(vals) => updateContent({ contactPage: { ...content.contactPage, ...vals } })}
         >
           <h1 className="section-title" style={{ fontSize: '28px' }}>{content.contactPage?.title || 'Demande de devis'}</h1>
-          <p className="section-subtitle" style={{ marginBottom: '20px' }}>
-            {content.contactPage?.subtitle || 'Parlez-nous de votre événement, nous revenons vers vous sous 24h avec une proposition personnalisée.'}
+          <p className="section-subtitle" style={{ marginBottom: '16px' }}>
+            {content.contactPage?.subtitle || 'Quelques infos sur votre événement et nous revenons vers vous sous 24h avec une proposition personnalisée.'}
           </p>
         </EditableBlock>
+      </section>
 
+      {/* STEPPER */}
+      <section className="container" style={{ padding: '0 20px 8px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', maxWidth: '460px', margin: '0 auto 4px' }}>
+          {STEPS.map((s, i) => {
+            const isDone = step > s.n;
+            const isActive = step === s.n;
+            return (
+              <div key={s.n} style={{ display: 'flex', alignItems: 'center', flex: i < STEPS.length - 1 ? 1 : '0 0 auto' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                  <motion.div
+                    animate={{
+                      backgroundColor: isActive || isDone ? 'var(--primary)' : 'var(--bg-secondary)',
+                      color: isActive || isDone ? '#fff' : 'var(--text-light)',
+                      scale: isActive ? 1.1 : 1,
+                    }}
+                    transition={{ duration: 0.25 }}
+                    style={{
+                      width: '32px', height: '32px', borderRadius: '50%',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      fontSize: '13px', fontWeight: 800, flexShrink: 0,
+                      boxShadow: isActive ? '0 0 0 4px var(--accent-glow)' : 'none',
+                      border: isActive || isDone ? 'none' : '1px solid var(--border-light)',
+                    }}
+                  >
+                    {isDone ? <CheckCircle2 size={16} /> : s.n}
+                  </motion.div>
+                  <span style={{ fontSize: '11px', fontWeight: isActive ? 700 : 500, color: isActive ? 'var(--primary)' : 'var(--text-light)', whiteSpace: 'nowrap' }}>{s.label}</span>
+                </div>
+                {i < STEPS.length - 1 && (
+                  <div style={{ flex: 1, height: '2px', margin: '0 8px', background: 'var(--border-light)', position: 'relative', top: '-10px', borderRadius: '2px', overflow: 'hidden' }}>
+                    <motion.div
+                      initial={false}
+                      animate={{ width: step > s.n ? '100%' : '0%' }}
+                      transition={{ duration: 0.3 }}
+                      style={{ height: '100%', background: 'var(--primary)' }}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* RECAP PILLS */}
+      {recapPills.length > 0 && step > 1 && (
+        <section className="container" style={{ padding: '4px 20px 0' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', justifyContent: 'center' }}>
+            {recapPills.map((p, i) => {
+              const Icon = p.icon;
+              return (
+                <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 11px', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', borderRadius: '999px', fontSize: '12px', fontWeight: 600, color: 'var(--text-main)' }}>
+                  <Icon size={12} style={{ color: 'var(--primary)' }} /> {p.text}
+                </span>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* FORM */}
+      <section className="container" style={{ padding: '16px 20px 24px' }}>
         {!isConfigured() && (
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', padding: '12px 16px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', marginBottom: '20px', fontSize: '13px', color: 'var(--primary)', lineHeight: 1.5 }}>
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', padding: '12px 16px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-light)', marginBottom: '16px', fontSize: '13px', color: 'var(--primary)', lineHeight: 1.5 }}>
             <AlertCircle size={16} style={{ flexShrink: 0, marginTop: '2px' }} />
             <span><strong>Mode démo</strong> — Configurez l'URL Google Apps Script dans <code>src/config/emailjs.js</code> pour activer l'envoi réel.</span>
           </div>
         )}
-      </section>
 
-      {/* FORM */}
-      <section className="container" style={{ padding: '0 20px 32px' }}>
         <form
           onSubmit={handleSubmit}
-          style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-md)' }}
+          style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-md)', overflow: 'hidden' }}
         >
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '0 20px',
-            }}
-          >
-            {/* Nom et prénom */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="name">Nom et prénom *</label>
-              <input className="form-input" type="text" id="name" name="name" placeholder="Jean Dupont" value={formData.name} onChange={handleChange} required />
-            </div>
-
-            {/* Email */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">Email *</label>
-              <input className="form-input" type="email" id="email" name="email" placeholder="jean@exemple.com" value={formData.email} onChange={handleChange} required />
-            </div>
-
-            {/* Téléphone */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="phone">Numéro de téléphone</label>
-              <input className="form-input" type="tel" id="phone" name="phone" placeholder="06 12 34 56 78" value={formData.phone} onChange={handleChange} />
-            </div>
-
-            {/* Type d'événement */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="eventType">Type d'événement</label>
-              <select className="form-select" id="eventType" name="eventType" value={formData.eventType} onChange={handleChange}>
-                <option value="">Sélectionnez...</option>
-                {eventTypes.map(t => <option key={t} value={t}>{t}</option>)}
-              </select>
-            </div>
-
-            {/* Date avec calendrier dropdown */}
-            <div className="form-group" style={{ position: 'relative', gridColumn: '1 / -1' }} ref={dateFieldRef}>
-              <label className="form-label" htmlFor="date">Date de l'événement *</label>
-              <button
-                type="button"
-                id="date"
-                onClick={() => setCalendarOpen(o => !o)}
-                aria-haspopup="dialog"
-                aria-expanded={calendarOpen}
-                className="form-input"
-                style={{
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '8px',
-                  color: formData.date ? 'var(--text-main)' : 'var(--text-light)',
-                }}
+          <AnimatePresence mode="wait" custom={direction}>
+            {/* ============ STEP 1 — ÉVÉNEMENT ============ */}
+            {step === 1 && (
+              <motion.div
+                key="step1"
+                custom={direction}
+                initial={{ opacity: 0, x: direction * 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: direction * -30 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
               >
-                <span>{formData.date ? formatDateFR(formData.date) : 'Choisir une date...'}</span>
-                <Calendar size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
-              </button>
+                <StepHeading n={1} title="Votre événement" subtitle="Pour commencer, parlez-nous de l'occasion." />
 
-              <AnimatePresence>
-                {calendarOpen && (
-                  <motion.div
-                    role="dialog"
-                    aria-label="Choisir une date"
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.18 }}
+                {/* Type d'événement — chips */}
+                <div className="form-group">
+                  <label className="form-label">Type d'événement</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))', gap: '10px', marginTop: '4px' }}>
+                    {eventTypes.map((t) => {
+                      const Icon = EVENT_ICONS[t] || PartyPopper;
+                      const active = formData.eventType === t;
+                      return (
+                        <button
+                          type="button"
+                          key={t}
+                          onClick={() => setField('eventType', active ? '' : t)}
+                          style={{
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+                            padding: '14px 8px', borderRadius: 'var(--radius-md)', cursor: 'pointer',
+                            background: active ? 'var(--bg-secondary)' : 'var(--bg-app)',
+                            border: active ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                            boxShadow: active ? '0 0 0 3px var(--accent-glow)' : 'none',
+                            color: active ? 'var(--primary)' : 'var(--text-main)',
+                            transition: 'all 0.2s', fontWeight: active ? 700 : 500, fontSize: '13px',
+                          }}
+                        >
+                          <Icon size={22} />
+                          {t}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Date avec calendrier dropdown */}
+                <div className="form-group" style={{ position: 'relative' }} ref={dateFieldRef}>
+                  <label className="form-label" htmlFor="date">Date de l'événement *</label>
+                  <button
+                    type="button"
+                    id="date"
+                    onClick={() => setCalendarOpen(o => !o)}
+                    aria-haspopup="dialog"
+                    aria-expanded={calendarOpen}
+                    className="form-input"
                     style={{
-                      position: 'absolute',
-                      top: 'calc(100% + 4px)',
-                      left: 0,
-                      right: 0,
-                      zIndex: 50,
-                      background: '#ffffff',
-                      borderRadius: 'var(--radius-lg)',
-                      border: '1px solid #e2e8f0',
-                      boxShadow: '0 20px 50px rgba(15, 23, 42, 0.18)',
-                      overflow: 'hidden',
+                      textAlign: 'left', cursor: 'pointer', display: 'flex',
+                      alignItems: 'center', justifyContent: 'space-between', gap: '8px',
+                      color: formData.date ? 'var(--text-main)' : 'var(--text-light)',
                     }}
                   >
-                    {/* Month nav */}
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', background: '#ffffff' }}>
-                      <button type="button" onClick={prevMonth} style={{ background: '#f1f5f9', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', color: '#0f172a' }}>
-                        <ChevronLeft size={16} />
-                      </button>
-                      <span style={{ fontWeight: 700, fontSize: '14px', textTransform: 'capitalize', color: '#0f172a' }}>{monthLabel}</span>
-                      <button type="button" onClick={nextMonth} style={{ background: '#f1f5f9', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', color: '#0f172a' }}>
-                        <ChevronRight size={16} />
-                      </button>
-                    </div>
+                    <span>{formData.date ? formatDateFR(formData.date) : 'Choisir une date...'}</span>
+                    <Calendar size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                  </button>
 
-                    {/* Legend */}
-                    <div style={{ display: 'flex', gap: '14px', padding: '8px 16px', fontSize: '11px', color: '#64748b', borderBottom: '1px solid #e2e8f0', background: '#ffffff' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', display: 'inline-block' }} /> Disponible
-                      </span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fee2e2', border: '1px solid #fca5a5', display: 'inline-block' }} /> Complet
-                      </span>
-                    </div>
-
-                    <div style={{ position: 'relative', minHeight: '240px', background: '#ffffff' }}>
-                      {loadingSlots && (
-                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(6px)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                          <Loader2 size={20} style={{ color: 'var(--primary)', animation: 'spin 1s linear infinite' }} />
-                          <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary)' }}>Chargement...</span>
+                  <AnimatePresence>
+                    {calendarOpen && (
+                      <motion.div
+                        role="dialog"
+                        aria-label="Choisir une date"
+                        initial={{ opacity: 0, y: -8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.18 }}
+                        style={{
+                          position: 'absolute', top: 'calc(100% + 4px)', left: 0, right: 0, zIndex: 50,
+                          background: '#ffffff', borderRadius: 'var(--radius-lg)', border: '1px solid #e2e8f0',
+                          boxShadow: '0 20px 50px rgba(15, 23, 42, 0.18)', overflow: 'hidden',
+                        }}
+                      >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid #e2e8f0', background: '#ffffff' }}>
+                          <button type="button" onClick={prevMonth} style={{ background: '#f1f5f9', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', color: '#0f172a' }}>
+                            <ChevronLeft size={16} />
+                          </button>
+                          <span style={{ fontWeight: 700, fontSize: '14px', textTransform: 'capitalize', color: '#0f172a' }}>{monthLabel}</span>
+                          <button type="button" onClick={nextMonth} style={{ background: '#f1f5f9', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', color: '#0f172a' }}>
+                            <ChevronRight size={16} />
+                          </button>
                         </div>
-                      )}
 
-                      {/* Day headers */}
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '10px 10px 4px' }}>
-                        {['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'].map(d => (
-                          <div key={d} style={{ textAlign: 'center', fontSize: '11px', fontWeight: 700, color: '#94a3b8', padding: '4px' }}>{d}</div>
-                        ))}
-                      </div>
+                        <div style={{ display: 'flex', gap: '14px', padding: '8px 16px', fontSize: '11px', color: '#64748b', borderBottom: '1px solid #e2e8f0', background: '#ffffff' }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: 'var(--primary)', display: 'inline-block' }} /> Disponible
+                          </span>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#fee2e2', border: '1px solid #fca5a5', display: 'inline-block' }} /> Complet
+                          </span>
+                        </div>
 
-                      {/* Days */}
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '4px 10px 14px', gap: '4px' }}>
-                        {calendarDays.map((day, i) => {
-                          if (!day) return <div key={`empty-${i}`} />;
-                          const isSelected = formData.date === day.dateStr;
-                          const isDisabled = day.isPast || day.isFullyBooked;
-                          return (
-                            <button
-                              type="button"
-                              key={day.dateStr}
-                              disabled={isDisabled}
-                              onClick={() => selectDate(day.dateStr)}
-                              style={{
-                                width: '100%', aspectRatio: '1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                fontSize: '13px', fontWeight: isSelected ? 700 : 500,
-                                background: isSelected ? 'var(--primary)' : day.isFullyBooked ? '#fee2e2' : 'transparent',
-                                color: isSelected ? '#fff' : day.isFullyBooked ? '#ef4444' : day.isPast ? '#cbd5e1' : '#0f172a',
-                                opacity: day.isPast ? 0.5 : 1,
-                                cursor: isDisabled ? 'not-allowed' : 'pointer',
-                                transition: 'all 0.2s',
-                                border: day.isFullyBooked ? '1px solid #fca5a5' : 'none',
-                              }}
-                            >
-                              {day.day}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                        <div style={{ position: 'relative', minHeight: '240px', background: '#ffffff' }}>
+                          {loadingSlots && (
+                            <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(6px)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                              <Loader2 size={20} style={{ color: 'var(--primary)', animation: 'spin 1s linear infinite' }} />
+                              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary)' }}>Chargement...</span>
+                            </div>
+                          )}
 
-            {/* Adresse */}
-            <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-              <label className="form-label" htmlFor="location">Adresse de l'événement</label>
-              <input className="form-input" type="text" id="location" name="location" placeholder="Salle des fêtes, Le Havre" value={formData.location} onChange={handleChange} />
-            </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '10px 10px 4px' }}>
+                            {['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'].map(d => (
+                              <div key={d} style={{ textAlign: 'center', fontSize: '11px', fontWeight: 700, color: '#94a3b8', padding: '4px' }}>{d}</div>
+                            ))}
+                          </div>
 
-            {/* Nombre d'invités */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="guests">Nombre d'invités à l'événement</label>
-              <input className="form-input" type="number" min="0" id="guests" name="guests" placeholder="Ex : 80" value={formData.guests} onChange={handleChange} />
-            </div>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '4px 10px 14px', gap: '4px' }}>
+                            {calendarDays.map((day, i) => {
+                              if (!day) return <div key={`empty-${i}`} />;
+                              const isSelected = formData.date === day.dateStr;
+                              const isDisabled = day.isPast || day.isFullyBooked;
+                              return (
+                                <button
+                                  type="button"
+                                  key={day.dateStr}
+                                  disabled={isDisabled}
+                                  onClick={() => selectDate(day.dateStr)}
+                                  style={{
+                                    width: '100%', aspectRatio: '1', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    fontSize: '13px', fontWeight: isSelected ? 700 : 500,
+                                    background: isSelected ? 'var(--primary)' : day.isFullyBooked ? '#fee2e2' : 'transparent',
+                                    color: isSelected ? '#fff' : day.isFullyBooked ? '#ef4444' : day.isPast ? '#cbd5e1' : '#0f172a',
+                                    opacity: day.isPast ? 0.5 : 1,
+                                    cursor: isDisabled ? 'not-allowed' : 'pointer',
+                                    transition: 'all 0.2s',
+                                    border: day.isFullyBooked ? '1px solid #fca5a5' : 'none',
+                                  }}
+                                >
+                                  {day.day}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
 
-            {/* Pack souhaité */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="formula">Pack souhaité pour l'événement</label>
-              <select className="form-select" id="formula" name="formula" value={formData.formula} onChange={handleChange}>
-                <option value="">Sélectionnez...</option>
-                {formulas.map(f => <option key={f} value={f}>{f}</option>)}
-              </select>
-            </div>
+                {/* Nombre d'invités */}
+                <div className="form-group">
+                  <label className="form-label" htmlFor="guests">Nombre d'invités <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(estimation)</span></label>
+                  <div style={{ position: 'relative' }}>
+                    <Users size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)', pointerEvents: 'none' }} />
+                    <input className="form-input" type="number" min="0" id="guests" name="guests" placeholder="Ex : 80" value={formData.guests} onChange={handleChange} style={{ paddingLeft: '38px' }} />
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-            {/* Préférence de contact */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="contactPreference">Comment préférez-vous être contacté ?</label>
-              <select className="form-select" id="contactPreference" name="contactPreference" value={formData.contactPreference} onChange={handleChange}>
-                <option value="">Sélectionnez...</option>
-                {CONTACT_PREFERENCES.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
+            {/* ============ STEP 2 — FORMULE ============ */}
+            {step === 2 && (
+              <motion.div
+                key="step2"
+                custom={direction}
+                initial={{ opacity: 0, x: direction * 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: direction * -30 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+              >
+                <StepHeading n={2} title="Quelle formule vous intéresse ?" subtitle="Indicatif — vous pourrez en discuter avec nous. Pas encore décidé ? Pas de souci." />
 
-            {/* Source */}
-            <div className="form-group">
-              <label className="form-label" htmlFor="referralSource">Comment nous avez-vous connu ?</label>
-              <select className="form-select" id="referralSource" name="referralSource" value={formData.referralSource} onChange={handleChange}>
-                <option value="">Sélectionnez...</option>
-                {REFERRAL_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-          </div>
+                <div style={{ display: 'grid', gap: '10px', marginBottom: '8px' }}>
+                  {formulaOptions.map((f) => {
+                    const active = formData.formula === f.name;
+                    return (
+                      <button
+                        type="button"
+                        key={f.name}
+                        onClick={() => setField('formula', active ? '' : f.name)}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+                          padding: '16px 18px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left',
+                          background: active ? 'var(--bg-secondary)' : 'var(--bg-app)',
+                          border: active ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                          boxShadow: active ? '0 0 0 3px var(--accent-glow)' : 'none',
+                          transition: 'all 0.2s', position: 'relative',
+                        }}
+                      >
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
+                            <span style={{ fontWeight: 800, fontSize: '15px', color: 'var(--text-main)' }}>{f.name}</span>
+                            {f.featured && (
+                              <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary)', background: 'var(--bg-secondary)', border: '1px solid var(--primary)', borderRadius: '999px', padding: '2px 8px' }}>★ POPULAIRE</span>
+                            )}
+                          </div>
+                          {f.desc && <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{f.desc}</div>}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+                          <span style={{ fontWeight: 900, fontSize: '17px', color: active ? 'var(--primary)' : 'var(--text-main)' }}>{f.price}</span>
+                          <span style={{
+                            width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+                            border: active ? 'none' : '2px solid var(--border-medium)',
+                            background: active ? 'var(--primary)' : 'transparent',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>
+                            {active && <CheckCircle2 size={16} color="#fff" />}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
 
+                  {/* Option "je ne sais pas encore" */}
+                  <button
+                    type="button"
+                    onClick={() => setField('formula', formData.formula === 'Je ne sais pas encore' ? '' : 'Je ne sais pas encore')}
+                    style={{
+                      padding: '14px 18px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'center',
+                      background: formData.formula === 'Je ne sais pas encore' ? 'var(--bg-secondary)' : 'transparent',
+                      border: formData.formula === 'Je ne sais pas encore' ? '2px solid var(--primary)' : '2px dashed var(--border-medium)',
+                      color: formData.formula === 'Je ne sais pas encore' ? 'var(--primary)' : 'var(--text-muted)',
+                      fontWeight: 600, fontSize: '14px', transition: 'all 0.2s',
+                    }}
+                  >
+                    Je ne sais pas encore — conseillez-moi
+                  </button>
+                </div>
+
+                {/* Adresse */}
+                <div className="form-group" style={{ marginTop: '12px' }}>
+                  <label className="form-label" htmlFor="location">Lieu de l'événement <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
+                  <div style={{ position: 'relative' }}>
+                    <MapPin size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)', pointerEvents: 'none' }} />
+                    <input className="form-input" type="text" id="location" name="location" placeholder="Salle des fêtes, Le Havre" value={formData.location} onChange={handleChange} style={{ paddingLeft: '38px' }} />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ============ STEP 3 — COORDONNÉES ============ */}
+            {step === 3 && (
+              <motion.div
+                key="step3"
+                custom={direction}
+                initial={{ opacity: 0, x: direction * 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: direction * -30 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+              >
+                <StepHeading n={3} title="Vos coordonnées" subtitle="Dernière étape ! Pour vous envoyer votre devis personnalisé." />
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 18px' }}>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="name">Nom et prénom *</label>
+                    <input className="form-input" type="text" id="name" name="name" placeholder="Jean Dupont" value={formData.name} onChange={handleChange} required />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="email">Email *</label>
+                    <input className="form-input" type="email" id="email" name="email" placeholder="jean@exemple.com" value={formData.email} onChange={handleChange} required />
+                  </div>
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label className="form-label" htmlFor="phone">Numéro de téléphone <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
+                    <input className="form-input" type="tel" id="phone" name="phone" placeholder="06 12 34 56 78" value={formData.phone} onChange={handleChange} />
+                  </div>
+                </div>
+
+                {/* Préférence de contact — chips */}
+                <div className="form-group">
+                  <label className="form-label">Comment préférez-vous être contacté ?</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
+                    {CONTACT_PREFERENCES.map((p) => {
+                      const active = formData.contactPreference === p;
+                      return (
+                        <button
+                          type="button"
+                          key={p}
+                          onClick={() => setField('contactPreference', active ? '' : p)}
+                          style={{
+                            padding: '9px 16px', borderRadius: '999px', cursor: 'pointer', fontSize: '13px',
+                            fontWeight: active ? 700 : 500,
+                            background: active ? 'var(--primary)' : 'var(--bg-app)',
+                            color: active ? '#fff' : 'var(--text-main)',
+                            border: active ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          {p}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Source */}
+                <div className="form-group">
+                  <label className="form-label" htmlFor="referralSource">Comment nous avez-vous connu ?</label>
+                  <select className="form-select" id="referralSource" name="referralSource" value={formData.referralSource} onChange={handleChange}>
+                    <option value="">Sélectionnez...</option>
+                    {REFERRAL_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ERREUR */}
           {error && (
-            <div style={{ marginTop: '8px', marginBottom: '16px', padding: '14px 18px', background: '#fef2f2', borderRadius: 'var(--radius-md)', border: '1px solid #fecaca', color: '#b91c1c', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ marginTop: '8px', marginBottom: '12px', padding: '14px 18px', background: '#fef2f2', borderRadius: 'var(--radius-md)', border: '1px solid #fecaca', color: '#b91c1c', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <AlertCircle size={16} /> {error}
             </div>
           )}
 
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={loading}
-            style={{ width: '100%', marginTop: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-          >
-            {loading ? (
-              <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Envoi en cours...</>
-            ) : (
-              <><Send size={18} /> Envoyer ma demande</>
+          {/* NAVIGATION */}
+          <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
+            {step > 1 && (
+              <button type="button" className="btn-secondary" onClick={goBack} disabled={loading} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                <ChevronLeft size={18} /> Retour
+              </button>
             )}
-          </button>
+            {step < 3 ? (
+              <button type="button" className="btn-primary" onClick={goNext} style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
+                Continuer <ChevronRight size={18} />
+              </button>
+            ) : (
+              <button type="submit" className="btn-primary" disabled={loading} style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                {loading ? (
+                  <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Envoi en cours...</>
+                ) : (
+                  <><Send size={18} /> Envoyer ma demande</>
+                )}
+              </button>
+            )}
+          </div>
 
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '16px', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '12px', color: 'var(--text-light)', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -526,7 +765,7 @@ const Contact = () => {
       </section>
 
       {/* CONTACT INFO */}
-      <section className="container" style={{ padding: '16px 20px 48px' }}>
+      <section className="container" style={{ padding: '8px 20px 48px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <EditableBlock
             label="Contact Téléphone"
@@ -568,5 +807,23 @@ const Contact = () => {
     </div>
   );
 };
+
+// ===== Petits composants de présentation =====
+const StepHeading = ({ n, title, subtitle }) => (
+  <div style={{ marginBottom: '20px' }}>
+    <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+      Étape {n} sur 3
+    </span>
+    <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0 4px' }}>{title}</h2>
+    {subtitle && <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5, margin: 0 }}>{subtitle}</p>}
+  </div>
+);
+
+const SummaryRow = ({ label, value, border }) => (
+  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', padding: '10px 0', borderBottom: border ? '1px solid var(--border-light)' : 'none' }}>
+    <span style={{ fontSize: '14px', color: 'var(--text-muted)', flexShrink: 0 }}>{label}</span>
+    <span style={{ fontSize: '14px', fontWeight: 700, textAlign: 'right' }}>{value}</span>
+  </div>
+);
 
 export default Contact;
