@@ -24,7 +24,7 @@ const BUSINESS_PHONE = '06 03 16 36 21';
 
 // Adresse d'expédition (domaine doit être vérifié dans Resend)
 const FROM_EMAIL = 'PhotoRoots <noreply@photoroots.fr>';
-const REPLY_TO = 'contact@photoroots.fr';
+const REPLY_TO = 'serviceclient@photoroots.fr';
 
 // ===== GET : Récupérer les dates occupées =====
 function doGet(e) {
@@ -41,23 +41,24 @@ function doGet(e) {
   }
 }
 
-// ===== POST : Créer une réservation =====
+// ===== POST : Enregistrer une demande de devis =====
 function doPost(e) {
   try {
     const data = JSON.parse(e.postData.contents);
-    
-    // Valider les données requises
-    if (!data.date || !data.name || !data.email || !data.eventType) {
-      return jsonResponse({ error: 'Données manquantes' }, 400);
+
+    // Valider les données requises (eventType, location, etc. sont optionnels
+    // dans le nouveau formulaire de demande de devis)
+    if (!data.date || !data.name || !data.email) {
+      return jsonResponse({ error: 'Données manquantes (nom, email ou date)' }, 400);
     }
 
-    // Vérifier que la date n'est pas déjà prise
+    // Vérifier que la date n'est pas déjà complète (2+ événements)
     const busy = getBusyDatesArray();
     if (busy.includes(data.date)) {
-      return jsonResponse({ error: 'Cette date est déjà réservée. Veuillez choisir une autre date.' }, 409);
+      return jsonResponse({ error: 'Cette date est déjà complète. Veuillez choisir une autre date.' }, 409);
     }
 
-    // Créer l'événement sur Google Calendar
+    // Créer l'événement "Devis" sur Google Calendar (orange, à confirmer)
     const event = createCalendarEvent(data);
 
     // Envoyer email de confirmation au client
@@ -66,10 +67,10 @@ function doPost(e) {
     // Envoyer email de notification au propriétaire
     sendOwnerEmail(data);
 
-    return jsonResponse({ 
-      success: true, 
+    return jsonResponse({
+      success: true,
       eventId: event.getId(),
-      message: 'Réservation confirmée !'
+      message: 'Demande de devis bien reçue !'
     });
 
   } catch (error) {
