@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { Camera, Calendar, MapPin, Plus } from 'lucide-react';
 import { haptic } from '../hooks/useHaptic';
 import { GALLERY_CATEGORIES, displayTitle, galleryAlt, normalizeCategory } from '../utils/galleryFormat';
 import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
-import Lightbox from '../components/Lightbox';
+const Lightbox = lazy(() => import('../components/Lightbox'));
 import FadeIn from '../components/FadeIn';
 import { useContent } from '../context/ContentContext';
 import { useAdmin } from '../context/AdminContext';
@@ -235,14 +235,16 @@ const Gallery = () => {
 
       {/* LIGHTBOX (mode public uniquement) */}
       {lightboxIndex !== null && !isAdminMode && (
-        <Lightbox
-          images={filteredData.map(d => ({
-            src: d.image,
-            alt: galleryAlt(d),
-          }))}
-          initialIndex={lightboxIndex}
-          onClose={() => setLightboxIndex(null)}
-        />
+        <Suspense fallback={null}>
+          <Lightbox
+            images={filteredData.map(d => ({
+              src: d.image,
+              alt: galleryAlt(d),
+            }))}
+            initialIndex={lightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+          />
+        </Suspense>
       )}
 
       {/* Add Photo Modal */}

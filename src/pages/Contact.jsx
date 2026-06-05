@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -9,7 +9,7 @@ import {
 import { processBooking, formatDateFR, fetchBusySlots, invalidateBusySlotsCache } from '../services/emailService';
 import { isConfigured } from '../config/emailjs';
 import { formatPrice } from '../utils/galleryFormat';
-import Confetti from '../components/Confetti';
+const Confetti = lazy(() => import('../components/Confetti'));
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
 
@@ -342,7 +342,7 @@ const Contact = () => {
   if (submitted) {
     return (
       <div className="animate-in">
-        <Confetti active={submitted} />
+        <Suspense fallback={null}><Confetti active={submitted} /></Suspense>
         <Helmet>
           <title>Demande envoyée | PhotoRoots</title>
         </Helmet>
