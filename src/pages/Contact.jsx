@@ -38,8 +38,24 @@ const STEPS = [
 ];
 
 // Extrait le nombre de tirages depuis les fonctionnalités d'une formule CMS
-// (ex: "Impression de 200 Photos" → "200 tirages", "Impressions illimitées" → "Tirages illimités")
+// Nombre de tirages affiché à côté de chaque pack dans le formulaire de devis.
+// Correspondance explicite par nom de pack (insensible à la casse/accents),
+// avec extraction automatique en repli pour un pack inconnu.
+const TIRAGES_BY_NAME = {
+  'starter': '100% digital',
+  'essentiel': '100% digital',
+  'prestige': '200 tirages',
+  'excellence': '400 tirages',
+};
+
+const normalizeName = (s) =>
+  String(s || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
 const extractTirages = (plan) => {
+  // 1) Correspondance explicite par nom
+  const override = TIRAGES_BY_NAME[normalizeName(plan?.name)];
+  if (override) return override;
+  // 2) Repli : extraction depuis les fonctionnalités
   const feats = plan?.features || [];
   const f = feats.find((x) => /impression|tirage|photo/i.test(String(x)));
   if (!f) return null;
@@ -102,10 +118,10 @@ const Contact = () => {
       }));
     }
     return [
-      { name: 'Essentiel', price: '189€', tirages: null },
-      { name: 'Premium', price: '289€', tirages: 'Tirages illimités', featured: true },
+      { name: 'Starter', price: '99€', tirages: '100% digital' },
+      { name: 'Essentiel', price: '189€', tirages: '100% digital' },
+      { name: 'Prestige', price: '249€', tirages: '200 tirages', featured: true },
       { name: 'Excellence', price: '389€', tirages: '400 tirages' },
-      { name: 'Sur-Mesure', price: 'Sur devis', tirages: null },
     ];
   }, [content.pricing_plans]);
 
