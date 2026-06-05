@@ -72,21 +72,9 @@ function PageContent() {
   const [activeTab, setActiveTab] = React.useState('home');
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   
-  // SEO Injection
-  useEffect(() => {
-    const route = location.pathname;
-    const pageSEO = content.seo?.pages?.[route] || content.seo?.global;
-    if (pageSEO) {
-      document.title = pageSEO.title;
-      let metaDesc = document.querySelector('meta[name="description"]');
-      if (!metaDesc) {
-        metaDesc = document.createElement('meta');
-        metaDesc.name = 'description';
-        document.head.appendChild(metaDesc);
-      }
-      metaDesc.content = pageSEO.description;
-    }
-  }, [location.pathname, content.seo]);
+  // NB : le SEO par page est géré exclusivement via react-helmet-async
+  // (balises <Helmet> dans chaque page). L'ancienne injection via content.seo
+  // a été retirée car elle écrasait les titres/canonical optimisés du Helmet.
   useEffect(() => {
     if (content.theme) {
       const primaryColor = content.theme.primary || '#c5a059';

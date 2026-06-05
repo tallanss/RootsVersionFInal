@@ -184,6 +184,7 @@ const buildMergedContent = (parsed = {}) => {
 
 // Sauvegarde en arrière-plan vers Supabase
 const saveToSupabase = async (mergedContent) => {
+  if (!supabase) return; // mode offline / prerender
   try {
     const { error } = await supabase
       .from('site_content')
@@ -214,6 +215,7 @@ export const ContentProvider = ({ children }) => {
 
   // Chargement depuis Supabase au montage (source de vérité)
   useEffect(() => {
+    if (!supabase) return; // mode offline / prerender
     const fetchFromSupabase = async () => {
       try {
         const { data, error } = await supabase

@@ -12,14 +12,18 @@ export default defineConfig({
   plugins: [
     react(),
     Sitemap({
-      hostname: 'https://photoroot-le-havre.netlify.app/',
+      hostname: 'https://photoroots.fr',
       outDir: 'dist',
+      exclude: ['/admin', '/mentions-legales'],
       dynamicRoutes: [
         '/',
         '/photobooth',
         '/tarifs',
         '/galerie',
         '/contact',
+        '/le-havre',
+        '/rouen',
+        '/dieppe',
         '/save-the-date'
       ]
     }),
