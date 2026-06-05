@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 
@@ -33,26 +33,28 @@ class ErrorBoundary extends React.Component {
   }
 }
 import { ToastContainer } from './components/Toast';
+// Routes publiques prérendues → import eager (rendu synchrone, SEO)
 import Home from './pages/Home';
 import Photobooth from './pages/Photobooth';
 import Tarifs from './pages/Tarifs';
 import Contact from './pages/Contact';
 import Gallery from './pages/Gallery';
-import Admin from './pages/Admin';
 import Legal from './pages/Legal';
 import SaveTheDate from './pages/SaveTheDate';
-import SaveTheDateEvent from './pages/SaveTheDateEvent';
-import NotFound from './pages/NotFound';
 import LeHavre from './pages/LeHavre';
 import Rouen from './pages/Rouen';
 import Dieppe from './pages/Dieppe';
+// Routes/composants non prérendus ou réservés admin → lazy (hors bundle visiteur)
+const Admin = lazy(() => import('./pages/Admin'));
+const SaveTheDateEvent = lazy(() => import('./pages/SaveTheDateEvent'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const AdminSidebar = lazy(() => import('./components/AdminSidebar'));
 import BottomNav from './components/BottomNav';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import ContactButton from './components/WhatsAppButton';
 import CookieBanner from './components/CookieBanner';
 import AdminToolbar from './components/admin/AdminToolbar';
-import AdminSidebar from './components/AdminSidebar';
 
 import { useContent } from './context/ContentContext';
 import { AdminProvider, useAdmin } from './context/AdminContext';
@@ -108,21 +110,23 @@ function PageContent() {
       {!isStandalonePage && <Header />}
       <main id="main-content" style={{ flexGrow: 1, position: 'relative' }}>
         <div key={location.pathname} className="page-transition">
-          <Routes location={location}>
-            <Route path="/" element={<Home />} />
-            <Route path="/photobooth" element={<Photobooth />} />
-            <Route path="/tarifs" element={<Tarifs />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/galerie" element={<Gallery />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/mentions-legales" element={<Legal />} />
-            <Route path="/save-the-date" element={<SaveTheDate />} />
-            <Route path="/save-the-date/:slug" element={<SaveTheDateEvent />} />
-            <Route path="/le-havre" element={<LeHavre />} />
-            <Route path="/rouen" element={<Rouen />} />
-            <Route path="/dieppe" element={<Dieppe />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={null}>
+            <Routes location={location}>
+              <Route path="/" element={<Home />} />
+              <Route path="/photobooth" element={<Photobooth />} />
+              <Route path="/tarifs" element={<Tarifs />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/galerie" element={<Gallery />} />
+              <Route path="/admin" element={<Admin />} />
+              <Route path="/mentions-legales" element={<Legal />} />
+              <Route path="/save-the-date" element={<SaveTheDate />} />
+              <Route path="/save-the-date/:slug" element={<SaveTheDateEvent />} />
+              <Route path="/le-havre" element={<LeHavre />} />
+              <Route path="/rouen" element={<Rouen />} />
+              <Route path="/dieppe" element={<Dieppe />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </div>
       </main>
       {!isStandalonePage && <Footer />}
@@ -131,13 +135,15 @@ function PageContent() {
       {!isStandalonePage && <AdminToolbar onOpenDashboard={() => setIsSidebarOpen(true)} />}
       
       {isAdminMode && (
-        <AdminSidebar 
-          isOpen={isSidebarOpen} 
-          setIsOpen={setIsSidebarOpen} 
-          onLogout={logout}
-          activeTab={activeTab} 
-          setActiveTab={setActiveTab}
-        />
+        <Suspense fallback={null}>
+          <AdminSidebar
+            isOpen={isSidebarOpen}
+            setIsOpen={setIsSidebarOpen}
+            onLogout={logout}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
+        </Suspense>
       )}
       
       <CookieBanner />
