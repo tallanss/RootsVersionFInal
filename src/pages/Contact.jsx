@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Mail, Phone, MapPin, CheckCircle2, Send, ChevronRight, ChevronLeft,
   Calendar, CalendarCheck, Loader2, AlertCircle, Users, Heart, Cake,
@@ -33,17 +33,30 @@ const EVENT_ICONS = {
 };
 
 const STEPS = [
-  { n: 1, label: 'Événement' },
-  { n: 2, label: 'Formule' },
-  { n: 3, label: 'Coordonnées' },
+  { n: 1, label: 'Coordonnées' },
+  { n: 2, label: 'Événement' },
 ];
+
+// Extrait le nombre de tirages depuis les fonctionnalités d'une formule CMS
+// (ex: "Impression de 200 Photos" → "200 tirages", "Impressions illimitées" → "Tirages illimités")
+const extractTirages = (plan) => {
+  const feats = plan?.features || [];
+  const f = feats.find((x) => /impression|tirage|photo/i.test(String(x)));
+  if (!f) return null;
+  if (/illimit/i.test(f)) return 'Tirages illimités';
+  const m = String(f).match(/\d+/);
+  return m ? `${m[0]} tirages` : null;
+};
 
 const Contact = () => {
   const { content, updateContent } = useContent();
+  const location = useLocation();
 
   const eventTypes = content.formOptions?.eventTypes || ['Mariage', 'Anniversaire', 'Entreprise', 'Baptême', 'EVJF/EVG', 'Autre'];
 
-  const [mode, setMode] = useState('devis'); // 'devis' | 'message'
+  // Mode initial depuis l'URL : /contact?mode=message ouvre le message rapide
+  const initialMode = new URLSearchParams(location.search).get('mode') === 'message' ? 'message' : 'devis';
+  const [mode, setMode] = useState(initialMode); // 'devis' | 'message'
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
   const [loading, setLoading] = useState(false);
@@ -84,17 +97,24 @@ const Contact = () => {
       return content.pricing_plans.map(p => ({
         name: p.name,
         price: formatPrice(p.price),
-        desc: p.desc,
+        tirages: extractTirages(p),
         featured: !!p.featured,
       }));
     }
     return [
-      { name: 'Essentiel', price: '189€', desc: 'Idéal pour les petits événements' },
-      { name: 'Premium', price: '289€', desc: 'Notre best-seller, impressions incluses', featured: true },
-      { name: 'Excellence', price: '389€', desc: 'Personnalisation totale & technicien dédié' },
-      { name: 'Sur-Mesure', price: 'Sur devis', desc: 'Une prestation 100% sur mesure' },
+      { name: 'Essentiel', price: '189€', tirages: null },
+      { name: 'Premium', price: '289€', tirages: 'Tirages illimités', featured: true },
+      { name: 'Excellence', price: '389€', tirages: '400 tirages' },
+      { name: 'Sur-Mesure', price: 'Sur devis', tirages: null },
     ];
   }, [content.pricing_plans]);
+
+  // Synchroniser le mode avec le paramètre d'URL (?mode=message)
+  useEffect(() => {
+    const m = new URLSearchParams(location.search).get('mode');
+    if (m === 'message') setMode('message');
+    else if (m === 'devis') setMode('devis');
+  }, [location.search]);
 
   // Charger les dates occupées au montage
   useEffect(() => {
@@ -185,9 +205,11 @@ const Contact = () => {
 
   const goNext = () => {
     if (step === 1) {
-      if (!formData.date) { setError('Veuillez sélectionner une date pour votre événement.'); return; }
+      if (!formData.name.trim()) { setError('Veuillez saisir vos nom et prénom.'); return; }
+      if (!EMAIL_REGEX.test(formData.email)) { setError('Veuillez saisir une adresse email valide.'); return; }
+      if (formData.phone && !PHONE_REGEX.test(formData.phone)) { setError('Numéro de téléphone invalide.'); return; }
     }
-    goTo(Math.min(3, step + 1), 1);
+    goTo(Math.min(2, step + 1), 1);
   };
 
   const goBack = () => goTo(Math.max(1, step - 1), -1);
@@ -371,11 +393,10 @@ const Contact = () => {
     );
   }
 
-  // ===== Récap latéral (pills) à partir de l'étape 2 =====
+  // ===== Récap (pills) — rappelle les infos saisies à l'étape 1 =====
   const recapPills = [
-    formData.date && { icon: Calendar, text: formatDateFR(formData.date) },
-    formData.eventType && { icon: EVENT_ICONS[formData.eventType] || PartyPopper, text: formData.eventType },
-    formData.formula && { icon: CheckCircle2, text: formData.formula },
+    formData.name.trim() && { icon: CheckCircle2, text: formData.name.trim() },
+    formData.email.trim() && { icon: Mail, text: formData.email.trim() },
   ].filter(Boolean);
 
   return (
@@ -596,7 +617,7 @@ const Contact = () => {
           style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-md)', overflow: 'hidden' }}
         >
           <AnimatePresence mode="wait" custom={direction}>
-            {/* ============ STEP 1 — ÉVÉNEMENT ============ */}
+            {/* ============ STEP 1 — COORDONNÉES ============ */}
             {step === 1 && (
               <motion.div
                 key="step1"
@@ -606,7 +627,74 @@ const Contact = () => {
                 exit={{ opacity: 0, x: direction * -30 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
               >
-                <StepHeading n={1} title="Votre événement" subtitle="Pour commencer, parlez-nous de l'occasion." />
+                <StepHeading n={1} title="Vos coordonnées" subtitle="Pour pouvoir vous envoyer votre devis personnalisé." />
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 18px' }}>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="name">Nom et prénom *</label>
+                    <div style={{ position: 'relative' }}>
+                      <input className="form-input" type="text" id="name" name="name" placeholder="Jean Dupont" value={formData.name} onChange={handleChange} required style={{ paddingRight: '38px' }} />
+                      <ValidCheck show={formData.name.trim().length >= 2} />
+                    </div>
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="email">Adresse email *</label>
+                    <div style={{ position: 'relative' }}>
+                      <input className="form-input" type="email" id="email" name="email" placeholder="jean@exemple.com" value={formData.email} onChange={handleChange} required style={{ paddingRight: '38px' }} />
+                      <ValidCheck show={EMAIL_REGEX.test(formData.email)} />
+                    </div>
+                    {formData.email.length > 0 && !EMAIL_REGEX.test(formData.email) && <FieldHint>Adresse email invalide</FieldHint>}
+                  </div>
+                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                    <label className="form-label" htmlFor="phone">Numéro de téléphone <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
+                    <div style={{ position: 'relative' }}>
+                      <input className="form-input" type="tel" id="phone" name="phone" placeholder="06 12 34 56 78" value={formData.phone} onChange={handleChange} style={{ paddingRight: '38px' }} />
+                      <ValidCheck show={formData.phone.length > 0 && PHONE_REGEX.test(formData.phone)} />
+                    </div>
+                    {formData.phone.length > 0 && !PHONE_REGEX.test(formData.phone) && <FieldHint>Numéro invalide</FieldHint>}
+                  </div>
+                </div>
+
+                {/* Préférence de contact — chips */}
+                <div className="form-group">
+                  <label className="form-label">Comment préférez-vous être contacté ?</label>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
+                    {CONTACT_PREFERENCES.map((p) => {
+                      const active = formData.contactPreference === p;
+                      return (
+                        <button
+                          type="button"
+                          key={p}
+                          onClick={() => setField('contactPreference', active ? '' : p)}
+                          style={{
+                            padding: '9px 16px', borderRadius: '999px', cursor: 'pointer', fontSize: '13px',
+                            fontWeight: active ? 700 : 500,
+                            background: active ? 'var(--primary)' : 'var(--bg-app)',
+                            color: active ? '#fff' : 'var(--text-main)',
+                            border: active ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          {p}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* ============ STEP 2 — ÉVÉNEMENT ============ */}
+            {step === 2 && (
+              <motion.div
+                key="step2"
+                custom={direction}
+                initial={{ opacity: 0, x: direction * 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: direction * -30 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+              >
+                <StepHeading n={2} title="Votre événement" subtitle="Dernière étape ! Parlez-nous de l'occasion." />
 
                 {/* Type d'événement — chips */}
                 <div className="form-group">
@@ -638,7 +726,7 @@ const Contact = () => {
                   </div>
                 </div>
 
-                {/* Date avec calendrier dropdown */}
+                {/* Date avec calendrier */}
                 <div className="form-group" style={{ position: 'relative' }} ref={dateFieldRef}>
                   <label className="form-label" htmlFor="date">Date de l'événement *</label>
                   <button
@@ -739,165 +827,74 @@ const Contact = () => {
                   </AnimatePresence>
                 </div>
 
-                {/* Nombre d'invités */}
+                {/* Lieu */}
                 <div className="form-group">
-                  <label className="form-label" htmlFor="guests">Nombre d'invités <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(estimation)</span></label>
-                  <div style={{ position: 'relative' }}>
-                    <Users size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)', pointerEvents: 'none' }} />
-                    <input className="form-input" type="number" min="0" id="guests" name="guests" placeholder="Ex : 80" value={formData.guests} onChange={handleChange} style={{ paddingLeft: '38px' }} />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* ============ STEP 2 — FORMULE ============ */}
-            {step === 2 && (
-              <motion.div
-                key="step2"
-                custom={direction}
-                initial={{ opacity: 0, x: direction * 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: direction * -30 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-              >
-                <StepHeading n={2} title="Quelle formule vous intéresse ?" subtitle="Indicatif — vous pourrez en discuter avec nous. Pas encore décidé ? Pas de souci." />
-
-                <div style={{ display: 'grid', gap: '10px', marginBottom: '8px' }}>
-                  {formulaOptions.map((f) => {
-                    const active = formData.formula === f.name;
-                    return (
-                      <button
-                        type="button"
-                        key={f.name}
-                        onClick={() => setField('formula', active ? '' : f.name)}
-                        style={{
-                          display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
-                          padding: '16px 18px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left',
-                          background: active ? 'var(--bg-secondary)' : 'var(--bg-app)',
-                          border: active ? '2px solid var(--primary)' : '2px solid var(--border-light)',
-                          boxShadow: active ? '0 0 0 3px var(--accent-glow)' : 'none',
-                          transition: 'all 0.2s', position: 'relative',
-                        }}
-                      >
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '2px' }}>
-                            <span style={{ fontWeight: 800, fontSize: '15px', color: 'var(--text-main)' }}>{f.name}</span>
-                            {f.featured && (
-                              <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary)', background: 'var(--bg-secondary)', border: '1px solid var(--primary)', borderRadius: '999px', padding: '2px 8px' }}>★ POPULAIRE</span>
-                            )}
-                          </div>
-                          {f.desc && <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{f.desc}</div>}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-                          <span style={{ fontWeight: 900, fontSize: '17px', color: active ? 'var(--primary)' : 'var(--text-main)' }}>{f.price}</span>
-                          <span style={{
-                            width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
-                            border: active ? 'none' : '2px solid var(--border-medium)',
-                            background: active ? 'var(--primary)' : 'transparent',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          }}>
-                            {active && <CheckCircle2 size={16} color="#fff" />}
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
-
-                  {/* Option "je ne sais pas encore" */}
-                  <button
-                    type="button"
-                    onClick={() => setField('formula', formData.formula === 'Je ne sais pas encore' ? '' : 'Je ne sais pas encore')}
-                    style={{
-                      padding: '14px 18px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'center',
-                      background: formData.formula === 'Je ne sais pas encore' ? 'var(--bg-secondary)' : 'transparent',
-                      border: formData.formula === 'Je ne sais pas encore' ? '2px solid var(--primary)' : '2px dashed var(--border-medium)',
-                      color: formData.formula === 'Je ne sais pas encore' ? 'var(--primary)' : 'var(--text-muted)',
-                      fontWeight: 600, fontSize: '14px', transition: 'all 0.2s',
-                    }}
-                  >
-                    Je ne sais pas encore — conseillez-moi
-                  </button>
-                </div>
-
-                {/* Adresse */}
-                <div className="form-group" style={{ marginTop: '12px' }}>
                   <label className="form-label" htmlFor="location">Lieu de l'événement <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
                   <div style={{ position: 'relative' }}>
                     <MapPin size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)', pointerEvents: 'none' }} />
                     <input className="form-input" type="text" id="location" name="location" placeholder="Salle des fêtes, Le Havre" value={formData.location} onChange={handleChange} style={{ paddingLeft: '38px' }} />
                   </div>
                 </div>
-              </motion.div>
-            )}
 
-            {/* ============ STEP 3 — COORDONNÉES ============ */}
-            {step === 3 && (
-              <motion.div
-                key="step3"
-                custom={direction}
-                initial={{ opacity: 0, x: direction * 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: direction * -30 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-              >
-                <StepHeading n={3} title="Vos coordonnées" subtitle="Dernière étape ! Pour vous envoyer votre devis personnalisé." />
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 18px' }}>
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="name">Nom et prénom *</label>
-                    <div style={{ position: 'relative' }}>
-                      <input className="form-input" type="text" id="name" name="name" placeholder="Jean Dupont" value={formData.name} onChange={handleChange} required style={{ paddingRight: '38px' }} />
-                      <ValidCheck show={formData.name.trim().length >= 2} />
-                    </div>
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="email">Email *</label>
-                    <div style={{ position: 'relative' }}>
-                      <input className="form-input" type="email" id="email" name="email" placeholder="jean@exemple.com" value={formData.email} onChange={handleChange} required style={{ paddingRight: '38px' }} />
-                      <ValidCheck show={EMAIL_REGEX.test(formData.email)} />
-                    </div>
-                    {formData.email.length > 0 && !EMAIL_REGEX.test(formData.email) && <FieldHint>Adresse email invalide</FieldHint>}
-                  </div>
-                  <div className="form-group" style={{ gridColumn: '1 / -1' }}>
-                    <label className="form-label" htmlFor="phone">Numéro de téléphone <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
-                    <div style={{ position: 'relative' }}>
-                      <input className="form-input" type="tel" id="phone" name="phone" placeholder="06 12 34 56 78" value={formData.phone} onChange={handleChange} style={{ paddingRight: '38px' }} />
-                      <ValidCheck show={formData.phone.length > 0 && PHONE_REGEX.test(formData.phone)} />
-                    </div>
-                    {formData.phone.length > 0 && !PHONE_REGEX.test(formData.phone) && <FieldHint>Numéro invalide</FieldHint>}
-                  </div>
-                </div>
-
-                {/* Préférence de contact — chips */}
+                {/* Formule souhaitée — nom + nombre de tirages */}
                 <div className="form-group">
-                  <label className="form-label">Comment préférez-vous être contacté ?</label>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
-                    {CONTACT_PREFERENCES.map((p) => {
-                      const active = formData.contactPreference === p;
+                  <label className="form-label">Formule souhaitée <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
+                  <div style={{ display: 'grid', gap: '8px', marginTop: '4px' }}>
+                    {formulaOptions.map((f) => {
+                      const active = formData.formula === f.name;
                       return (
                         <button
                           type="button"
-                          key={p}
-                          onClick={() => setField('contactPreference', active ? '' : p)}
+                          key={f.name}
+                          onClick={() => setField('formula', active ? '' : f.name)}
                           style={{
-                            padding: '9px 16px', borderRadius: '999px', cursor: 'pointer', fontSize: '13px',
-                            fontWeight: active ? 700 : 500,
-                            background: active ? 'var(--primary)' : 'var(--bg-app)',
-                            color: active ? '#fff' : 'var(--text-main)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+                            padding: '14px 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left',
+                            background: active ? 'var(--bg-secondary)' : 'var(--bg-app)',
                             border: active ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                            boxShadow: active ? '0 0 0 3px var(--accent-glow)' : 'none',
                             transition: 'all 0.2s',
                           }}
                         >
-                          {p}
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, fontSize: '15px', color: 'var(--text-main)' }}>
+                            {f.name}
+                            {f.featured && (
+                              <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary)', background: 'var(--bg-secondary)', border: '1px solid var(--primary)', borderRadius: '999px', padding: '2px 8px' }}>★ POPULAIRE</span>
+                            )}
+                          </span>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+                            {f.tirages && <span style={{ fontSize: '13px', fontWeight: 700, color: active ? 'var(--primary)' : 'var(--text-muted)' }}>{f.tirages}</span>}
+                            <span style={{
+                              width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+                              border: active ? 'none' : '2px solid var(--border-medium)',
+                              background: active ? 'var(--primary)' : 'transparent',
+                              display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            }}>
+                              {active && <CheckCircle2 size={16} color="#fff" />}
+                            </span>
+                          </span>
                         </button>
                       );
                     })}
+                    <button
+                      type="button"
+                      onClick={() => setField('formula', formData.formula === 'Je ne sais pas encore' ? '' : 'Je ne sais pas encore')}
+                      style={{
+                        padding: '12px 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'center',
+                        background: formData.formula === 'Je ne sais pas encore' ? 'var(--bg-secondary)' : 'transparent',
+                        border: formData.formula === 'Je ne sais pas encore' ? '2px solid var(--primary)' : '2px dashed var(--border-medium)',
+                        color: formData.formula === 'Je ne sais pas encore' ? 'var(--primary)' : 'var(--text-muted)',
+                        fontWeight: 600, fontSize: '14px', transition: 'all 0.2s',
+                      }}
+                    >
+                      Je ne sais pas encore — conseillez-moi
+                    </button>
                   </div>
                 </div>
 
                 {/* Source */}
                 <div className="form-group">
-                  <label className="form-label" htmlFor="referralSource">Comment nous avez-vous connu ?</label>
+                  <label className="form-label" htmlFor="referralSource">Comment nous avez-vous connu ? <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
                   <select className="form-select" id="referralSource" name="referralSource" value={formData.referralSource} onChange={handleChange}>
                     <option value="">Sélectionnez...</option>
                     {REFERRAL_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -921,7 +918,7 @@ const Contact = () => {
                 <ChevronLeft size={18} /> Retour
               </button>
             )}
-            {step < 3 ? (
+            {step < 2 ? (
               <button type="button" className="btn-primary" onClick={goNext} style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                 Continuer <ChevronRight size={18} />
               </button>

@@ -39,8 +39,10 @@ const BottomNav = () => {
         {navItems.map((item) => {
           const Icon = iconMap[item.id] || Home;
           const isActive = location.pathname === item.path;
+          // L'onglet Contact ouvre directement le mode "message rapide"
+          const to = item.id === 'contact' ? '/contact?mode=message' : item.path;
           return (
-            <NavLink key={item.id} to={item.path} end={item.path === '/'} style={navStyle(isActive)}>
+            <NavLink key={item.id} to={to} end={item.path === '/'} style={navStyle(isActive)}>
               <Icon
                 size={20}
                 strokeWidth={2.5}
