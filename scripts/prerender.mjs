@@ -87,11 +87,26 @@ async function main() {
   const base = `http://127.0.0.1:${port}`;
 
   // --- Lancement du navigateur headless ---
-  const puppeteer = (await import('puppeteer')).default;
-  const browser = await puppeteer.launch({
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
-  });
+  // Sur Vercel/CI (Linux sans libs système), on utilise @sparticuz/chromium
+  // (Chromium auto-suffisant) via puppeteer-core. En local, le puppeteer
+  // complet avec son Chromium intégré.
+  const onVercel = !!(process.env.VERCEL || process.env.CI);
+  let browser;
+  if (onVercel) {
+    const chromium = (await import('@sparticuz/chromium')).default;
+    const puppeteerCore = (await import('puppeteer-core')).default;
+    browser = await puppeteerCore.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
+      headless: true,
+    });
+  } else {
+    const puppeteer = (await import('puppeteer')).default;
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    });
+  }
 
   const results = [];
   for (const route of ROUTES) {
