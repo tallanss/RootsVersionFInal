@@ -19,6 +19,13 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, '..', 'dist');
 
+// Villes (doivent rester alignées avec src/data/cities.js)
+const CITY_SLUGS = [
+  'le-havre', 'rouen', 'dieppe', 'montivilliers', 'harfleur',
+  'fecamp', 'etretat', 'bolbec', 'lillebonne', 'yvetot',
+  'saint-romain-de-colbosc',
+];
+
 // Routes publiques à prerender (on exclut /admin, /save-the-date/:slug, 404)
 const ROUTES = [
   '/',
@@ -26,10 +33,8 @@ const ROUTES = [
   '/tarifs',
   '/galerie',
   '/contact',
-  '/le-havre',
-  '/rouen',
-  '/dieppe',
   '/mentions-legales',
+  ...CITY_SLUGS.map((s) => `/location-photobooth-${s}`),
 ];
 
 const MIME = {

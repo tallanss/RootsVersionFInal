@@ -69,9 +69,17 @@ const Footer = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)' }}>Zones desservies</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <Link to="/le-havre" style={linkStyle}>Photobooth Le Havre</Link>
-            <Link to="/rouen" style={linkStyle}>Photobooth Rouen</Link>
-            <Link to="/dieppe" style={linkStyle}>Photobooth Dieppe</Link>
+            <Link to="/location-photobooth-le-havre" style={linkStyle}>Photobooth Le Havre</Link>
+            <Link to="/location-photobooth-montivilliers" style={linkStyle}>Photobooth Montivilliers</Link>
+            <Link to="/location-photobooth-harfleur" style={linkStyle}>Photobooth Harfleur</Link>
+            <Link to="/location-photobooth-fecamp" style={linkStyle}>Photobooth Fécamp</Link>
+            <Link to="/location-photobooth-etretat" style={linkStyle}>Photobooth Étretat</Link>
+            <Link to="/location-photobooth-bolbec" style={linkStyle}>Photobooth Bolbec</Link>
+            <Link to="/location-photobooth-lillebonne" style={linkStyle}>Photobooth Lillebonne</Link>
+            <Link to="/location-photobooth-yvetot" style={linkStyle}>Photobooth Yvetot</Link>
+            <Link to="/location-photobooth-saint-romain-de-colbosc" style={linkStyle}>Photobooth St-Romain-de-Colbosc</Link>
+            <Link to="/location-photobooth-rouen" style={linkStyle}>Photobooth Rouen</Link>
+            <Link to="/location-photobooth-dieppe" style={linkStyle}>Photobooth Dieppe</Link>
           </div>
         </div>
 

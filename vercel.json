@@ -1,7 +1,10 @@
 {
   "redirects": [
     { "source": "/contactez-nous", "destination": "/contact", "permanent": true },
-    { "source": "/contactez-nous/", "destination": "/contact", "permanent": true }
+    { "source": "/contactez-nous/", "destination": "/contact", "permanent": true },
+    { "source": "/le-havre", "destination": "/location-photobooth-le-havre", "permanent": true },
+    { "source": "/rouen", "destination": "/location-photobooth-rouen", "permanent": true },
+    { "source": "/dieppe", "destination": "/location-photobooth-dieppe", "permanent": true }
   ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

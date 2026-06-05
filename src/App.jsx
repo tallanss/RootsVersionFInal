@@ -41,9 +41,7 @@ import Contact from './pages/Contact';
 import Gallery from './pages/Gallery';
 import Legal from './pages/Legal';
 import SaveTheDate from './pages/SaveTheDate';
-import LeHavre from './pages/LeHavre';
-import Rouen from './pages/Rouen';
-import Dieppe from './pages/Dieppe';
+import CityPage from './pages/CityPage';
 // Routes/composants non prérendus ou réservés admin → lazy (hors bundle visiteur)
 const Admin = lazy(() => import('./pages/Admin'));
 const SaveTheDateEvent = lazy(() => import('./pages/SaveTheDateEvent'));
@@ -56,6 +54,7 @@ import ContactButton from './components/WhatsAppButton';
 import CookieBanner from './components/CookieBanner';
 import AdminToolbar from './components/admin/AdminToolbar';
 
+import { CITIES } from './data/cities';
 import { useContent } from './context/ContentContext';
 import { AdminProvider, useAdmin } from './context/AdminContext';
 
@@ -121,9 +120,9 @@ function PageContent() {
               <Route path="/mentions-legales" element={<Legal />} />
               <Route path="/save-the-date" element={<SaveTheDate />} />
               <Route path="/save-the-date/:slug" element={<SaveTheDateEvent />} />
-              <Route path="/le-havre" element={<LeHavre />} />
-              <Route path="/rouen" element={<Rouen />} />
-              <Route path="/dieppe" element={<Dieppe />} />
+              {Object.keys(CITIES).map((slug) => (
+                <Route key={slug} path={`/location-photobooth-${slug}`} element={<CityPage slug={slug} />} />
+              ))}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

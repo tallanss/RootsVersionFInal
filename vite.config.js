@@ -24,10 +24,18 @@ export default defineConfig({
         '/tarifs',
         '/galerie',
         '/contact',
-        '/le-havre',
-        '/rouen',
-        '/dieppe',
-        '/save-the-date'
+        '/save-the-date',
+        '/location-photobooth-le-havre',
+        '/location-photobooth-rouen',
+        '/location-photobooth-dieppe',
+        '/location-photobooth-montivilliers',
+        '/location-photobooth-harfleur',
+        '/location-photobooth-fecamp',
+        '/location-photobooth-etretat',
+        '/location-photobooth-bolbec',
+        '/location-photobooth-lillebonne',
+        '/location-photobooth-yvetot',
+        '/location-photobooth-saint-romain-de-colbosc'
       ]
     }),
     ViteImageOptimizer({
