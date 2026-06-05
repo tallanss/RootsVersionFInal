@@ -1,13 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const prefersReducedMotion =
   typeof window !== 'undefined' &&
   typeof window.matchMedia === 'function' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+// Pour une image locale (PNG/JPG du dossier public), on tente d'abord la
+// version .webp (beaucoup plus légère), avec repli automatique sur l'original.
+const getWebp = (src) => {
+  if (typeof src === 'string' && src.startsWith('/') && /\.(png|jpe?g)$/i.test(src)) {
+    return src.replace(/\.(png|jpe?g)$/i, '.webp');
+  }
+  return src;
+};
+
 const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState(() => getWebp(src));
+
+  // Réinitialise si la source change (édition CMS)
+  useEffect(() => {
+    setCurrentSrc(getWebp(src));
+    setIsLoaded(false);
+    setHasError(false);
+  }, [src]);
+
+  const handleError = () => {
+    // Si le .webp échoue (ex: absent en dev), on retombe sur l'original
+    if (currentSrc !== src) {
+      setCurrentSrc(src);
+    } else {
+      setIsLoaded(true);
+      setHasError(true);
+    }
+  };
 
   return (
     <div className={`premium-image-wrapper ${className}`} style={{ position: 'relative', overflow: 'hidden', ...style }}>
@@ -33,11 +60,11 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) =
         </div>
       ) : (
         <img
-          src={src}
+          src={currentSrc}
           alt={alt}
           className={imgClass}
           onLoad={() => setIsLoaded(true)}
-          onError={() => { setIsLoaded(true); setHasError(true); }}
+          onError={handleError}
           style={{
             width: '100%',
             height: '100%',

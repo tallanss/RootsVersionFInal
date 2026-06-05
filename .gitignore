@@ -29,3 +29,6 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# WebP générés au build
+public/**/*.webp
