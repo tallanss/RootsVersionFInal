@@ -14,9 +14,12 @@ export default defineConfig({
     Sitemap({
       hostname: 'https://photoroots.fr',
       outDir: 'dist',
+      lastmod: new Date(),
+      changefreq: 'weekly',
+      priority: 0.7,
       exclude: ['/admin', '/mentions-legales'],
+      // '/' est ajouté automatiquement depuis index.html — ne pas le répéter ici
       dynamicRoutes: [
-        '/',
         '/photobooth',
         '/tarifs',
         '/galerie',
