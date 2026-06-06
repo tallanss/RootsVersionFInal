@@ -62,6 +62,7 @@ const Footer = () => {
             {content.navigation?.map(item => (
               <Link key={item.id} to={item.path} style={linkStyle}>{item.label}</Link>
             ))}
+            <Link to="/blog" style={linkStyle}>Blog &amp; conseils</Link>
           </div>
         </div>
 

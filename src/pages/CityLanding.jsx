@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { ArrowRight, CheckCircle2, MapPin, Star, Clock, Tag, Phone, Sparkles, Heart } from 'lucide-react';
 import FadeIn from '../components/FadeIn';
 import AnimatedButton from '../components/AnimatedButton';
+import { CITIES } from '../data/cities';
 
 export default function CityLanding({ cityData }) {
   const {
@@ -63,6 +64,33 @@ export default function CityLanding({ cityData }) {
     })),
   };
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Accueil',
+        item: 'https://photoroots.fr/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name,
+        item: canonical,
+      },
+    ],
+  };
+
+  // Maillage interne local : on lie 5 AUTRES villes (on exclut la ville courante).
+  // La clé courte est dérivée du slug : 'location-photobooth-fecamp' → 'fecamp'.
+  const currentCityKey = slug.replace('location-photobooth-', '');
+  const nearbyCities = Object.entries(CITIES)
+    .filter(([key, city]) => key !== currentCityKey && city.name !== name)
+    .slice(0, 5)
+    .map(([, city]) => city);
+
   const contextParagraphs = localContext.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
 
   return (
@@ -87,6 +115,7 @@ export default function CityLanding({ cityData }) {
         {localFaqs.length > 0 && (
           <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
         )}
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       </Helmet>
 
       {/* HERO */}
@@ -232,6 +261,45 @@ export default function CityLanding({ cityData }) {
           ))}
         </section>
       </FadeIn>
+
+      {/* MAILLAGE INTERNE — VILLES À PROXIMITÉ */}
+      {nearbyCities.length > 0 && (
+        <FadeIn direction="up">
+          <section className="container" style={{ padding: '0 24px 32px' }}>
+            <div className="section-tag"><MapPin size={14} /> À proximité</div>
+            <h2 className="section-title">Nous intervenons aussi à proximité</h2>
+            <p className="section-subtitle">Découvrez nos pages dédiées aux autres villes de Seine-Maritime où PhotoRoots installe son photobooth.</p>
+
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '16px' }}>
+              {nearbyCities.map((other) => (
+                <Link
+                  key={other.slug}
+                  to={`/${other.slug}`}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '10px 18px',
+                    borderRadius: 'var(--radius-full, 999px)',
+                    border: '1px solid var(--gold, #c5a059)',
+                    color: 'var(--gold, #c5a059)',
+                    fontSize: '14px',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    background: 'rgba(197,160,89,0.06)',
+                    transition: 'background 0.2s ease, color 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--gold, #c5a059)'; e.currentTarget.style.color = '#fff'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(197,160,89,0.06)'; e.currentTarget.style.color = 'var(--gold, #c5a059)'; }}
+                >
+                  <MapPin size={14} />
+                  Photobooth {other.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+        </FadeIn>
+      )}
 
       {/* FINAL CTA */}
       <section className="container" style={{ padding: '32px 20px 48px' }}>

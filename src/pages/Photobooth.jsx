@@ -37,6 +37,29 @@ const Photobooth = () => {
   const allInFeatures = content.photobooth_all_in || DEFAULT_ALL_IN_FEATURES;
   const photoboothGallery = content.photobooth_gallery || DEFAULT_PHOTOBOOTH_GALLERY;
 
+  const serviceSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    serviceType: 'Location de photobooth',
+    name: 'Location de photobooth premium PhotoRoots',
+    description: "Location de photobooth premium (borne miroir tactile, impression instantanée, animation clé en main) pour mariages, anniversaires et événements d'entreprise en Seine-Maritime.",
+    provider: {
+      '@type': 'LocalBusiness',
+      name: 'PhotoRoots',
+      url: 'https://photoroots.fr',
+      telephone: '+33603163621',
+    },
+    areaServed: {
+      '@type': 'AdministrativeArea',
+      name: 'Seine-Maritime, Normandie',
+    },
+    offers: {
+      '@type': 'AggregateOffer',
+      lowPrice: 99,
+      priceCurrency: 'EUR',
+    },
+  };
+
   return (
     <div className="animate-in">
       <Helmet>
@@ -55,6 +78,7 @@ const Photobooth = () => {
         <meta name="twitter:description" content={content.photoboothSeoDesc || 'Découvrez notre photobooth dernière génération : borne miroir tactile, impression instantanée, animation clé en main. Location au Havre, Rouen, Dieppe à partir de 99€.'} />
         <meta name="twitter:image" content="https://photoroots.fr/photobooth-hero.png" />
         <link rel="canonical" href="https://photoroots.fr/photobooth" />
+        <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
       </Helmet>
 
       {/* HERO */}

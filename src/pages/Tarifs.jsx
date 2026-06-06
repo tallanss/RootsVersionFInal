@@ -304,6 +304,31 @@ const Tarifs = () => {
 
   const isSelected = (id) => selectedPlanId === id;
 
+  const offerSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    serviceType: 'Location de photobooth',
+    name: 'Formules location photobooth PhotoRoots',
+    description: "Formules de location de photobooth PhotoRoots en Seine-Maritime : Essentiel, Premium, Excellence et Sur-Mesure, pour mariages, anniversaires et événements d'entreprise.",
+    provider: {
+      '@type': 'LocalBusiness',
+      name: 'PhotoRoots',
+      url: 'https://photoroots.fr',
+      telephone: '+33603163621',
+    },
+    areaServed: {
+      '@type': 'AdministrativeArea',
+      name: 'Seine-Maritime, Normandie',
+    },
+    offers: {
+      '@type': 'AggregateOffer',
+      lowPrice: 99,
+      highPrice: 389,
+      priceCurrency: 'EUR',
+      offerCount: 4,
+    },
+  };
+
   return (
     <div className="animate-in">
       <Helmet>
@@ -322,6 +347,7 @@ const Tarifs = () => {
         <meta name="twitter:description" content={content.tarifsSeoDesc || 'Découvrez nos formules Photobooth dès 189€ en Normandie. Mariage, Entreprise, Anniversaire. Impression illimitée, accessoires et livraison inclus.'} />
         <meta name="twitter:image" content="https://photoroots.fr/photobooth-hero.png" />
         <link rel="canonical" href="https://photoroots.fr/tarifs" />
+        <script type="application/ld+json">{JSON.stringify(offerSchema)}</script>
       </Helmet>
 
       {/* HEADER */}

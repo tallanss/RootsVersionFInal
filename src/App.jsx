@@ -42,6 +42,8 @@ import Gallery from './pages/Gallery';
 import Legal from './pages/Legal';
 import SaveTheDate from './pages/SaveTheDate';
 import CityPage from './pages/CityPage';
+import BlogIndex from './pages/BlogIndex';
+import BlogArticle from './pages/BlogArticle';
 // Routes/composants non prérendus ou réservés admin → lazy (hors bundle visiteur)
 const Admin = lazy(() => import('./pages/Admin'));
 const SaveTheDateEvent = lazy(() => import('./pages/SaveTheDateEvent'));
@@ -120,6 +122,8 @@ function PageContent() {
               <Route path="/mentions-legales" element={<Legal />} />
               <Route path="/save-the-date" element={<SaveTheDate />} />
               <Route path="/save-the-date/:slug" element={<SaveTheDateEvent />} />
+              <Route path="/blog" element={<BlogIndex />} />
+              <Route path="/blog/:slug" element={<BlogArticle />} />
               {Object.keys(CITIES).map((slug) => (
                 <Route key={slug} path={`/location-photobooth-${slug}`} element={<CityPage slug={slug} />} />
               ))}
