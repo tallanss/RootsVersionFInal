@@ -238,6 +238,7 @@ const Contact = () => {
     if (!EMAIL_REGEX.test(formData.email)) { setError('Veuillez saisir une adresse email valide.'); return; }
     if (formData.phone && !PHONE_REGEX.test(formData.phone)) { setError('Numéro de téléphone invalide.'); return; }
     if (!formData.date) { setError('Veuillez sélectionner une date pour votre événement.'); return; }
+    if (!formData.location.trim()) { setError('Veuillez indiquer le lieu de votre événement.'); return; }
 
     // Rate limiting: 1 soumission par 30s
     const lastSubmit = sessionStorage.getItem('pr_last_submit');
@@ -845,10 +846,10 @@ const Contact = () => {
 
                 {/* Lieu */}
                 <div className="form-group">
-                  <label className="form-label" htmlFor="location">Lieu de l'événement <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
+                  <label className="form-label" htmlFor="location">Lieu de l'événement *</label>
                   <div style={{ position: 'relative' }}>
                     <MapPin size={16} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)', pointerEvents: 'none' }} />
-                    <input className="form-input" type="text" id="location" name="location" placeholder="Salle des fêtes, Le Havre" value={formData.location} onChange={handleChange} style={{ paddingLeft: '38px' }} />
+                    <input className="form-input" type="text" id="location" name="location" placeholder="Salle des fêtes, Le Havre" value={formData.location} onChange={handleChange} style={{ paddingLeft: '38px' }} required />
                   </div>
                 </div>
 
