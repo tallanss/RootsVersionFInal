@@ -147,6 +147,7 @@ function createCalendarEvent(data) {
     'Lieu : ' + (data.location || 'Non renseigné') + '\n' +
     'Nombre d\'invités : ' + (data.guests || 'Non précisé') + '\n' +
     'Pack souhaité : ' + (data.formula || 'Non précisé') + '\n' +
+    'Options : ' + (data.addons || 'Aucune') + '\n' +
     'Préférence de contact : ' + (data.contactPreference || 'Non précisée') + '\n' +
     'Connu via : ' + (data.referralSource || 'Non précisé') + '\n\n' +
     'Message : ' + (data.message || 'Aucun');
@@ -181,6 +182,7 @@ function sendClientEmail(data) {
     ['Téléphone',           data.phone || '—'],
     ['Préférence de contact', data.contactPreference || '—'],
   ];
+  if (data.addons) rows.push(['Options souhaitées', data.addons]);
 
   const tableRows = rows.map(function(r, i) {
     var border = i < rows.length - 1 ? 'border-bottom: 1px solid #e2e8f0;' : '';
@@ -225,6 +227,7 @@ function sendOwnerEmail(data) {
     ['Préférence de contact', data.contactPreference || '—'],
     ['Connu via',             data.referralSource || '—'],
   ];
+  if (data.addons) rows.push(['Options souhaitées', data.addons]);
 
   const tableRows = rows.map(function(r, i) {
     var border = i < rows.length - 1 ? 'border-bottom: 1px solid #e2e8f0;' : '';
