@@ -248,19 +248,9 @@ const Home = () => {
             baptism: Sparkles, hen: Gift, seminar: Users,
             prom: GraduationCap, xmas: PartyPopper,
           };
-          const DEFAULT_SERVICES = [
-            { id: 'wedding',   icon: 'wedding',   title: 'Mariage',             desc: 'Des souvenirs inoubliables pour le plus beau jour.' },
-            { id: 'corporate', icon: 'corporate', title: 'Entreprise',          desc: 'Soirées d\'entreprise, inaugurations, salons.' },
-            { id: 'birthday',  icon: 'birthday',  title: 'Anniversaire',        desc: 'Petits et grands, rires garantis en famille.' },
-            { id: 'baptism',   icon: 'baptism',   title: 'Baptême',             desc: 'Un souvenir tendre pour les plus beaux moments.' },
-            { id: 'hen',       icon: 'hen',       title: 'EVJF / EVG',          desc: 'L\'ambiance idéale pour célébrer entre amis.' },
-            { id: 'seminar',   icon: 'seminar',   title: 'Séminaire',           desc: 'Cohésion d\'équipe et team-building animés.' },
-            { id: 'prom',      icon: 'prom',      title: 'Bal de promo',        desc: 'Immortalisez la fin de vos études en beauté.' },
-            { id: 'xmas',      icon: 'xmas',      title: 'Noël d\'entreprise',  desc: 'Ambiance festive garantie pour vos collaborateurs.' },
-          ];
-          const services = (content.services && content.services.length >= 4)
-            ? content.services
-            : DEFAULT_SERVICES;
+          // Services gérés via le CMS (dashboard → « Services »). ICON_MAP ci-dessus
+          // reste la source de vérité des clés d'icônes disponibles.
+          const services = content.services || [];
 
           // On duplique la liste pour un défilement infini sans coupure
           const loop = [...services, ...services];
