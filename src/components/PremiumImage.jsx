@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const prefersReducedMotion =
   typeof window !== 'undefined' &&
@@ -18,6 +18,7 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) =
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(() => getWebp(src));
+  const imgRef = useRef(null);
 
   // Réinitialise si la source change (édition CMS)
   useEffect(() => {
@@ -25,6 +26,17 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) =
     setIsLoaded(false);
     setHasError(false);
   }, [src]);
+
+  // Image déjà en cache : `onLoad` peut ne jamais se déclencher (l'image est
+  // déjà « complete » au montage, typiquement après une navigation SPA de
+  // retour). Sans cette détection, l'image resterait invisible (opacity 0)
+  // → carré blanc. On vérifie l'état réel de l'<img> après chaque rendu.
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth > 0) {
+      setIsLoaded(true);
+    }
+  });
 
   const handleError = () => {
     // Si le .webp échoue (ex: absent en dev), on retombe sur l'original
@@ -60,6 +72,7 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) =
         </div>
       ) : (
         <img
+          ref={imgRef}
           src={currentSrc}
           alt={alt}
           className={imgClass}
