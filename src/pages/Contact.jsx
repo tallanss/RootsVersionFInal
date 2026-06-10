@@ -204,7 +204,7 @@ const Contact = () => {
     setCurrentMonth(d);
   };
 
-  const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => { const { name, value } = e.target; setFormData(prev => ({ ...prev, [name]: value })); };
   const setField = (key, value) => setFormData(prev => ({ ...prev, [key]: value }));
 
   const toggleAddon = (id) => setFormData(prev => ({
@@ -645,17 +645,10 @@ const Contact = () => {
           onSubmit={handleSubmit}
           style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-md)', overflow: 'hidden' }}
         >
-          <AnimatePresence mode="wait" custom={direction}>
+          <div key={step} className="animate-in">
             {/* ============ STEP 1 — COORDONNÉES ============ */}
             {step === 1 && (
-              <motion.div
-                key="step1"
-                custom={direction}
-                initial={{ opacity: 0, x: direction * 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: direction * -30 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-              >
+              <div>
                 <StepHeading n={1} title="Vos coordonnées" subtitle="Pour pouvoir vous envoyer votre devis personnalisé." />
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 18px' }}>
@@ -710,19 +703,12 @@ const Contact = () => {
                     })}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )}
 
             {/* ============ STEP 2 — ÉVÉNEMENT ============ */}
             {step === 2 && (
-              <motion.div
-                key="step2"
-                custom={direction}
-                initial={{ opacity: 0, x: direction * 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: direction * -30 }}
-                transition={{ duration: 0.25, ease: 'easeOut' }}
-              >
+              <div>
                 <StepHeading n={2} title="Votre événement" subtitle="Dernière étape ! Parlez-nous de l'occasion." />
 
                 {/* Type d'événement — chips */}
@@ -972,9 +958,9 @@ const Contact = () => {
                     {REFERRAL_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
-              </motion.div>
+              </div>
             )}
-          </AnimatePresence>
+          </div>
 
           {/* ERREUR */}
           {error && (
