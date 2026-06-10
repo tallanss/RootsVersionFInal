@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { CheckCircle2, Tag, Star, Phone, X } from 'lucide-react';
+import { useLocation, Link } from 'react-router-dom';
+import { CheckCircle2, Tag, Star, Phone, X, ArrowRight } from 'lucide-react';
 import { haptic } from '../hooks/useHaptic';
 import { Helmet } from 'react-helmet-async';
 import AnimatedButton from '../components/AnimatedButton';
@@ -376,6 +376,22 @@ const Tarifs = () => {
             </p>
           </FadeIn>
         </EditableBlock>
+      </section>
+
+      {/* LIEN VERS LES OPTIONS À LOUER */}
+      <section className="container" style={{ padding: '0 20px 8px' }}>
+        <Link
+          to="/options-a-louer"
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            background: 'var(--bg-secondary)', color: 'var(--primary)',
+            border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-full)',
+            padding: '10px 18px', fontSize: '14px', fontWeight: 700,
+            textDecoration: 'none',
+          }}
+        >
+          <Tag size={15} /> Voir toutes les options à louer <ArrowRight size={15} />
+        </Link>
       </section>
 
       {/* COMPARE TOGGLE */}

@@ -37,6 +37,7 @@ import { ToastContainer } from './components/Toast';
 import Home from './pages/Home';
 import Photobooth from './pages/Photobooth';
 import Tarifs from './pages/Tarifs';
+import RentalOptions from './pages/RentalOptions';
 import Contact from './pages/Contact';
 import Gallery from './pages/Gallery';
 import Legal from './pages/Legal';
@@ -116,6 +117,7 @@ function PageContent() {
               <Route path="/" element={<Home />} />
               <Route path="/photobooth" element={<Photobooth />} />
               <Route path="/tarifs" element={<Tarifs />} />
+              <Route path="/options-a-louer" element={<RentalOptions />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/galerie" element={<Gallery />} />
               <Route path="/admin" element={<Admin />} />
