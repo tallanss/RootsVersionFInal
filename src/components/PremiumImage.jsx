@@ -19,24 +19,37 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) =
   const [hasError, setHasError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(() => getWebp(src));
   const imgRef = useRef(null);
+  const isFirstRender = useRef(true);
 
-  // Réinitialise si la source change (édition CMS)
+  // Réinitialise quand la source change (édition CMS) — mais PAS au montage
+  // initial. Sinon, pour une image déjà en cache, `onLoad` se déclenche très
+  // tôt (setIsLoaded(true)) puis cet effet remettrait isLoaded=false →
+  // l'image resterait invisible (carré blanc).
   useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
     setCurrentSrc(getWebp(src));
     setIsLoaded(false);
     setHasError(false);
   }, [src]);
 
-  // Image déjà en cache : `onLoad` peut ne jamais se déclencher (l'image est
-  // déjà « complete » au montage, typiquement après une navigation SPA de
-  // retour). Sans cette détection, l'image resterait invisible (opacity 0)
-  // → carré blanc. On vérifie l'état réel de l'<img> après chaque rendu.
+  // L'événement React `onLoad` n'est pas fiable : il ne se déclenche pas si
+  // l'image est déjà en cache (navigation SPA de retour) NI si la même URL est
+  // déjà en cours de chargement par une autre <img> de la page (ex: l'image
+  // hero réutilisée dans la galerie). Résultat : l'image reste invisible
+  // (opacity 0) → carré blanc. On sécurise via l'<img> réelle : si elle est
+  // déjà « complete » on l'affiche, sinon on écoute l'événement natif `load`.
   useEffect(() => {
     const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth > 0) {
-      setIsLoaded(true);
-    }
-  });
+    if (!img) return undefined;
+    // `naturalWidth > 0` => les données de l'image sont disponibles (déjà en
+    // cache, ou déjà chargée par une autre <img> de la page) même si `onLoad`
+    // ne se déclenche pas de façon fiable. On l'affiche alors immédiatement ;
+    // sinon on écoute l'événement natif `load`.
+    if (img.naturalWidth > 0) { setIsLoaded(true); return undefined; }
+    const onLoad = () => setIsLoaded(true);
+    img.addEventListener('load', onLoad);
+    return () => img.removeEventListener('load', onLoad);
+  }, [currentSrc]);
 
   const handleError = () => {
     // Si le .webp échoue (ex: absent en dev), on retombe sur l'original
