@@ -23,6 +23,8 @@ import {
   EyeOff,
   Heart,
   CalendarX,
+  PlusCircle,
+  Sparkles,
 } from 'lucide-react';
 
 import { useContent } from '../context/ContentContext';
@@ -42,6 +44,8 @@ import {
   PageContentEditor,
   SaveTheDateManager,
   DisponibilitesManager,
+  AddonsManager,
+  ServicesManager,
 } from './admin/CMSModules';
 
 const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
@@ -54,8 +58,10 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
     { id: 'analytics', label: 'Performances', icon: BarChart3, category: 'BUSINESS' },
     { id: 'messages', label: 'Leads / Messages', icon: Mail, category: 'BUSINESS' },
     { id: 'tarifs', label: 'Tarifs & Plans', icon: Tag, category: 'BUSINESS' },
+    { id: 'addons', label: 'Options à louer', icon: PlusCircle, category: 'BUSINESS' },
 
     { id: 'pagecontent', label: 'Textes du Site', icon: FileText, category: 'CONTENU' },
+    { id: 'services', label: 'Services', icon: Sparkles, category: 'CONTENU' },
     { id: 'gallery', label: 'Médiathèque', icon: ImageIcon, category: 'CONTENU' },
     { id: 'savethedate', label: 'Save The Date', icon: Heart, category: 'CONTENU' },
     { id: 'disponibilites', label: 'Disponibilités', icon: CalendarX, category: 'CONTENU' },
@@ -85,7 +91,9 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
       case 'analytics': return <AnalyticsHub />;
       case 'messages': return <LeadCenter />;
       case 'tarifs': return <PriceArchitect />;
+      case 'addons': return <AddonsManager />;
       case 'pagecontent': return <PageContentEditor />;
+      case 'services': return <ServicesManager />;
       case 'gallery': return <MediaLib />;
       case 'savethedate': return <SaveTheDateManager />;
       case 'disponibilites': return <DisponibilitesManager />;
