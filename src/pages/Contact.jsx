@@ -105,6 +105,7 @@ const Contact = () => {
     formula: '',
     contactPreference: '',
     referralSource: '',
+    addons: [],
   });
 
   // Formules disponibles (depuis le CMS, avec fallback) — incluent prix + desc
@@ -206,6 +207,11 @@ const Contact = () => {
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const setField = (key, value) => setFormData(prev => ({ ...prev, [key]: value }));
 
+  const toggleAddon = (id) => setFormData(prev => ({
+    ...prev,
+    addons: prev.addons.includes(id) ? prev.addons.filter(a => a !== id) : [...prev.addons, id],
+  }));
+
   const selectDate = (dateStr) => {
     setField('date', dateStr);
     setCalendarOpen(false);
@@ -249,9 +255,13 @@ const Contact = () => {
     sessionStorage.setItem('pr_last_submit', String(Date.now()));
     setLoading(true);
 
+    const selectedAddons = (content.addons || []).filter(a => formData.addons.includes(a.id));
+    const addonsText = selectedAddons.map(a => `${a.name} (${a.price}€)`).join(', ');
+
     const autoMessage = [
       formData.guests ? `Nombre d'invités : ${formData.guests}` : null,
       formData.formula ? `Pack souhaité : ${formData.formula}` : null,
+      addonsText ? `Options souhaitées : ${addonsText}` : null,
       formData.contactPreference ? `Contact préféré : ${formData.contactPreference}` : null,
       formData.referralSource ? `Connu via : ${formData.referralSource}` : null,
     ].filter(Boolean).join('\n');
@@ -259,6 +269,7 @@ const Contact = () => {
     const booking = {
       date: formData.date,
       formula: formData.formula || 'Demande de devis',
+      addons: addonsText,
       name: formData.name,
       email: formData.email,
       phone: formData.phone,
@@ -285,6 +296,7 @@ const Contact = () => {
         location: formData.location,
         guests: formData.guests,
         formula: formData.formula || 'Demande de devis',
+        addons: addonsText,
         fullMessage: autoMessage,
         contactPreference: formData.contactPreference,
         referralSource: formData.referralSource,
@@ -908,6 +920,49 @@ const Contact = () => {
                     </button>
                   </div>
                 </div>
+
+                {/* Options à louer (add-ons) */}
+                {(content.addons || []).filter(a => a.enabled !== false).length > 0 && (
+                  <div className="form-group">
+                    <label className="form-label">Options souhaitées <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
+                    <div style={{ display: 'grid', gap: '8px', marginTop: '4px' }}>
+                      {(content.addons || []).filter(a => a.enabled !== false).map((a) => {
+                        const active = formData.addons.includes(a.id);
+                        return (
+                          <button
+                            type="button"
+                            key={a.id}
+                            onClick={() => toggleAddon(a.id)}
+                            style={{
+                              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+                              padding: '14px 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left',
+                              background: active ? 'var(--bg-secondary)' : 'var(--bg-app)',
+                              border: active ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                              boxShadow: active ? '0 0 0 3px var(--accent-glow)' : 'none',
+                              transition: 'all 0.2s',
+                            }}
+                          >
+                            <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                              <span style={{ fontWeight: 800, fontSize: '15px', color: 'var(--text-main)' }}>{a.name}</span>
+                              {a.desc && <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{a.desc}</span>}
+                            </span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+                              <span style={{ fontSize: '14px', fontWeight: 800, color: active ? 'var(--primary)' : 'var(--text-muted)' }}>+{a.price}€</span>
+                              <span style={{
+                                width: '22px', height: '22px', borderRadius: '6px', flexShrink: 0,
+                                border: active ? 'none' : '2px solid var(--border-medium)',
+                                background: active ? 'var(--primary)' : 'transparent',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              }}>
+                                {active && <CheckCircle2 size={16} color="#fff" />}
+                              </span>
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* Source */}
                 <div className="form-group">
