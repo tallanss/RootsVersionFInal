@@ -277,11 +277,8 @@ const Tarifs = () => {
 
   const plans = content.pricing_plans || defaultPlans;
 
-  const options = [
-    { id: 'guestbook', name: 'Livre d\'or Premium', price: 39, desc: 'Avec collages et stylos' },
-    { id: 'usb', name: 'Clé USB souvenirs', price: 15, desc: 'Toutes les photos en HD' },
-    { id: 'branding', name: 'Branding Écran', price: 29, desc: 'Votre logo sur l\'interface' },
-  ];
+  // Options à la carte gérées via le CMS (dashboard → « Options à louer »).
+  const options = (content.addons || []).filter(o => o.enabled !== false);
 
   const toggleOption = (id) => {
     haptic(8);
@@ -297,7 +294,7 @@ const Tarifs = () => {
     const planPrice = priceToNumber(plan.price);
     const optionsPrice = selectedOptions.reduce((total, optId) => {
       const option = options.find(o => o.id === optId);
-      return total + (option ? option.price : 0);
+      return total + (option ? (Number(option.price) || 0) : 0);
     }, 0);
     return planPrice + optionsPrice;
   };
@@ -722,7 +719,7 @@ const Tarifs = () => {
       </section>}
 
       {/* OPTIONS ADD-ONS */}
-      {selectedPlanId !== null && !plans.find(p => p.id === selectedPlanId)?.isCustom && (
+      {selectedPlanId !== null && options.length > 0 && !plans.find(p => p.id === selectedPlanId)?.isCustom && (
         <section className="container" style={{ padding: '0 20px 24px' }}>
           <div style={{
             background: 'var(--bg-card)',
