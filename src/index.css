@@ -1150,6 +1150,13 @@ button:active { transform: scale(0.97); }
   object-fit: cover;
   transition: transform 0.4s ease;
 }
+/* PremiumImage enveloppe le <img> dans .premium-image-wrapper : on force le
+   wrapper à remplir la carte carrée (sinon il prend la hauteur naturelle de
+   l'image et laisse du blanc sous l'image). */
+.gallery-item .premium-image-wrapper {
+  width: 100%;
+  height: 100%;
+}
 .gallery-item:hover img {
   transform: scale(1.05);
 }
