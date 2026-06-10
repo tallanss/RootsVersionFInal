@@ -750,6 +750,175 @@ export const PriceArchitect = () => {
 };
 
 /* ========================================== */
+/* ➕ ADDONS MANAGER (Options à louer)        */
+/* ========================================== */
+export const AddonsManager = () => {
+  const { content, updateContent, saveStatus } = useContent();
+  const addons = content.addons || [];
+
+  const updateAddon = (idx, field, value) => {
+    const next = [...addons];
+    const v = field === 'price' ? (Number(String(value).replace(/[^0-9]/g, '')) || 0) : value;
+    next[idx] = { ...next[idx], [field]: v };
+    updateContent({ addons: next });
+  };
+
+  const toggleEnabled = (idx) => {
+    const next = [...addons];
+    next[idx] = { ...next[idx], enabled: next[idx].enabled === false ? true : false };
+    updateContent({ addons: next });
+  };
+
+  const addAddon = () => {
+    updateContent({ addons: [...addons, { id: 'opt-' + Date.now(), name: 'Nouvelle option', price: 0, desc: '', enabled: true }] });
+  };
+
+  const deleteAddon = (idx) => {
+    updateContent({ addons: addons.filter((_, i) => i !== idx) });
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Options à louer</h2>
+          <p style={{ color: '#64748b', fontSize: '14px' }}>Gérez les options à la carte proposées en plus des formules (page Tarifs + formulaire de devis).</p>
+        </div>
+        <button onClick={addAddon} style={{ background: 'var(--primary)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          <Plus size={16} /> Ajouter une option
+        </button>
+      </header>
+
+      {addons.length === 0 ? (
+        <div className="cms-card" style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
+          Aucune option pour le moment. Cliquez sur « Ajouter une option ».
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {addons.map((opt, i) => (
+            <section key={opt.id} className="cms-card" style={{ opacity: opt.enabled === false ? 0.55 : 1 }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '10px' }}>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '6px' }}>NOM</label>
+                      <input type="text" className="cms-input" value={opt.name} onChange={(e) => updateAddon(i, 'name', e.target.value)} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '6px' }}>PRIX (€)</label>
+                      <input type="text" inputMode="numeric" className="cms-input" value={opt.price} onChange={(e) => updateAddon(i, 'price', e.target.value)} />
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '6px' }}>DESCRIPTION</label>
+                    <input type="text" className="cms-input" value={opt.desc} onChange={(e) => updateAddon(i, 'desc', e.target.value)} />
+                  </div>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 600, color: '#cbd5e1', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={opt.enabled !== false} onChange={() => toggleEnabled(i)} />
+                    Option active (visible sur le site)
+                  </label>
+                </div>
+                <button onClick={() => deleteAddon(i)} title="Supprimer" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', padding: '10px', borderRadius: '8px', cursor: 'pointer', flexShrink: 0 }}>
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
+      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+    </div>
+  );
+};
+
+/* ========================================== */
+/* ✨ SERVICES MANAGER                         */
+/* ========================================== */
+// Clés d'icônes — DOIVENT rester alignées avec ICON_MAP dans src/pages/Home.jsx.
+const SERVICE_ICON_OPTIONS = [
+  { key: 'wedding',   label: 'Mariage (cœur)' },
+  { key: 'corporate', label: 'Entreprise (mallette)' },
+  { key: 'birthday',  label: 'Anniversaire (gâteau)' },
+  { key: 'baptism',   label: 'Baptême (étincelles)' },
+  { key: 'hen',       label: 'EVJF / EVG (cadeau)' },
+  { key: 'seminar',   label: 'Séminaire (groupe)' },
+  { key: 'prom',      label: 'Bal de promo (diplôme)' },
+  { key: 'xmas',      label: 'Noël (cotillon)' },
+];
+
+export const ServicesManager = () => {
+  const { content, updateContent, saveStatus } = useContent();
+  const services = content.services || [];
+
+  const updateService = (idx, field, value) => {
+    const next = [...services];
+    next[idx] = { ...next[idx], [field]: value };
+    updateContent({ services: next });
+  };
+
+  const addService = () => {
+    updateContent({ services: [...services, { id: 'svc-' + Date.now(), icon: 'wedding', title: 'Nouveau service', desc: '' }] });
+  };
+
+  const deleteService = (idx) => {
+    updateContent({ services: services.filter((_, i) => i !== idx) });
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Services</h2>
+          <p style={{ color: '#64748b', fontSize: '14px' }}>Gérez les types d'événements affichés sur la page d'accueil.</p>
+        </div>
+        <button onClick={addService} style={{ background: 'var(--primary)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          <Plus size={16} /> Ajouter un service
+        </button>
+      </header>
+
+      {services.length === 0 ? (
+        <div className="cms-card" style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
+          Aucun service pour le moment. Cliquez sur « Ajouter un service ».
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          {services.map((svc, i) => (
+            <section key={svc.id || i} className="cms-card">
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '10px' }}>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '6px' }}>TITRE</label>
+                      <input type="text" className="cms-input" value={svc.title} onChange={(e) => updateService(i, 'title', e.target.value)} />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '6px' }}>ICÔNE</label>
+                      <select className="cms-input" value={svc.icon || 'wedding'} onChange={(e) => updateService(i, 'icon', e.target.value)}>
+                        {SERVICE_ICON_OPTIONS.map(o => (
+                          <option key={o.key} value={o.key} style={{ background: '#0f172a' }}>{o.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '6px' }}>DESCRIPTION</label>
+                    <input type="text" className="cms-input" value={svc.desc} onChange={(e) => updateService(i, 'desc', e.target.value)} />
+                  </div>
+                </div>
+                <button onClick={() => deleteService(i)} title="Supprimer" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', padding: '10px', borderRadius: '8px', cursor: 'pointer', flexShrink: 0 }}>
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </section>
+          ))}
+        </div>
+      )}
+      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+    </div>
+  );
+};
+
+/* ========================================== */
 /* ❓ FAQ MASTER                               */
 /* ========================================== */
 export const FAQMaster = () => {
