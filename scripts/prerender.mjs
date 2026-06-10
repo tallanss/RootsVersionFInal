@@ -40,6 +40,7 @@ const ROUTES = [
   '/',
   '/photobooth',
   '/tarifs',
+  '/options-a-louer',
   '/galerie',
   '/contact',
   '/mentions-legales',

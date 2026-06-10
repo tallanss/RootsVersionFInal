@@ -129,6 +129,7 @@ const DEFAULT_CONTENT = {
       '/tarifs': { title: 'Tarifs & Formules - PhotoRoots', description: 'Location photobooth à partir de 99€ — Découvrez nos formules pour mariages, anniversaires et entreprises.' },
       '/galerie': { title: 'Galerie Événements - PhotoRoots', description: 'Location photobooth à partir de 99€ — Découvrez nos réalisations en Seine-Maritime.' },
       '/contact': { title: 'Contact & devis - PhotoRoots', description: 'Location photobooth à partir de 99€ — Faites votre demande de devis gratuit, réponse sous 24h.' },
+      '/options-a-louer': { title: 'Options à louer pour votre photobooth — PhotoRoots', description: "Livre d'or premium, accessoires, clé USB, branding personnalisé… Ajoutez des options à la carte à votre location de photobooth en Normandie. Devis gratuit en 24h." },
     }
   },
   messages: [],

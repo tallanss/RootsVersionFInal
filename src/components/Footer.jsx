@@ -63,6 +63,7 @@ const Footer = () => {
               <Link key={item.id} to={item.path} style={linkStyle}>{item.label}</Link>
             ))}
             <Link to="/blog" style={linkStyle}>Blog &amp; conseils</Link>
+            <Link to="/options-a-louer" style={linkStyle}>Options à louer</Link>
           </div>
         </div>
 
