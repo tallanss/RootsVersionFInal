@@ -11,9 +11,14 @@ const DEFAULT_CONTENT = {
   ctaDesc: "Réservez votre date en ligne et recevez une confirmation instantanée.",
   footerDesc: "L'excellence du photobooth premium en Normandie. Sublimez vos événements avec nos bornes photos innovantes et élégantes.",
   services: [
-    { title: 'Mariage', desc: 'Offrez à vos invités des souvenirs inoubliables pour le plus beau jour de votre vie.' },
-    { title: 'Entreprise', desc: 'Cohésion et dynamisme.' },
-    { title: 'Anniversaire', desc: 'Rires garantis avec vos proches.' },
+    { id: 'wedding',   icon: 'wedding',   title: 'Mariage',            desc: 'Des souvenirs inoubliables pour le plus beau jour.' },
+    { id: 'corporate', icon: 'corporate', title: 'Entreprise',         desc: "Soirées d'entreprise, inaugurations, salons." },
+    { id: 'birthday',  icon: 'birthday',  title: 'Anniversaire',       desc: 'Petits et grands, rires garantis en famille.' },
+    { id: 'baptism',   icon: 'baptism',   title: 'Baptême',            desc: 'Un souvenir tendre pour les plus beaux moments.' },
+    { id: 'hen',       icon: 'hen',       title: 'EVJF / EVG',         desc: "L'ambiance idéale pour célébrer entre amis." },
+    { id: 'seminar',   icon: 'seminar',   title: 'Séminaire',          desc: "Cohésion d'équipe et team-building animés." },
+    { id: 'prom',      icon: 'prom',      title: 'Bal de promo',       desc: 'Immortalisez la fin de vos études en beauté.' },
+    { id: 'xmas',      icon: 'xmas',      title: "Noël d'entreprise",  desc: 'Ambiance festive garantie pour vos collaborateurs.' },
   ],
   stats: [
     { num: '150+', label: 'Événements' },
@@ -81,6 +86,11 @@ const DEFAULT_CONTENT = {
       excluded: [],
       featured: false
     }
+  ],
+  addons: [
+    { id: 'guestbook', name: "Livre d'or Premium", price: 39, desc: 'Avec collages et stylos', enabled: true },
+    { id: 'usb',       name: 'Clé USB souvenirs',  price: 15, desc: 'Toutes les photos en HD', enabled: true },
+    { id: 'branding',  name: 'Branding Écran',     price: 29, desc: "Votre logo sur l'interface", enabled: true },
   ],
   theme: {
     primary: "#c5a059",
@@ -157,7 +167,16 @@ const buildMergedContent = (parsed = {}) => {
     formOptions: { ...DEFAULT_CONTENT.formOptions, ...(parsed.formOptions || {}) },
     analytics: { ...DEFAULT_CONTENT.analytics, ...(parsed.analytics || {}) },
     stats: parsed.stats || DEFAULT_CONTENT.stats,
-    services: parsed.services || DEFAULT_CONTENT.services,
+    // Migration : l'ancien format de services (sans `icon`) est remplacé par le
+    // nouveau défaut enrichi. Une liste éditée via le CMS (avec `icon`) est conservée.
+    services: (() => {
+      const stored = parsed.services;
+      if (!Array.isArray(stored) || stored.length === 0 || !stored[0].icon) {
+        return DEFAULT_CONTENT.services;
+      }
+      return stored;
+    })(),
+    addons: parsed.addons || DEFAULT_CONTENT.addons,
     pricing_plans: (() => {
       const stored = parsed.pricing_plans;
       if (!stored) return DEFAULT_CONTENT.pricing_plans;
