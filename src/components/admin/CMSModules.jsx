@@ -26,6 +26,8 @@ import {
   Heart,
   Copy,
   Loader2,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../../context/ContentContext';
@@ -1506,41 +1508,170 @@ export const PageContentEditor = () => {
 /* ========================================== */
 /* 🗺️ NAVIGATION EDITOR                      */
 /* ========================================== */
+// Pages internes proposées pour les liens du menu — aligné avec les routes de src/App.jsx.
+const NAV_PAGE_OPTIONS = [
+  { value: '/', label: 'Accueil' },
+  { value: '/photobooth', label: 'Photobooth' },
+  { value: '/tarifs', label: 'Tarifs' },
+  { value: '/galerie', label: 'Galerie' },
+  { value: '/options-a-louer', label: 'Options à louer' },
+  { value: '/contact', label: 'Contact / Devis' },
+  { value: '/save-the-date', label: 'Save The Date' },
+  { value: '/blog', label: 'Blog' },
+  { value: '/mentions-legales', label: 'Mentions légales' },
+  { value: '/location-photobooth-le-havre', label: 'Ville — Le Havre' },
+  { value: '/location-photobooth-rouen', label: 'Ville — Rouen' },
+  { value: '/location-photobooth-dieppe', label: 'Ville — Dieppe' },
+  { value: '/location-photobooth-montivilliers', label: 'Ville — Montivilliers' },
+  { value: '/location-photobooth-harfleur', label: 'Ville — Harfleur' },
+  { value: '/location-photobooth-fecamp', label: 'Ville — Fécamp' },
+  { value: '/location-photobooth-etretat', label: 'Ville — Étretat' },
+  { value: '/location-photobooth-bolbec', label: 'Ville — Bolbec' },
+  { value: '/location-photobooth-lillebonne', label: 'Ville — Lillebonne' },
+  { value: '/location-photobooth-yvetot', label: 'Ville — Yvetot' },
+  { value: '/location-photobooth-saint-romain-de-colbosc', label: 'Ville — St-Romain' },
+];
+
+// Icônes de la barre de navigation mobile.
+// DOIT rester aligné avec iconMap dans src/components/BottomNav.jsx.
+const NAV_ICON_OPTIONS = [
+  { value: 'home', label: 'Maison' },
+  { value: 'photobooth', label: 'Appareil photo' },
+  { value: 'tarifs', label: 'Étiquette prix' },
+  { value: 'galerie', label: 'Image' },
+  { value: 'invite', label: 'Cœur' },
+  { value: 'contact', label: 'Enveloppe' },
+  { value: 'blog', label: 'Livre' },
+  { value: 'ville', label: 'Épingle carte' },
+  { value: 'options', label: 'Étincelles' },
+  { value: 'etoile', label: 'Étoile' },
+  { value: 'cadeau', label: 'Cadeau' },
+  { value: 'agenda', label: 'Calendrier' },
+];
+
 export const NavEditor = () => {
   const { content, updateContent, saveStatus } = useContent();
 
   const [localNav, setLocalNav] = useState([...(content.navigation || [])]);
   const [isDirty, setIsDirty] = useState(false);
 
-  const updateNavItem = (id, value) => {
-    setLocalNav(p => p.map(n => n.id === id ? { ...n, label: value } : n));
+  const setItem = (idx, patch) => {
+    setLocalNav(p => p.map((n, i) => (i === idx ? { ...n, ...patch } : n)));
     setIsDirty(true);
   };
-  const handleSave = () => { updateContent({ navigation: localNav }); setIsDirty(false); showToast('Sauvegardé ✓'); };
+
+  const move = (idx, dir) => {
+    setLocalNav(p => {
+      const j = idx + dir;
+      if (j < 0 || j >= p.length) return p;
+      const next = [...p];
+      [next[idx], next[j]] = [next[j], next[idx]];
+      return next;
+    });
+    setIsDirty(true);
+  };
+
+  const removeItem = (idx) => {
+    setLocalNav(p => p.filter((_, i) => i !== idx));
+    setIsDirty(true);
+  };
+
+  const addItem = () => {
+    setLocalNav(p => [...p, { id: 'nav-' + Date.now(), label: 'Nouveau lien', path: '/', icon: 'etoile' }]);
+    setIsDirty(true);
+  };
+
+  const handleSave = () => {
+    if (localNav.length === 0) {
+      showToast('Le menu doit contenir au moins un lien.', 'error');
+      return;
+    }
+    updateContent({ navigation: localNav });
+    setIsDirty(false);
+    showToast('Sauvegardé ✓');
+  };
+
+  const selectStyle = { fontSize: '12px', padding: '8px 10px' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      <header>
-        <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Navigation & Menu</h2>
-        <p style={{ color: '#64748b', fontSize: '14px' }}>Modifiez les libellés de votre menu principal.</p>
+      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Navigation & Menu</h2>
+          <p style={{ color: '#64748b', fontSize: '14px' }}>Ajoutez, renommez, réordonnez ou supprimez les liens du menu (barre du bas + pied de page).</p>
+        </div>
+        <button onClick={addItem} style={{ background: 'var(--primary)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+          <Plus size={16} /> Ajouter un lien
+        </button>
       </header>
 
+      {localNav.length > 6 && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.25)', borderRadius: '12px', padding: '12px 16px', color: '#fbbf24', fontSize: '13px', fontWeight: 600 }}>
+          <AlertTriangle size={16} style={{ flexShrink: 0 }} />
+          Au-delà de 6 liens, la barre de navigation mobile devient étroite : les libellés peuvent être coupés.
+        </div>
+      )}
+
       <div className="cms-card">
-        <h3 className="cms-section-title"><Navigation size={18} /> Liens du Menu</h3>
+        <h3 className="cms-section-title"><Navigation size={18} /> Liens du Menu ({localNav.length})</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {localNav.map(item => (
-            <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '12px' }}>
-              <div style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#64748b' }}>
-                <ChevronRight size={14} />
-              </div>
-              <div style={{ flexGrow: 1 }}>
+          {localNav.map((item, idx) => (
+            <div key={item.id} style={{ background: 'rgba(255,255,255,0.03)', padding: '12px', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '2px', flexShrink: 0 }}>
+                  <button onClick={() => move(idx, -1)} disabled={idx === 0} title="Monter" style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: idx === 0 ? '#334155' : '#94a3b8', borderRadius: '6px', padding: '3px', cursor: idx === 0 ? 'default' : 'pointer', display: 'flex' }}>
+                    <ChevronUp size={13} />
+                  </button>
+                  <button onClick={() => move(idx, 1)} disabled={idx === localNav.length - 1} title="Descendre" style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: idx === localNav.length - 1 ? '#334155' : '#94a3b8', borderRadius: '6px', padding: '3px', cursor: idx === localNav.length - 1 ? 'default' : 'pointer', display: 'flex' }}>
+                    <ChevronDown size={13} />
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={item.label}
-                  onChange={(e) => updateNavItem(item.id, e.target.value)}
-                  style={{ background: 'transparent', border: 'none', color: '#fff', fontWeight: 700, fontSize: '15px', width: '100%', outline: 'none' }}
+                  onChange={(e) => setItem(idx, { label: e.target.value })}
+                  placeholder="Libellé du lien"
+                  style={{ background: 'transparent', border: 'none', color: '#fff', fontWeight: 700, fontSize: '15px', flexGrow: 1, minWidth: 0, outline: 'none' }}
                 />
-                <span style={{ fontSize: '11px', color: '#64748b' }}>Chemin : {item.path}</span>
+                <button
+                  onClick={() => removeItem(idx)}
+                  disabled={localNav.length <= 1}
+                  title={localNav.length <= 1 ? 'Le menu doit garder au moins un lien' : 'Supprimer ce lien'}
+                  style={{ background: 'rgba(239,68,68,0.1)', color: localNav.length <= 1 ? '#475569' : '#ef4444', border: 'none', padding: '8px', borderRadius: '8px', cursor: localNav.length <= 1 ? 'default' : 'pointer', display: 'flex', flexShrink: 0 }}
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                <div>
+                  <label style={{ fontSize: '10px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '4px' }}>PAGE CIBLE</label>
+                  <select
+                    className="cms-input"
+                    style={selectStyle}
+                    value={item.path}
+                    onChange={(e) => setItem(idx, { path: e.target.value })}
+                  >
+                    {!NAV_PAGE_OPTIONS.some(o => o.value === item.path) && (
+                      <option value={item.path} style={{ background: '#0f172a' }}>{item.path}</option>
+                    )}
+                    {NAV_PAGE_OPTIONS.map(o => (
+                      <option key={o.value} value={o.value} style={{ background: '#0f172a' }}>{o.label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: '10px', fontWeight: 800, color: '#64748b', display: 'block', marginBottom: '4px' }}>ICÔNE (barre mobile)</label>
+                  <select
+                    className="cms-input"
+                    style={selectStyle}
+                    value={item.icon || (NAV_ICON_OPTIONS.some(o => o.value === item.id) ? item.id : 'etoile')}
+                    onChange={(e) => setItem(idx, { icon: e.target.value })}
+                  >
+                    {NAV_ICON_OPTIONS.map(o => (
+                      <option key={o.value} value={o.value} style={{ background: '#0f172a' }}>{o.label}</option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
           ))}

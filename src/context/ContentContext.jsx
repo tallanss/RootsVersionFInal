@@ -147,6 +147,39 @@ const DEFAULT_CONTENT = {
     title: 'Save The Date',
     subtitle: "Personnalisez et téléchargez votre carte 'Save the Date' gratuitement."
   },
+  // Page Options à louer (héros + CTA)
+  rentalOptionsTitle: 'Personnalisez votre photobooth',
+  rentalOptionsSubtitle: "Complétez votre formule avec nos options à la carte. Ajoutez celles qui vous font envie au moment de votre demande de devis — sans engagement.",
+  rentalOptionsCtaTitle: "Envie d'ajouter ces options ?",
+  rentalOptionsCtaDesc: "Sélectionnez vos options directement dans votre demande de devis et recevez une proposition personnalisée gratuite sous 24 h.",
+  // Page Blog (héros + CTA)
+  blogTitle: 'Conseils & inspirations pour vos événements',
+  blogSubtitle: "Tarifs, mariages, soirées d'entreprise, idées d'accessoires et guides locaux en Normandie : retrouvez nos articles pour préparer sereinement votre animation photobooth.",
+  blogCtaTitle: 'Une question sur votre événement ?',
+  blogCtaDesc: "Mariage, anniversaire ou soirée d'entreprise : parlons de votre projet et obtenez un devis gratuit sous 24 h.",
+  // Mentions légales & CGV (sections éditables)
+  legal: {
+    title: 'Mentions Légales & CGV',
+    mentionsTitle: 'Mentions Légales',
+    cgvTitle: 'Conditions Générales de Vente',
+    lastUpdated: 'Mars 2026',
+    mentions: [
+      { title: '1. Éditeur du site', body: "PhotoRoots\nMicro-entreprise — SIRET : [À compléter]\nSiège social : Le Havre, Seine-Maritime (76)\nEmail : contact@photoroots.fr\nTéléphone : 06 03 16 36 21" },
+      { title: '2. Hébergement', body: 'Ce site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis.' },
+      { title: '3. Propriété intellectuelle', body: "L'ensemble des contenus (textes, images, photos, vidéos, logos) présents sur ce site sont protégés par le droit d'auteur. Toute reproduction, même partielle, est interdite sans autorisation préalable." },
+      { title: '4. Données personnelles (RGPD)', body: "Les informations collectées via le formulaire de réservation sont destinées exclusivement à PhotoRoots pour le traitement de votre demande. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ce droit, contactez-nous à : contact@photoroots.fr\nAucune donnée n'est transmise à des tiers. Les données sont conservées pendant une durée maximale de 36 mois après votre dernière interaction." },
+      { title: '5. Cookies', body: "Ce site utilise des cookies strictement nécessaires au fonctionnement (mémorisation des préférences). Aucun cookie publicitaire ou de tracking n'est utilisé sans votre consentement explicite." },
+    ],
+    cgv: [
+      { title: 'Article 1 — Objet', body: "Les présentes conditions régissent les prestations de location de photobooth proposées par PhotoRoots pour tout type d'événement (mariage, anniversaire, événement d'entreprise, etc.)." },
+      { title: 'Article 2 — Réservation', body: 'Toute réservation effectuée via le site internet est confirmée par email. Un acompte de 30% du montant total est demandé pour valider la réservation. Le solde est dû le jour de l\'événement.' },
+      { title: 'Article 3 — Annulation', body: "Par le client :\n• Plus de 30 jours avant : remboursement intégral de l'acompte\n• Entre 15 et 30 jours : remboursement de 50% de l'acompte\n• Moins de 15 jours : l'acompte est conservé\nPar PhotoRoots : En cas de force majeure, PhotoRoots s'engage à proposer une date de report ou un remboursement intégral." },
+      { title: 'Article 4 — Prestations', body: "Les formules proposées incluent la mise à disposition du matériel, l'installation et la désinstallation, ainsi que l'accompagnement pendant l'événement selon la formule choisie." },
+      { title: 'Article 5 — Responsabilité', body: "Le client s'engage à utiliser le matériel mis à disposition de manière raisonnable. Tout dommage causé au matériel durant l'événement sera facturé au client selon le coût de réparation ou de remplacement." },
+      { title: 'Article 6 — Droit à l\'image', body: "Sauf mention contraire expresse, PhotoRoots se réserve le droit d'utiliser les photos prises lors de l'événement à des fins de communication et de portfolio. Les photos ne seront jamais utilisées à des fins commerciales tierces." },
+      { title: 'Article 7 — Litiges', body: "En cas de litige, les parties s'engagent à rechercher une solution amiable. À défaut, les tribunaux compétents du ressort du Havre seront seuls compétents." },
+    ],
+  },
 };
 
 // Deep merge depuis le localStorage/Supabase vers les defaults
@@ -157,7 +190,17 @@ const buildMergedContent = (parsed = {}) => {
     hero: { ...DEFAULT_CONTENT.hero, ...(parsed.hero || {}) },
     scrolly: { ...DEFAULT_CONTENT.scrolly, ...(parsed.scrolly || {}) },
     theme: { ...DEFAULT_CONTENT.theme, ...(parsed.theme || {}) },
-    navigation: parsed.navigation || DEFAULT_CONTENT.navigation,
+    // Garde : une navigation vide (ou invalide) retombe sur le défaut — sinon
+    // le site n'aurait plus AUCUN menu (la barre du bas est la seule navigation).
+    navigation: (Array.isArray(parsed.navigation) && parsed.navigation.length > 0)
+      ? parsed.navigation
+      : DEFAULT_CONTENT.navigation,
+    legal: {
+      ...DEFAULT_CONTENT.legal,
+      ...(parsed.legal || {}),
+      mentions: parsed.legal?.mentions?.length ? parsed.legal.mentions : DEFAULT_CONTENT.legal.mentions,
+      cgv: parsed.legal?.cgv?.length ? parsed.legal.cgv : DEFAULT_CONTENT.legal.cgv,
+    },
     socials: { ...DEFAULT_CONTENT.socials, ...(parsed.socials || {}) },
     contact: { ...DEFAULT_CONTENT.contact, ...(parsed.contact || {}) },
     seo: {

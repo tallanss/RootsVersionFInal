@@ -62,8 +62,9 @@ const Footer = () => {
             {content.navigation?.map(item => (
               <Link key={item.id} to={item.path} style={linkStyle}>{item.label}</Link>
             ))}
-            <Link to="/blog" style={linkStyle}>Blog &amp; conseils</Link>
-            <Link to="/options-a-louer" style={linkStyle}>Options à louer</Link>
+            {/* Liens fixes — masqués si le client les a déjà ajoutés à son menu (anti-doublon) */}
+            {!content.navigation?.some(i => i.path === '/blog') && <Link to="/blog" style={linkStyle}>Blog &amp; conseils</Link>}
+            {!content.navigation?.some(i => i.path === '/options-a-louer') && <Link to="/options-a-louer" style={linkStyle}>Options à louer</Link>}
           </div>
         </div>
 
