@@ -4,6 +4,8 @@ import { BookOpen, ArrowRight, Clock, Calendar, Sparkles } from 'lucide-react';
 import FadeIn from '../components/FadeIn';
 import AnimatedButton from '../components/AnimatedButton';
 import { ARTICLES } from '../data/blog';
+import { useContent } from '../context/ContentContext';
+import EditableBlock from '../components/admin/EditableBlock';
 
 // Formate une date ISO (2026-06-06) en français lisible (6 juin 2026).
 const MONTHS_FR = [
@@ -17,6 +19,7 @@ function formatDateFr(iso) {
 }
 
 export default function BlogIndex() {
+  const { content, updateContent } = useContent();
   const seoTitle = 'Blog Photobooth & Conseils Événementiels | PhotoRoots';
   const seoDesc =
     "Le blog PhotoRoots : prix d'un photobooth, conseils mariage, idées d'accessoires, animations d'entreprise et guides locaux en Normandie. Des articles utiles pour réussir votre événement.";
@@ -48,13 +51,22 @@ export default function BlogIndex() {
       <section className="container" style={{ padding: '48px 24px 16px' }}>
         <FadeIn direction="down" duration={0.9}>
           <div className="section-tag"><BookOpen size={14} /> Blog</div>
-          <h1 className="section-title" style={{ fontSize: '32px' }}>
-            Conseils &amp; inspirations pour vos événements
-          </h1>
-          <p className="section-subtitle">
-            Tarifs, mariages, soirées d'entreprise, idées d'accessoires et guides locaux en
-            Normandie : retrouvez nos articles pour préparer sereinement votre animation photobooth.
-          </p>
+          <EditableBlock
+            label="En-tête du blog"
+            modalTitle="En-tête — Blog"
+            fields={[
+              { key: 'blogTitle', label: 'Titre', type: 'text', value: content.blogTitle || 'Conseils & inspirations pour vos événements' },
+              { key: 'blogSubtitle', label: 'Sous-titre', type: 'textarea', value: content.blogSubtitle || '' },
+            ]}
+            onSave={(vals) => updateContent(vals)}
+          >
+            <h1 className="section-title" style={{ fontSize: '32px' }}>
+              {content.blogTitle || 'Conseils & inspirations pour vos événements'}
+            </h1>
+            <p className="section-subtitle">
+              {content.blogSubtitle || "Tarifs, mariages, soirées d'entreprise, idées d'accessoires et guides locaux en Normandie : retrouvez nos articles pour préparer sereinement votre animation photobooth."}
+            </p>
+          </EditableBlock>
         </FadeIn>
       </section>
 
@@ -160,11 +172,20 @@ export default function BlogIndex() {
       <section className="container" style={{ padding: '16px 20px 48px' }}>
         <FadeIn direction="up">
           <div className="cta-section">
-            <h2>Une question sur votre événement ?</h2>
-            <p>
-              Mariage, anniversaire ou soirée d'entreprise : parlons de votre projet et obtenez un
-              devis gratuit sous 24 h.
-            </p>
+            <EditableBlock
+              label="CTA"
+              modalTitle="Appel à l'action — Blog"
+              fields={[
+                { key: 'blogCtaTitle', label: 'Titre', type: 'text', value: content.blogCtaTitle || 'Une question sur votre événement ?' },
+                { key: 'blogCtaDesc', label: 'Description', type: 'textarea', value: content.blogCtaDesc || '' },
+              ]}
+              onSave={(vals) => updateContent(vals)}
+            >
+              <h2>{content.blogCtaTitle || 'Une question sur votre événement ?'}</h2>
+              <p>
+                {content.blogCtaDesc || "Mariage, anniversaire ou soirée d'entreprise : parlons de votre projet et obtenez un devis gratuit sous 24 h."}
+              </p>
+            </EditableBlock>
             <AnimatedButton
               to="/contact"
               className="btn-primary"

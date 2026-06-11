@@ -4,9 +4,10 @@ import { Sparkles, ArrowRight, Check, ChevronLeft } from 'lucide-react';
 import FadeIn from '../components/FadeIn';
 import AnimatedButton from '../components/AnimatedButton';
 import { useContent } from '../context/ContentContext';
+import EditableBlock from '../components/admin/EditableBlock';
 
 export default function RentalOptions() {
-  const { content } = useContent();
+  const { content, updateContent } = useContent();
   const addons = (content.addons || []).filter((a) => a.enabled !== false);
 
   const seo = content.seo?.pages?.['/options-a-louer'] || {};
@@ -39,13 +40,22 @@ export default function RentalOptions() {
       <section className="container" style={{ padding: '48px 24px 16px' }}>
         <FadeIn direction="down" duration={0.9}>
           <div className="section-tag"><Sparkles size={14} /> Options à louer</div>
-          <h1 className="section-title" style={{ fontSize: '32px' }}>
-            Personnalisez votre photobooth
-          </h1>
-          <p className="section-subtitle">
-            Complétez votre formule avec nos options à la carte. Ajoutez celles qui vous font
-            envie au moment de votre demande de devis — sans engagement.
-          </p>
+          <EditableBlock
+            label="En-tête de la page"
+            modalTitle="En-tête — Options à louer"
+            fields={[
+              { key: 'rentalOptionsTitle', label: 'Titre', type: 'text', value: content.rentalOptionsTitle || 'Personnalisez votre photobooth' },
+              { key: 'rentalOptionsSubtitle', label: 'Sous-titre', type: 'textarea', value: content.rentalOptionsSubtitle || '' },
+            ]}
+            onSave={(vals) => updateContent(vals)}
+          >
+            <h1 className="section-title" style={{ fontSize: '32px' }}>
+              {content.rentalOptionsTitle || 'Personnalisez votre photobooth'}
+            </h1>
+            <p className="section-subtitle">
+              {content.rentalOptionsSubtitle || "Complétez votre formule avec nos options à la carte. Ajoutez celles qui vous font envie au moment de votre demande de devis — sans engagement."}
+            </p>
+          </EditableBlock>
         </FadeIn>
       </section>
 
@@ -154,11 +164,20 @@ export default function RentalOptions() {
       <section className="container" style={{ padding: '16px 20px 48px' }}>
         <FadeIn direction="up">
           <div className="cta-section">
-            <h2>Envie d'ajouter ces options ?</h2>
-            <p>
-              Sélectionnez vos options directement dans votre demande de devis et recevez une
-              proposition personnalisée gratuite sous 24 h.
-            </p>
+            <EditableBlock
+              label="CTA"
+              modalTitle="Appel à l'action — Options à louer"
+              fields={[
+                { key: 'rentalOptionsCtaTitle', label: 'Titre', type: 'text', value: content.rentalOptionsCtaTitle || "Envie d'ajouter ces options ?" },
+                { key: 'rentalOptionsCtaDesc', label: 'Description', type: 'textarea', value: content.rentalOptionsCtaDesc || '' },
+              ]}
+              onSave={(vals) => updateContent(vals)}
+            >
+              <h2>{content.rentalOptionsCtaTitle || "Envie d'ajouter ces options ?"}</h2>
+              <p>
+                {content.rentalOptionsCtaDesc || 'Sélectionnez vos options directement dans votre demande de devis et recevez une proposition personnalisée gratuite sous 24 h.'}
+              </p>
+            </EditableBlock>
             <AnimatedButton
               to="/contact?mode=devis"
               className="btn-primary"

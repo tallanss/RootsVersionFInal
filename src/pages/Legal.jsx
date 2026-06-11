@@ -1,8 +1,48 @@
 import { Link } from 'react-router-dom';
 import { Shield, FileText, ArrowLeft } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import { useContent } from '../context/ContentContext';
+import EditableBlock from '../components/admin/EditableBlock';
+
+const h3Style = { fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' };
+const cardStyle = { background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '28px', border: '1px solid var(--border-light)' };
+const h2Style = { fontSize: '20px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' };
+
+const sectionFields = (s) => [
+  { key: 'title', label: 'Titre', type: 'text', value: s?.title || '' },
+  { key: 'body', label: 'Texte', type: 'textarea', value: s?.body || '' },
+];
 
 const Legal = () => {
+  const { content, updateContent } = useContent();
+  const legal = content.legal || { mentions: [], cgv: [] };
+
+  const saveSection = (listKey, idx) => (vals) => {
+    const next = [...(legal[listKey] || [])];
+    next[idx] = { ...next[idx], ...vals };
+    updateContent({ legal: { ...legal, [listKey]: next } });
+  };
+  const deleteSection = (listKey, idx) => () => {
+    updateContent({ legal: { ...legal, [listKey]: (legal[listKey] || []).filter((_, i) => i !== idx) } });
+  };
+  const addSection = (listKey) => (vals) => {
+    updateContent({ legal: { ...legal, [listKey]: [...(legal[listKey] || []), { title: vals.title || 'Nouvelle section', body: vals.body || '' }] } });
+  };
+
+  const renderSections = (listKey) => (legal[listKey] || []).map((s, i) => (
+    <EditableBlock
+      key={`${listKey}-${i}`}
+      label={s.title}
+      modalTitle={`Modifier « ${s.title} »`}
+      fields={sectionFields(s)}
+      onSave={saveSection(listKey, i)}
+      onDelete={deleteSection(listKey, i)}
+    >
+      <h3 style={h3Style}>{s.title}</h3>
+      <p style={{ whiteSpace: 'pre-line' }}>{s.body}</p>
+    </EditableBlock>
+  ));
+
   return (
     <div className="animate-in">
       <Helmet>
@@ -16,76 +56,63 @@ const Legal = () => {
         </Link>
 
         <div className="section-tag"><Shield size={14} /> Informations légales</div>
-        <h1 className="section-title" style={{ fontSize: '28px', marginBottom: '32px' }}>Mentions Légales & CGV</h1>
+        <EditableBlock
+          label="Titre de la page"
+          modalTitle="Titre de la page"
+          fields={[{ key: 'title', label: 'Titre', type: 'text', value: legal.title || 'Mentions Légales & CGV' }]}
+          onSave={(vals) => updateContent({ legal: { ...legal, ...vals } })}
+        >
+          <h1 className="section-title" style={{ fontSize: '28px', marginBottom: '32px' }}>{legal.title || 'Mentions Légales & CGV'}</h1>
+        </EditableBlock>
 
         {/* Mentions Légales */}
-        <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '28px', border: '1px solid var(--border-light)', marginBottom: '20px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <FileText size={20} color="var(--primary)" /> Mentions Légales
-          </h2>
+        <div style={{ ...cardStyle, marginBottom: '20px' }}>
+          <EditableBlock
+            label="Mentions légales"
+            modalTitle="Titre de la carte"
+            fields={[{ key: 'mentionsTitle', label: 'Titre', type: 'text', value: legal.mentionsTitle || 'Mentions Légales' }]}
+            onSave={(vals) => updateContent({ legal: { ...legal, ...vals } })}
+            onAdd={{ label: 'Ajouter une section', fields: sectionFields(), onSave: addSection('mentions') }}
+          >
+            <h2 style={h2Style}>
+              <FileText size={20} color="var(--primary)" /> {legal.mentionsTitle || 'Mentions Légales'}
+            </h2>
+          </EditableBlock>
 
           <div style={{ fontSize: '14px', lineHeight: 1.8, color: 'var(--text-muted)' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '16px', marginBottom: '8px' }}>1. Éditeur du site</h3>
-            <p><strong>PhotoRoots</strong><br />
-            Micro-entreprise — SIRET : [À compléter]<br />
-            Siège social : Le Havre, Seine-Maritime (76)<br />
-            Email : <a href="mailto:contact@photoroots.fr" style={{ color: 'inherit', textDecoration: 'none' }}>contact@photoroots.fr</a><br />
-            Téléphone : <a href="tel:0603163621" style={{ color: 'inherit', textDecoration: 'none' }}>06 03 16 36 21</a></p>
-
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>2. Hébergement</h3>
-            <p>Ce site est hébergé par [À compléter — ex: OVH, Vercel, Netlify].</p>
-
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>3. Propriété intellectuelle</h3>
-            <p>L'ensemble des contenus (textes, images, photos, vidéos, logos) présents sur ce site sont protégés par le droit d'auteur. Toute reproduction, même partielle, est interdite sans autorisation préalable.</p>
-
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>4. Données personnelles (RGPD)</h3>
-            <p>Les informations collectées via le formulaire de réservation sont destinées exclusivement à PhotoRoots pour le traitement de votre demande. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ce droit, contactez-nous à : <a href="mailto:contact@photoroots.fr" style={{ color: 'inherit', textDecoration: 'none' }}>contact@photoroots.fr</a></p>
-            <p style={{ marginTop: '8px' }}>Aucune donnée n'est transmise à des tiers. Les données sont conservées pendant une durée maximale de 36 mois après votre dernière interaction.</p>
-
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>5. Cookies</h3>
-            <p>Ce site utilise des cookies strictement nécessaires au fonctionnement (mémorisation des préférences). Aucun cookie publicitaire ou de tracking n'est utilisé sans votre consentement explicite.</p>
+            {renderSections('mentions')}
           </div>
         </div>
 
         {/* CGV */}
-        <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '28px', border: '1px solid var(--border-light)' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Shield size={20} color="var(--primary)" /> Conditions Générales de Vente
-          </h2>
+        <div style={cardStyle}>
+          <EditableBlock
+            label="CGV"
+            modalTitle="Titre de la carte"
+            fields={[{ key: 'cgvTitle', label: 'Titre', type: 'text', value: legal.cgvTitle || 'Conditions Générales de Vente' }]}
+            onSave={(vals) => updateContent({ legal: { ...legal, ...vals } })}
+            onAdd={{ label: 'Ajouter un article', fields: sectionFields(), onSave: addSection('cgv') }}
+          >
+            <h2 style={h2Style}>
+              <Shield size={20} color="var(--primary)" /> {legal.cgvTitle || 'Conditions Générales de Vente'}
+            </h2>
+          </EditableBlock>
 
           <div style={{ fontSize: '14px', lineHeight: 1.8, color: 'var(--text-muted)' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '16px', marginBottom: '8px' }}>Article 1 — Objet</h3>
-            <p>Les présentes conditions régissent les prestations de location de photobooth proposées par PhotoRoots pour tout type d'événement (mariage, anniversaire, événement d'entreprise, etc.).</p>
-
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>Article 2 — Réservation</h3>
-            <p>Toute réservation effectuée via le site internet est confirmée par email. Un acompte de 30% du montant total est demandé pour valider la réservation. Le solde est dû le jour de l'événement.</p>
-
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>Article 3 — Annulation</h3>
-            <p><strong>Par le client :</strong></p>
-            <ul style={{ paddingLeft: '20px', marginTop: '4px' }}>
-              <li>Plus de 30 jours avant : remboursement intégral de l'acompte</li>
-              <li>Entre 15 et 30 jours : remboursement de 50% de l'acompte</li>
-              <li>Moins de 15 jours : l'acompte est conservé</li>
-            </ul>
-            <p style={{ marginTop: '8px' }}><strong>Par PhotoRoots :</strong> En cas de force majeure, PhotoRoots s'engage à proposer une date de report ou un remboursement intégral.</p>
-
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>Article 4 — Prestations</h3>
-            <p>Les formules proposées incluent la mise à disposition du matériel, l'installation et la désinstallation, ainsi que l'accompagnement pendant l'événement selon la formule choisie.</p>
-
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>Article 5 — Responsabilité</h3>
-            <p>Le client s'engage à utiliser le matériel mis à disposition de manière raisonnable. Tout dommage causé au matériel durant l'événement sera facturé au client selon le coût de réparation ou de remplacement.</p>
-
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>Article 6 — Droit à l'image</h3>
-            <p>Sauf mention contraire expresse, PhotoRoots se réserve le droit d'utiliser les photos prises lors de l'événement à des fins de communication et de portfolio. Les photos ne seront jamais utilisées à des fins commerciales tierces.</p>
-
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginTop: '20px', marginBottom: '8px' }}>Article 7 — Litiges</h3>
-            <p>En cas de litige, les parties s'engagent à rechercher une solution amiable. À défaut, les tribunaux compétents du ressort du Havre seront seuls compétents.</p>
+            {renderSections('cgv')}
           </div>
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-light)', marginTop: '24px' }}>
-          Dernière mise à jour : Mars 2026
-        </p>
+        <EditableBlock
+          label="Dernière mise à jour"
+          modalTitle="Dernière mise à jour"
+          fields={[{ key: 'lastUpdated', label: 'Texte (ex: Mars 2026)', type: 'text', value: legal.lastUpdated || '' }]}
+          onSave={(vals) => updateContent({ legal: { ...legal, ...vals } })}
+        >
+          <p style={{ textAlign: 'center', fontSize: '13px', color: 'var(--text-light)', marginTop: '24px' }}>
+            Dernière mise à jour : {legal.lastUpdated || '—'}
+          </p>
+        </EditableBlock>
       </section>
     </div>
   );
