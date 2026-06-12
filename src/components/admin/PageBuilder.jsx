@@ -349,7 +349,7 @@ const PageBuilder = ({ pageId, onBack }) => {
         />
       )}
 
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };

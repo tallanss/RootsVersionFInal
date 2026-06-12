@@ -26,6 +26,8 @@ import {
   PlusCircle,
   Sparkles,
   Layout,
+  Menu as MenuIcon,
+  X,
 } from 'lucide-react';
 
 import { useContent } from '../context/ContentContext';
@@ -53,39 +55,46 @@ import PagesManager from './admin/PagesManager';
 const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
   const { content, saveStatus, updateContent } = useContent();
   const [previewMode, setPreviewMode] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const unreadCount = content.messages?.filter(m => m.status === 'Nouveau').length || 0;
 
   const menuItems = [
     { id: 'home', label: 'Accueil', icon: Home, category: 'BUSINESS' },
-    { id: 'analytics', label: 'Performances', icon: BarChart3, category: 'BUSINESS' },
-    { id: 'messages', label: 'Leads / Messages', icon: Mail, category: 'BUSINESS' },
-    { id: 'tarifs', label: 'Tarifs & Plans', icon: Tag, category: 'BUSINESS' },
+    { id: 'analytics', label: 'Statistiques', icon: BarChart3, category: 'BUSINESS' },
+    { id: 'messages', label: 'Demandes reçues', icon: Mail, category: 'BUSINESS' },
+    { id: 'tarifs', label: 'Formules & prix', icon: Tag, category: 'BUSINESS' },
     { id: 'addons', label: 'Options à louer', icon: PlusCircle, category: 'BUSINESS' },
 
-    { id: 'pagecontent', label: 'Textes du Site', icon: FileText, category: 'CONTENU' },
-    { id: 'pages', label: 'Pages libres', icon: Layout, category: 'CONTENU' },
+    { id: 'pagecontent', label: 'Textes du site', icon: FileText, category: 'CONTENU' },
+    { id: 'pages', label: 'Mes pages', icon: Layout, category: 'CONTENU' },
     { id: 'services', label: 'Services', icon: Sparkles, category: 'CONTENU' },
-    { id: 'gallery', label: 'Médiathèque', icon: ImageIcon, category: 'CONTENU' },
+    { id: 'gallery', label: 'Photos', icon: ImageIcon, category: 'CONTENU' },
     { id: 'savethedate', label: 'Save The Date', icon: Heart, category: 'CONTENU' },
     { id: 'disponibilites', label: 'Disponibilités', icon: CalendarX, category: 'CONTENU' },
-    { id: 'reviews', label: 'Avis Clients', icon: Star, category: 'CONTENU' },
-    { id: 'faq', label: 'FAQ / Aide', icon: HelpCircle, category: 'CONTENU' },
+    { id: 'reviews', label: 'Avis clients', icon: Star, category: 'CONTENU' },
+    { id: 'faq', label: 'Questions fréquentes', icon: HelpCircle, category: 'CONTENU' },
 
-    { id: 'design', label: 'Style & Couleurs', icon: Palette, category: 'APPARENCE' },
-    { id: 'seo', label: 'SEO & Google', icon: Globe, category: 'APPARENCE' },
-    { id: 'navigation', label: 'Menu & Liens', icon: NavIcon, category: 'APPARENCE' },
-    { id: 'social', label: 'Réseaux Sociaux', icon: Share2, category: 'APPARENCE' },
+    { id: 'design', label: 'Style & couleurs', icon: Palette, category: 'APPARENCE' },
+    { id: 'seo', label: 'Visibilité Google', icon: Globe, category: 'APPARENCE' },
+    { id: 'navigation', label: 'Menu du site', icon: NavIcon, category: 'APPARENCE' },
+    { id: 'social', label: 'Réseaux & coordonnées', icon: Share2, category: 'APPARENCE' },
 
     { id: 'system', label: 'Maintenance', icon: Settings, category: 'SYSTEM' },
   ];
 
-  // Mobile bottom nav items (most used)
+  const CATEGORY_LABELS = {
+    BUSINESS: 'Mon activité',
+    CONTENU: 'Mon contenu',
+    APPARENCE: 'Apparence & visibilité',
+    SYSTEM: 'Système',
+  };
+
+  // Barre mobile : les 3 actions les plus courantes + un menu complet
+  // (le tiroir donne accès à TOUTES les sections, introuvables avant sur téléphone).
   const mobileNavItems = [
     { id: 'home', icon: Home, label: 'Accueil' },
-    { id: 'messages', icon: Mail, label: 'Leads', badge: unreadCount },
-    { id: 'gallery', icon: ImageIcon, label: 'Galerie' },
-    { id: 'design', icon: Palette, label: 'Design' },
-    { id: 'analytics', icon: BarChart3, label: 'Stats' },
+    { id: 'messages', icon: Mail, label: 'Demandes', badge: unreadCount },
+    { id: 'gallery', icon: ImageIcon, label: 'Photos' },
   ];
 
   const renderContent = () => {
@@ -190,7 +199,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
         <nav style={{ flexGrow: 1, padding: '12px', overflowY: 'auto' }}>
           {['BUSINESS', 'CONTENU', 'APPARENCE', 'SYSTEM'].map(cat => (
             <div key={cat} style={{ marginBottom: '20px' }}>
-              <div style={{ padding: '0 16px 8px', fontSize: '10px', fontWeight: 800, color: '#475569', letterSpacing: '1px' }}>{cat}</div>
+              <div style={{ padding: '0 16px 8px', fontSize: '10px', fontWeight: 800, color: '#475569', letterSpacing: '1px', textTransform: 'uppercase' }}>{CATEGORY_LABELS[cat]}</div>
               {menuItems.filter(i => i.category === cat).map(item => (
                 <div
                   key={item.id}
@@ -361,6 +370,13 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
             </button>
           ))}
           <button
+            onClick={() => setMobileMenuOpen(true)}
+            style={{ flex: 1, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px 4px', color: '#cbd5e1' }}
+          >
+            <MenuIcon size={20} />
+            <span style={{ fontSize: '10px', fontWeight: 700 }}>Tout le menu</span>
+          </button>
+          <button
             onClick={onLogout}
             style={{ flex: 1, background: 'none', border: 'none', cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', padding: '10px 4px', color: '#ef4444' }}
           >
@@ -368,6 +384,43 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
             <span style={{ fontSize: '10px', fontWeight: 500 }}>Sortir</span>
           </button>
         </nav>
+
+        {/* ── TIROIR MOBILE : toutes les sections ── */}
+        {mobileMenuOpen && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 30, background: '#0f0f12', overflowY: 'auto', padding: '20px 16px 40px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <span style={{ fontWeight: 900, fontSize: '17px', color: '#fff' }}>Toutes les sections</span>
+              <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'rgba(255,255,255,0.05)', border: 'none', color: '#94a3b8', padding: '9px', borderRadius: '50%', cursor: 'pointer', display: 'flex' }}>
+                <X size={18} />
+              </button>
+            </div>
+            {['BUSINESS', 'CONTENU', 'APPARENCE', 'SYSTEM'].map(cat => (
+              <div key={cat} style={{ marginBottom: '18px' }}>
+                <div style={{ padding: '0 4px 8px', fontSize: '10px', fontWeight: 800, color: '#475569', letterSpacing: '1px', textTransform: 'uppercase' }}>{CATEGORY_LABELS[cat]}</div>
+                {menuItems.filter(i => i.category === cat).map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => { setActiveTab(item.id); setMobileMenuOpen(false); }}
+                    style={{
+                      width: '100%', textAlign: 'left', cursor: 'pointer',
+                      padding: '13px 14px', margin: '2px 0', borderRadius: '12px', border: 'none',
+                      display: 'flex', alignItems: 'center', gap: '12px',
+                      color: activeTab === item.id ? '#fff' : '#94a3b8',
+                      background: activeTab === item.id ? 'rgba(255,255,255,0.06)' : 'transparent',
+                      fontWeight: activeTab === item.id ? 700 : 500, fontSize: '15px',
+                    }}
+                  >
+                    <item.icon size={18} color={activeTab === item.id ? 'var(--primary)' : 'currentColor'} />
+                    <span style={{ flexGrow: 1 }}>{item.label}</span>
+                    {item.id === 'messages' && unreadCount > 0 && (
+                      <span style={{ background: 'var(--primary)', color: '#fff', fontSize: '10px', padding: '2px 6px', borderRadius: '6px' }}>{unreadCount}</span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
       </main>
 
       <style>{`

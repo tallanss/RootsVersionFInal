@@ -172,7 +172,7 @@ const PagesManager = () => {
           onClose={() => setCreateOpen(false)}
         />
       )}
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };

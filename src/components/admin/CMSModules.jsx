@@ -28,6 +28,10 @@ import {
   Loader2,
   ChevronUp,
   ChevronDown,
+  CalendarX,
+  PlusCircle,
+  Pencil,
+  Tag,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../../context/ContentContext';
@@ -46,8 +50,11 @@ const PCEField = ({ label, value, onChange, textarea, rows = 3 }) => (
   </div>
 );
 
-/* ── Bouton de sauvegarde partagé ── */
-export const SaveBar = ({ isDirty, onSave, label, status }) => (
+/* ── Bouton de sauvegarde partagé ──
+   `auto` : module à enregistrement automatique (chaque modification est déjà
+   sauvegardée) — le libellé le dit clairement au lieu du trompeur
+   « Aucune modification ». ── */
+export const SaveBar = ({ isDirty, onSave, label, status, auto }) => (
   <div style={{
     position: 'sticky', bottom: '16px', zIndex: 10,
     display: 'flex', justifyContent: 'center',
@@ -74,8 +81,8 @@ export const SaveBar = ({ isDirty, onSave, label, status }) => (
         letterSpacing: '0.02em',
       }}
     >
-      {status === 'saving' ? <Loader2 size={17} className="spin" /> : (status === 'saved' ? <Check size={17} /> : <Save size={17} />)}
-      {label || (status === 'saving' ? 'Enregistrement...' : status === 'saved' ? 'Sauvegardé ✓' : (isDirty ? 'Enregistrer les modifications' : 'Aucune modification'))}
+      {status === 'saving' ? <Loader2 size={17} className="spin" /> : (status === 'saved' || (auto && !isDirty) ? <Check size={17} /> : <Save size={17} />)}
+      {label || (status === 'saving' ? 'Enregistrement...' : status === 'saved' ? 'Sauvegardé ✓' : (auto ? 'Enregistrement automatique ✓' : (isDirty ? 'Enregistrer les modifications' : 'Aucune modification')))}
     </button>
   </div>
 );
@@ -89,20 +96,24 @@ export const DashboardHome = ({ onNavigate }) => {
   const newLeads = messages.filter(m => m.status === 'Nouveau').length;
   const recentLeads = [...messages].reverse().slice(0, 3);
 
+  // Actions courantes, en langage simple — pensées pour un propriétaire non-technicien.
   const shortcuts = [
-    { id: 'messages', icon: Mail, label: 'Leads', color: '#c5a059', badge: newLeads },
-    { id: 'gallery', icon: ImageIcon, label: 'Galerie', color: '#818cf8' },
-    { id: 'tarifs', icon: Hash, label: 'Tarifs', color: '#10b981' },
-    { id: 'design', icon: Palette, label: 'Design', color: '#f472b6' },
-    { id: 'reviews', icon: Star, label: 'Avis', color: '#fbbf24' },
-    { id: 'seo', icon: Globe, label: 'SEO', color: '#38bdf8' },
+    { id: 'messages', icon: Mail, label: 'Voir mes demandes', color: '#c5a059', badge: newLeads },
+    { id: 'tarifs', icon: Tag, label: 'Changer mes prix', color: '#10b981' },
+    { id: 'gallery', icon: ImageIcon, label: 'Ajouter des photos', color: '#818cf8' },
+    { id: 'disponibilites', icon: CalendarX, label: 'Bloquer une date', color: '#f87171' },
+    { id: 'pagecontent', icon: Type, label: 'Modifier mes textes', color: '#38bdf8' },
+    { id: 'pages', icon: Layout, label: 'Créer une page', color: '#a78bfa' },
+    { id: 'addons', icon: PlusCircle, label: 'Mes options à louer', color: '#34d399' },
+    { id: 'reviews', icon: Star, label: 'Gérer mes avis', color: '#fbbf24' },
+    { id: 'design', icon: Palette, label: 'Changer les couleurs', color: '#f472b6' },
   ];
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
       <header>
         <h2 style={{ fontSize: '26px', fontWeight: 900, marginBottom: '6px' }}>Bonjour 👋</h2>
-        <p style={{ color: '#64748b', fontSize: '14px' }}>Que voulez-vous gérer aujourd'hui ?</p>
+        <p style={{ color: '#64748b', fontSize: '14px' }}>Bienvenue dans votre espace de gestion.</p>
       </header>
 
       {/* KPIs rapides */}
@@ -121,10 +132,10 @@ export const DashboardHome = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Raccourcis */}
+      {/* Actions courantes */}
       <section className="cms-card">
-        <h3 className="cms-section-title"><Layout size={16} /> Accès rapide</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+        <h3 className="cms-section-title"><Layout size={16} /> Que voulez-vous faire ?</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px' }}>
           {shortcuts.map(s => (
             <button
               key={s.id}
@@ -153,6 +164,16 @@ export const DashboardHome = ({ onNavigate }) => {
             </button>
           ))}
         </div>
+      </section>
+
+      {/* Astuce édition directe */}
+      <section style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', background: 'rgba(197,160,89,0.07)', border: '1px solid rgba(197,160,89,0.2)', borderRadius: '14px', padding: '14px 16px' }}>
+        <Pencil size={18} color="var(--primary)" style={{ flexShrink: 0, marginTop: '2px' }} />
+        <p style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6, margin: 0 }}>
+          <strong style={{ color: '#fff' }}>Astuce :</strong> vous pouvez aussi modifier le site directement.
+          Fermez ce panneau, naviguez sur le site et cliquez sur le bouton « Modifier » qui apparaît
+          sur chaque texte ou photo.
+        </p>
       </section>
 
       {/* Derniers leads */}
@@ -209,8 +230,8 @@ export const AnalyticsHub = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Performances Business</h2>
-          <p style={{ color: '#64748b', fontSize: '14px' }}>Suivez votre activité et gérez vos données de conversion.</p>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Statistiques</h2>
+          <p style={{ color: '#64748b', fontSize: '14px' }}>Suivez vos demandes et modifiez les chiffres affichés sur la page d'accueil.</p>
         </div>
         <button 
           onClick={downloadLeadsCSV}
@@ -267,7 +288,7 @@ export const AnalyticsHub = () => {
           ))}
         </div>
       </section>
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -357,8 +378,8 @@ export const MediaLib = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <header>
-        <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Médiathèque</h2>
-        <p style={{ color: '#64748b', fontSize: '14px' }}>Uploadez vos photos directement depuis votre appareil.</p>
+        <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Photos du site</h2>
+        <p style={{ color: '#64748b', fontSize: '14px' }}>Ajoutez vos photos depuis votre téléphone ou ordinateur : elles apparaissent dans la galerie du site.</p>
       </header>
 
       {/* UPLOAD ZONE */}
@@ -512,7 +533,7 @@ export const MediaLib = () => {
           ))}
         </div>
       )}
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -611,7 +632,7 @@ export const ReviewCenter = () => {
           </div>
         ))}
       </div>
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -746,7 +767,7 @@ export const PriceArchitect = () => {
           </div>
         </div>
       )}
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -828,7 +849,7 @@ export const AddonsManager = () => {
           ))}
         </div>
       )}
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -915,7 +936,7 @@ export const ServicesManager = () => {
           ))}
         </div>
       )}
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -945,8 +966,8 @@ export const FAQMaster = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>FAQ & Aide</h2>
-          <p style={{ color: '#64748b', fontSize: '14px' }}>Répondez aux questions les plus fréquentes de vos clients.</p>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Questions fréquentes</h2>
+          <p style={{ color: '#64748b', fontSize: '14px' }}>Les questions/réponses affichées sur la page d'accueil. Répondez comme vous le diriez à un client au téléphone.</p>
         </div>
         <button 
           onClick={addFaq}
@@ -982,7 +1003,7 @@ export const FAQMaster = () => {
           </section>
         ))}
       </div>
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -1161,7 +1182,7 @@ export const DisponibilitesManager = () => {
           </div>
         </div>
       )}
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -1308,8 +1329,8 @@ export const SEOManager = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <header>
-        <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Référencement (SEO)</h2>
-        <p style={{ color: '#64748b', fontSize: '14px' }}>Optimisez ce que Google et les réseaux sociaux affichent pour chaque page.</p>
+        <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Visibilité Google</h2>
+        <p style={{ color: '#64748b', fontSize: '14px' }}>Le titre et la petite description que Google affiche pour chaque page dans ses résultats. Utilisez les mots que vos clients tapent (ex : « location photobooth mariage »).</p>
       </header>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1342,7 +1363,7 @@ export const SEOManager = () => {
           </section>
         ))}
       </div>
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -1368,8 +1389,8 @@ export const LeadCenter = () => {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <header>
-        <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Centre de Leads</h2>
-        <p style={{ color: '#64748b', fontSize: '14px' }}>Gérez les demandes de contact et réservations reçues.</p>
+        <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Demandes reçues</h2>
+        <p style={{ color: '#64748b', fontSize: '14px' }}>Les demandes de devis et messages envoyés depuis votre site. Pensez à les marquer « Réservé » une fois confirmées.</p>
       </header>
 
       {messages.length === 0 ? (
@@ -1429,7 +1450,7 @@ export const LeadCenter = () => {
           ))}
         </div>
       )}
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };
@@ -1869,7 +1890,7 @@ export const SaveTheDateManager = () => {
           onClose={() => setCreateOpen(false)}
         />
       )}
-      <SaveBar status={saveStatus} onSave={() => updateContent({})} />
+      <SaveBar status={saveStatus} auto onSave={() => updateContent({})} />
     </div>
   );
 };
