@@ -25,6 +25,7 @@ import {
   CalendarX,
   PlusCircle,
   Sparkles,
+  Layout,
 } from 'lucide-react';
 
 import { useContent } from '../context/ContentContext';
@@ -47,6 +48,7 @@ import {
   AddonsManager,
   ServicesManager,
 } from './admin/CMSModules';
+import PagesManager from './admin/PagesManager';
 
 const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
   const { content, saveStatus, updateContent } = useContent();
@@ -61,6 +63,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
     { id: 'addons', label: 'Options à louer', icon: PlusCircle, category: 'BUSINESS' },
 
     { id: 'pagecontent', label: 'Textes du Site', icon: FileText, category: 'CONTENU' },
+    { id: 'pages', label: 'Pages libres', icon: Layout, category: 'CONTENU' },
     { id: 'services', label: 'Services', icon: Sparkles, category: 'CONTENU' },
     { id: 'gallery', label: 'Médiathèque', icon: ImageIcon, category: 'CONTENU' },
     { id: 'savethedate', label: 'Save The Date', icon: Heart, category: 'CONTENU' },
@@ -93,6 +96,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
       case 'tarifs': return <PriceArchitect />;
       case 'addons': return <AddonsManager />;
       case 'pagecontent': return <PageContentEditor />;
+      case 'pages': return <PagesManager />;
       case 'services': return <ServicesManager />;
       case 'gallery': return <MediaLib />;
       case 'savethedate': return <SaveTheDateManager />;

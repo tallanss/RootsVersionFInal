@@ -7,7 +7,7 @@ import { supabase } from '../../config/supabase';
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
-const uploadImageToSupabase = async (file) => {
+export const uploadImageToSupabase = async (file) => {
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
     throw new Error('Type de fichier non supporté. Utilisez JPG, PNG, WebP, GIF ou SVG.');
   }

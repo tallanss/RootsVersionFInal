@@ -143,6 +143,7 @@ const DEFAULT_CONTENT = {
   },
   saveTheDateEvents: [],
   blockedDates: [],
+  customPages: [],
   saveTheDate: {
     title: 'Save The Date',
     subtitle: "Personnalisez et téléchargez votre carte 'Save the Date' gratuitement."
@@ -232,6 +233,7 @@ const buildMergedContent = (parsed = {}) => {
     faqs: parsed.faqs || DEFAULT_CONTENT.faqs,
     saveTheDateEvents: parsed.saveTheDateEvents || DEFAULT_CONTENT.saveTheDateEvents,
     blockedDates: parsed.blockedDates || DEFAULT_CONTENT.blockedDates,
+    customPages: parsed.customPages || DEFAULT_CONTENT.customPages,
     saveTheDate: { ...DEFAULT_CONTENT.saveTheDate, ...(parsed.saveTheDate || {}) },
   };
 
@@ -263,6 +265,10 @@ const saveToSupabase = async (mergedContent) => {
 
 export const ContentProvider = ({ children }) => {
   const [saveStatus, setSaveStatus] = useState(null); // null | 'saving' | 'saved'
+  // true quand le chargement Supabase initial est terminé (succès ou échec).
+  // Permet aux pages dynamiques (/p/:slug) de distinguer « pas encore chargé »
+  // de « page introuvable » (sinon faux 404 pendant le fetch).
+  const [remoteLoaded, setRemoteLoaded] = useState(false);
 
   const [content, setContent] = useState(() => {
     try {
@@ -278,7 +284,7 @@ export const ContentProvider = ({ children }) => {
 
   // Chargement depuis Supabase au montage (source de vérité)
   useEffect(() => {
-    if (!supabase) return; // mode offline / prerender
+    if (!supabase) { setRemoteLoaded(true); return; } // mode offline / prerender
     const fetchFromSupabase = async () => {
       try {
         const { data, error } = await supabase
@@ -327,7 +333,7 @@ export const ContentProvider = ({ children }) => {
       }
     };
 
-    fetchFromSupabase();
+    fetchFromSupabase().finally(() => setRemoteLoaded(true));
   }, []);
 
   const saveTimerRef = useRef(null);
@@ -388,7 +394,7 @@ export const ContentProvider = ({ children }) => {
   }, [content.messages]);
 
   return (
-    <ContentContext.Provider value={{ content, updateContent, resetToDefault, downloadLeadsCSV, saveStatus }}>
+    <ContentContext.Provider value={{ content, updateContent, resetToDefault, downloadLeadsCSV, saveStatus, remoteLoaded }}>
       {children}
     </ContentContext.Provider>
   );

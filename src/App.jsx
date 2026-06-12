@@ -48,6 +48,7 @@ import BlogArticle from './pages/BlogArticle';
 // Routes/composants non prérendus ou réservés admin → lazy (hors bundle visiteur)
 const Admin = lazy(() => import('./pages/Admin'));
 const SaveTheDateEvent = lazy(() => import('./pages/SaveTheDateEvent'));
+const CustomPage = lazy(() => import('./pages/CustomPage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const AdminSidebar = lazy(() => import('./components/AdminSidebar'));
 import BottomNav from './components/BottomNav';
@@ -129,6 +130,8 @@ function PageContent() {
               {Object.keys(CITIES).map((slug) => (
                 <Route key={slug} path={`/location-photobooth-${slug}`} element={<CityPage slug={slug} />} />
               ))}
+              {/* Pages libres créées via le CMS (dashboard → Pages libres) */}
+              <Route path="/p/:slug" element={<CustomPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
