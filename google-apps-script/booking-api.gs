@@ -13,6 +13,10 @@
 // 4. Déployer → Gérer les déploiements → crayon (Modifier) → Version :
 //    "Nouvelle version" → Déployer
 // 5. L'URL ne change pas : rien à modifier côté Vercel
+// 6. ⚠️ Cette version ajoute une notification de SECOURS via Gmail (MailApp).
+//    À la première exécution, Google demandera de RÉAUTORISER le script
+//    (nouveau périmètre Gmail) → cliquez "Autoriser". Sans ça, le repli
+//    propriétaire ne fonctionnera pas.
 //
 // ============================================================
 
@@ -61,28 +65,41 @@ function doPost(e) {
       return jsonResponse({ error: 'Données manquantes (nom, email ou date)' }, 400);
     }
 
-    // Vérifier que la date n'est pas déjà complète (2+ événements)
-    const busy = getBusyDatesArray();
-    if (busy.includes(data.date)) {
-      return jsonResponse({ error: 'Cette date est déjà complète. Veuillez choisir une autre date.' }, 409);
+    // (La détection automatique « 2+ événements → date complète » a été retirée :
+    // toute date reste réservable. Le blocage éventuel se gère à la main via le
+    // dashboard, onglet « Disponibilités ».)
+
+    // Chaque étape est INDÉPENDANTE : un échec n'empêche pas les suivantes.
+    const status = { calendar: false, clientEmail: false, ownerEmail: false, ownerFallback: false };
+
+    // 1) Événement Google Calendar (orange, à confirmer)
+    try { createCalendarEvent(data); status.calendar = true; }
+    catch (err) { logError_('Google Calendar', err); }
+
+    // 2) Email de confirmation au client (via Resend)
+    try { sendClientEmail(data); status.clientEmail = true; }
+    catch (err) { logError_('Email client (Resend)', err); }
+
+    // 3) Notification au propriétaire — DOIT aboutir quoi qu'il arrive.
+    try {
+      sendOwnerEmail(data);
+      status.ownerEmail = true;
+    } catch (err) {
+      logError_('Email propriétaire (Resend)', err);
+      // Repli Gmail indépendant de Resend → le proprio est toujours prévenu.
+      try { notifyOwnerFallback_(data, err); status.ownerFallback = true; }
+      catch (err2) { logError_('Repli Gmail (MailApp)', err2); }
     }
 
-    // Créer l'événement "Devis" sur Google Calendar (orange, à confirmer)
-    const event = createCalendarEvent(data);
-
-    // Envoyer email de confirmation au client
-    sendClientEmail(data);
-
-    // Envoyer email de notification au propriétaire
-    sendOwnerEmail(data);
-
-    return jsonResponse({
-      success: true,
-      eventId: event.getId(),
-      message: 'Demande de devis bien reçue !'
-    });
+    return jsonResponse({ success: true, status: status, message: 'Demande de devis bien reçue !' });
 
   } catch (error) {
+    // Dernier filet : prévenir le propriétaire qu'une demande a planté côté serveur.
+    try {
+      MailApp.sendEmail(OWNER_EMAIL, '⚠️ Erreur réservation — site PhotoRoots',
+        'Une demande a échoué côté serveur : ' + error.message + '\n\n' +
+        'Données reçues :\n' + (e && e.postData ? e.postData.contents : '(indisponible)'));
+    } catch (_) {}
     return jsonResponse({ error: error.message }, 500);
   }
 }
@@ -269,7 +286,17 @@ function sendContactMessageEmails(data) {
     '</table>' +
     '<div style="background: white; padding: 14px; border-radius: 8px; margin-top: 12px; border: 1px solid #e2e8f0;"><strong>Message :</strong><br>' + data.message + '</div>' +
     '</div></div>';
-  sendViaResend(OWNER_EMAIL, ownerSubject, ownerBody);
+  try {
+    sendViaResend(OWNER_EMAIL, ownerSubject, ownerBody);
+  } catch (err) {
+    logError_('Message — email propriétaire (Resend)', err);
+    // Repli Gmail : le proprio reçoit quand même le message.
+    try {
+      MailApp.sendEmail(OWNER_EMAIL, '🔔 [SECOURS] Nouveau message — ' + data.name,
+        'De : ' + data.name + ' <' + data.email + '>\n\n' + data.message +
+        '\n\n⚠️ L\'email via Resend a échoué : ' + err.message);
+    } catch (_) {}
+  }
 
   // 2) Accusé de réception au client
   const clientSubject = '✅ Votre message est bien reçu — ' + BUSINESS_NAME;
@@ -285,7 +312,11 @@ function sendContactMessageEmails(data) {
     '<p style="color: #64748b; font-size: 14px;">Besoin d\'une réponse rapide ? Appelez-nous au <strong>' + BUSINESS_PHONE + '</strong>.</p>' +
     '<p>À très vite,<br><strong>L\'équipe ' + BUSINESS_NAME + '</strong></p>' +
     '</div></div>';
-  sendViaResend(data.email, clientSubject, clientBody);
+  try {
+    sendViaResend(data.email, clientSubject, clientBody);
+  } catch (err) {
+    logError_('Message — accusé client (Resend)', err);
+  }
 }
 
 // ===== Helper : Envoi d'email via l'API Resend =====
@@ -313,10 +344,39 @@ function sendViaResend(to, subject, htmlBody) {
 
   const code = response.getResponseCode();
   if (code < 200 || code >= 300) {
-    console.error('Resend API error ' + code + ': ' + response.getContentText());
-  } else {
-    console.log('Email envoyé à ' + to);
+    // On lève une vraie erreur : l'appelant décide quoi faire (repli Gmail, log).
+    // AVANT, l'échec était avalé silencieusement → emails coupés sans alerte.
+    throw new Error('Resend ' + code + ' : ' + response.getContentText());
   }
+  console.log('Email envoyé à ' + to);
+}
+
+// ===== Log d'erreur (visible dans Apps Script → Exécutions) =====
+function logError_(etape, err) {
+  console.error('[PhotoRoots] Échec ' + etape + ' : ' + (err && err.message ? err.message : err));
+}
+
+// ===== Repli : prévenir le propriétaire via Gmail si Resend échoue =====
+// MailApp envoie depuis le compte Google propriétaire du script — INDÉPENDANT
+// de la vérification du domaine Resend. Quota ~100/jour (large pour des leads).
+function notifyOwnerFallback_(data, resendErr) {
+  const dateFormatted = data.date ? formatDateFR(parseDateFR(data.date)) : '—';
+  const body =
+    '⚠️ NOTIFICATION DE SECOURS — l\'envoi via Resend a échoué, mais voici la demande reçue :\n\n' +
+    'Client : ' + data.name + '\n' +
+    'Email : ' + data.email + '\n' +
+    'Téléphone : ' + (data.phone || '—') + '\n' +
+    'Date : ' + dateFormatted + '\n' +
+    'Événement : ' + (data.eventType || '—') + '\n' +
+    'Lieu : ' + (data.location || '—') + '\n' +
+    'Nombre d\'invités : ' + (data.guests || '—') + '\n' +
+    'Pack souhaité : ' + (data.formula || '—') + '\n' +
+    'Options : ' + (data.addons || '—') + '\n' +
+    'Préférence de contact : ' + (data.contactPreference || '—') + '\n' +
+    'Message : ' + (data.message || '—') + '\n\n' +
+    'Erreur Resend : ' + (resendErr && resendErr.message ? resendErr.message : resendErr) + '\n' +
+    'À faire : vérifier la vérification du domaine sur https://resend.com/domains';
+  MailApp.sendEmail(OWNER_EMAIL, '🔔 [SECOURS] Nouvelle demande — ' + data.name, body);
 }
 
 // ===== Helper : Réponse JSON avec CORS =====

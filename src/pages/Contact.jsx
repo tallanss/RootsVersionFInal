@@ -6,7 +6,7 @@ import {
   Calendar, CalendarCheck, Loader2, AlertCircle, Users, Heart, Cake,
   Briefcase, Sparkles, Gift, PartyPopper, MoreHorizontal, MessageCircle,
 } from 'lucide-react';
-import { processBooking, formatDateFR, fetchBusySlots, invalidateBusySlotsCache } from '../services/emailService';
+import { processBooking, formatDateFR, invalidateBusySlotsCache } from '../services/emailService';
 import { isConfigured } from '../config/emailjs';
 import { formatPrice } from '../utils/galleryFormat';
 const Confetti = lazy(() => import('../components/Confetti'));
@@ -76,12 +76,10 @@ const Contact = () => {
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
   const [loading, setLoading] = useState(false);
-  const [loadingSlots, setLoadingSlots] = useState(true);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [submittedMode, setSubmittedMode] = useState('devis');
-  const [busySlots, setBusySlots] = useState([]);
 
   // Formulaire "message rapide" (nom, email, message uniquement)
   const [msg, setMsg] = useState({ name: '', email: '', message: '' });
@@ -133,18 +131,10 @@ const Contact = () => {
     else if (m === 'devis') setMode('devis');
   }, [location.search]);
 
-  // Charger les dates occupées au montage
-  useEffect(() => {
-    const loadBusySlots = async () => {
-      setLoadingSlots(true);
-      const slots = await fetchBusySlots();
-      const busyDates = slots.map(s => s.split('_')[0]);
-      const cmsBlocked = content.blockedDates || [];
-      setBusySlots([...new Set([...busyDates, ...cmsBlocked])]);
-      setLoadingSlots(false);
-    };
-    loadBusySlots();
-  }, [content.blockedDates]);
+  // Le calendrier ne bloque QUE les dates marquées indisponibles à la main
+  // dans le dashboard (onglet « Disponibilités »). La détection automatique
+  // « 2+ événements dans l'agenda Google → date complète » a été retirée.
+  const busySlots = useMemo(() => content.blockedDates || [], [content.blockedDates]);
 
   // Click outside or Escape closes calendar
   useEffect(() => {
@@ -399,7 +389,7 @@ const Contact = () => {
               ) : result?.isDemo ? (
                 <>Mode démo — en production, nous reviendrons vers vous sous 24h à <strong>{formData.email}</strong>.</>
               ) : (
-                <>Nous revenons vers vous sous 24h à <strong>{formData.email}</strong> avec un devis personnalisé.</>
+                <>Votre demande est bien enregistrée ✓ Nous revenons vers vous sous 24h — par email à <strong>{formData.email}</strong> ou par téléphone — avec votre devis personnalisé.</>
               )}
             </p>
 
@@ -796,13 +786,6 @@ const Contact = () => {
                         </div>
 
                         <div style={{ position: 'relative', minHeight: '240px', background: '#ffffff' }}>
-                          {loadingSlots && (
-                            <div style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(6px)', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                              <Loader2 size={20} style={{ color: 'var(--primary)', animation: 'spin 1s linear infinite' }} />
-                              <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary)' }}>Chargement...</span>
-                            </div>
-                          )}
-
                           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', padding: '10px 10px 4px' }}>
                             {['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'].map(d => (
                               <div key={d} style={{ textAlign: 'center', fontSize: '11px', fontWeight: 700, color: '#94a3b8', padding: '4px' }}>{d}</div>
