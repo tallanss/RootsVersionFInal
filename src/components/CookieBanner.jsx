@@ -26,6 +26,8 @@ const CookieBanner = () => {
   const accept = () => {
     localStorage.setItem(COOKIE_KEY, 'true');
     setVisible(false);
+    // Signale le consentement → Google Analytics se charge immédiatement.
+    window.dispatchEvent(new Event('pr-cookies-accepted'));
   };
 
   const decline = () => {

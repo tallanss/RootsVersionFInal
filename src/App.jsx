@@ -57,6 +57,7 @@ import Header from './components/Header';
 import ContactButton from './components/WhatsAppButton';
 import CookieBanner from './components/CookieBanner';
 import AdminToolbar from './components/admin/AdminToolbar';
+import GoogleAnalytics from './components/GoogleAnalytics';
 
 import { CITIES } from './data/cities';
 import { useContent } from './context/ContentContext';
@@ -183,6 +184,7 @@ function App() {
       <Router>
         <AdminProvider>
           <ScrollToTop />
+          <GoogleAnalytics />
           <PageContent />
         </AdminProvider>
       </Router>
