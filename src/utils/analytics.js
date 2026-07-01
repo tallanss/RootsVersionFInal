@@ -49,3 +49,10 @@ export function trackPageview(path) {
     page_title: document.title,
   });
 }
+
+// Envoie un événement de conversion (n'a d'effet que si GA est chargé =
+// consentement donné). Sans consentement : no-op silencieux.
+export function trackEvent(name, params = {}) {
+  if (!loaded || typeof window.gtag !== 'function') return;
+  window.gtag('event', name, params);
+}

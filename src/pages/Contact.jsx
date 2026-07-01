@@ -7,6 +7,7 @@ import {
   Briefcase, Sparkles, Gift, PartyPopper, MoreHorizontal, MessageCircle,
 } from 'lucide-react';
 import { processBooking, formatDateFR, invalidateBusySlotsCache } from '../services/emailService';
+import { trackEvent } from '../utils/analytics';
 import { isConfigured } from '../config/emailjs';
 import { formatPrice } from '../utils/galleryFormat';
 const Confetti = lazy(() => import('../components/Confetti'));
@@ -298,6 +299,11 @@ const Contact = () => {
 
       setResult(res);
       setSubmittedMode('devis');
+      // Conversion GA4 : demande de devis envoyée
+      trackEvent('generate_lead', {
+        type_evenement: formData.eventType || 'non précisé',
+        formule: formData.formula || 'non précisée',
+      });
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
@@ -350,6 +356,8 @@ const Contact = () => {
 
       setResult(res);
       setSubmittedMode('message');
+      // Conversion GA4 : message rapide envoyé
+      trackEvent('contact_message', { method: 'formulaire' });
       setSubmitted(true);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
