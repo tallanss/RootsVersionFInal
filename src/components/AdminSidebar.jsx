@@ -28,6 +28,7 @@ import {
   Layout,
   Menu as MenuIcon,
   X,
+  Images,
 } from 'lucide-react';
 
 import { useContent } from '../context/ContentContext';
@@ -51,6 +52,7 @@ import {
   ServicesManager,
 } from './admin/CMSModules';
 import PagesManager from './admin/PagesManager';
+import ClientGalleries from './admin/ClientGalleries';
 
 const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
   const { content, saveStatus, updateContent } = useContent();
@@ -67,6 +69,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
 
     { id: 'pagecontent', label: 'Textes du site', icon: FileText, category: 'CONTENU' },
     { id: 'pages', label: 'Mes pages', icon: Layout, category: 'CONTENU' },
+    { id: 'galleries', label: 'Galeries clients', icon: Images, category: 'CONTENU' },
     { id: 'services', label: 'Services', icon: Sparkles, category: 'CONTENU' },
     { id: 'gallery', label: 'Photos', icon: ImageIcon, category: 'CONTENU' },
     { id: 'savethedate', label: 'Save The Date', icon: Heart, category: 'CONTENU' },
@@ -106,6 +109,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
       case 'addons': return <AddonsManager />;
       case 'pagecontent': return <PageContentEditor />;
       case 'pages': return <PagesManager />;
+      case 'galleries': return <ClientGalleries />;
       case 'services': return <ServicesManager />;
       case 'gallery': return <MediaLib />;
       case 'savethedate': return <SaveTheDateManager />;

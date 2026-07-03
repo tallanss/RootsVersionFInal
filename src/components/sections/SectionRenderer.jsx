@@ -17,6 +17,7 @@ import {
   Tag,
   Mail,
   Heading1,
+  Images,
 } from 'lucide-react';
 import PremiumImage from '../PremiumImage';
 import AnimatedButton from '../AnimatedButton';
@@ -241,12 +242,78 @@ const ContactCtaBlock = ({ title, desc, btnLabel }) => {
   );
 };
 
+// Sécurité : on n'accepte QUE des URL http(s) (jamais de code HTML brut → anti-XSS).
+const safeIframeUrl = (u) => {
+  try {
+    const x = new URL(String(u || '').trim());
+    return (x.protocol === 'https:' || x.protocol === 'http:') ? x.href : null;
+  } catch {
+    return null;
+  }
+};
+
+const IframeBlock = ({ url, height, buttonLabel }) => {
+  const src = safeIframeUrl(url);
+  const h = Number(height) || 720;
+
+  if (!src) {
+    return (
+      <section className="container" style={{ padding: '24px' }}>
+        <div style={{ textAlign: 'center', padding: '40px 24px', border: '1px dashed var(--border-medium)', borderRadius: '18px', color: 'var(--text-muted)' }}>
+          Galerie à venir — l'adresse n'a pas encore été renseignée.
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="container" style={{ padding: '16px 20px 32px' }}>
+      <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-md)', background: 'var(--bg-card)' }}>
+        <iframe
+          src={src}
+          title="Galerie photos"
+          loading="lazy"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox allow-downloads"
+          allow="fullscreen"
+          style={{ width: '100%', height: `${h}px`, border: 0, display: 'block' }}
+        />
+      </div>
+      {/* Repli : si le service bloque l'affichage en iframe, ce lien reste cliquable. */}
+      <div style={{ textAlign: 'center', marginTop: '14px' }}>
+        <a
+          href={src}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}
+        >
+          {buttonLabel || 'Voir mes photos'} <ArrowRight size={16} />
+        </a>
+        <p style={{ fontSize: '12px', color: 'var(--text-light)', marginTop: '6px' }}>
+          La galerie ne s'affiche pas ci-dessus ? Ouvrez-la dans un nouvel onglet.
+        </p>
+      </div>
+    </section>
+  );
+};
+
 /* ── Registre des blocs ──
  * fields : props plates éditées via EditModal (les types text/textarea/image
  * correspondent aux champs supportés par EditModal).
  * list : props de type liste, éditées via l'ItemListEditor du PageBuilder.
  */
 export const SECTION_LIBRARY = {
+  iframe: {
+    label: 'Galerie (intégration)',
+    hint: 'Intègre une galerie photo externe via son adresse (URL)',
+    icon: Images,
+    Component: IframeBlock,
+    defaultProps: { url: '', height: 720, buttonLabel: 'Voir mes photos' },
+    fields: [
+      { key: 'url', label: 'Adresse (URL) de la galerie', type: 'text' },
+      { key: 'height', label: 'Hauteur en pixels (ex : 720)', type: 'text' },
+      { key: 'buttonLabel', label: 'Texte du bouton de secours', type: 'text' },
+    ],
+  },
   hero: {
     label: 'En-tête de page',
     hint: 'Tag, titre, sous-titre, image et bouton (tous optionnels)',

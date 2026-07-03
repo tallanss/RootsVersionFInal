@@ -25,6 +25,8 @@ const PagesManager = () => {
   const [copiedId, setCopiedId] = useState(null);
 
   const pages = content.customPages || [];
+  // Les galeries clients ont leur propre module — on ne les mélange pas ici.
+  const listPages = pages.filter((p) => p.kind !== 'gallery');
 
   // Slug unique : suffixe -2, -3… si déjà pris
   const uniqueSlug = (base) => {
@@ -111,9 +113,9 @@ const PagesManager = () => {
       </header>
 
       <div className="cms-card">
-        <h3 className="cms-section-title"><FileText size={16} /> Vos pages ({pages.length})</h3>
+        <h3 className="cms-section-title"><FileText size={16} /> Vos pages ({listPages.length})</h3>
 
-        {pages.length === 0 ? (
+        {listPages.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '40px 24px', border: '2px dashed rgba(255,255,255,0.07)', borderRadius: '14px', color: '#475569' }}>
             <FileText size={28} style={{ marginBottom: '12px', opacity: 0.3 }} />
             <p style={{ fontSize: '14px', fontWeight: 600, marginBottom: '6px' }}>Aucune page pour le moment</p>
@@ -121,7 +123,7 @@ const PagesManager = () => {
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {pages.map((page) => (
+            {listPages.map((page) => (
               <div key={page.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: '14px', padding: '14px 16px', border: '1px solid rgba(255,255,255,0.05)', flexWrap: 'wrap' }}>
                 <div style={{ flex: 1, minWidth: '150px' }}>
                   <p style={{ fontWeight: 700, fontSize: '15px', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -157,7 +159,7 @@ const PagesManager = () => {
           </div>
         )}
 
-        {pages.length > 0 && (
+        {listPages.length > 0 && (
           <p style={{ fontSize: '11px', color: '#64748b', marginTop: '14px' }}>
             💡 Pour ajouter une page à votre menu, allez dans « Menu &amp; Liens » et utilisez son adresse /p/…
           </p>
