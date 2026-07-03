@@ -102,7 +102,7 @@ const ClientGalleries = () => {
 
   const galleryFields = (g) => ([
     { key: 'clientName', label: 'Nom du client (ex : Sophie & Marc)', type: 'text', value: g?.galleryClientName || '' },
-    { key: 'galleryUrl', label: 'Adresse (URL) de la galerie photos', type: 'text', value: g?.galleryUrl || '' },
+    { key: 'galleryUrl', label: "Lien OU code d'intégration (iframe) de la galerie", type: 'textarea', value: g?.galleryUrl || '' },
     { key: 'message', label: "Message d'accueil (optionnel)", type: 'textarea', value: g?.galleryMessage || '' },
   ]);
 
@@ -163,8 +163,8 @@ const ClientGalleries = () => {
         )}
 
         <p style={{ fontSize: '11px', color: '#64748b', marginTop: '14px' }}>
-          💡 Collez simplement l'adresse (URL) de la galerie de votre prestataire photo. Si elle ne
-          s'affiche pas en fenêtre intégrée, le bouton « Voir mes photos » de la page prend le relais.
+          💡 Collez le <strong style={{ color: '#cbd5e1' }}>lien</strong> ou le <strong style={{ color: '#cbd5e1' }}>code d'intégration (iframe)</strong> fourni par votre service photo (ex : fotoshare) — le site en extrait
+          automatiquement la galerie. Si elle ne s'affiche pas, le bouton « Voir mes photos » prend le relais.
         </p>
       </div>
 

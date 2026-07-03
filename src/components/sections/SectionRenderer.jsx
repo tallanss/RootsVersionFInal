@@ -242,10 +242,17 @@ const ContactCtaBlock = ({ title, desc, btnLabel }) => {
   );
 };
 
-// Sécurité : on n'accepte QUE des URL http(s) (jamais de code HTML brut → anti-XSS).
-const safeIframeUrl = (u) => {
+// Accepte une URL simple OU un code d'intégration <iframe …> : dans ce dernier
+// cas on en extrait UNIQUEMENT l'attribut src (on n'injecte jamais le HTML brut
+// collé → anti-XSS). Seules les URL http(s) sont autorisées.
+const safeIframeUrl = (input) => {
+  let raw = String(input || '').trim();
+  if (/<iframe/i.test(raw)) {
+    const m = raw.match(/\ssrc\s*=\s*["']([^"']+)["']/i);
+    raw = m ? m[1].replace(/&amp;/g, '&').trim() : '';
+  }
   try {
-    const x = new URL(String(u || '').trim());
+    const x = new URL(raw);
     return (x.protocol === 'https:' || x.protocol === 'http:') ? x.href : null;
   } catch {
     return null;
@@ -274,7 +281,7 @@ const IframeBlock = ({ url, height, buttonLabel }) => {
           title="Galerie photos"
           loading="lazy"
           sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox allow-downloads"
-          allow="fullscreen"
+          allow="fullscreen; web-share; clipboard-write"
           style={{ width: '100%', height: `${h}px`, border: 0, display: 'block' }}
         />
       </div>
@@ -304,12 +311,12 @@ const IframeBlock = ({ url, height, buttonLabel }) => {
 export const SECTION_LIBRARY = {
   iframe: {
     label: 'Galerie (intégration)',
-    hint: 'Intègre une galerie photo externe via son adresse (URL)',
+    hint: "Colle le lien OU le code d'intégration (iframe) de la galerie",
     icon: Images,
     Component: IframeBlock,
     defaultProps: { url: '', height: 720, buttonLabel: 'Voir mes photos' },
     fields: [
-      { key: 'url', label: 'Adresse (URL) de la galerie', type: 'text' },
+      { key: 'url', label: "Lien OU code d'intégration (iframe) de la galerie", type: 'textarea' },
       { key: 'height', label: 'Hauteur en pixels (ex : 720)', type: 'text' },
       { key: 'buttonLabel', label: 'Texte du bouton de secours', type: 'text' },
     ],
