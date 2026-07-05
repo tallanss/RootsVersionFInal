@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Camera, ArrowRight } from 'lucide-react';
+import { Camera, ArrowRight, Lock } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
 import FadeIn from '../components/FadeIn';
@@ -103,10 +103,18 @@ const Gallery = () => {
                     className="album-card"
                     style={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '18px', overflow: 'hidden', border: '1px solid var(--border-light)', background: 'var(--bg-card)', boxShadow: 'var(--shadow-md)' }}
                   >
-                    <div style={{ aspectRatio: '4 / 3', overflow: 'hidden', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ position: 'relative', aspectRatio: '4 / 3', overflow: 'hidden', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {a.galleryCoverImage
                         ? <PremiumImage src={a.galleryCoverImage} alt={a.galleryClientName || a.title} style={{ width: '100%', height: '100%' }} />
                         : <Camera size={34} color="var(--text-light)" />}
+                      {a.galleryPasswordHash && (
+                        <span
+                          title="Album protégé par mot de passe"
+                          style={{ position: 'absolute', top: '10px', right: '10px', display: 'inline-flex', alignItems: 'center', gap: '5px', background: 'rgba(15,23,42,0.72)', color: '#fff', fontSize: '11px', fontWeight: 700, padding: '5px 9px', borderRadius: '999px', backdropFilter: 'blur(4px)' }}
+                        >
+                          <Lock size={11} /> Protégé
+                        </span>
+                      )}
                     </div>
                     <div style={{ padding: '14px 16px', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
                       <h3 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)', margin: 0, lineHeight: 1.3 }}>

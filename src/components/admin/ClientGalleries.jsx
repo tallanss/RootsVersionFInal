@@ -5,6 +5,7 @@ import EditModal from './EditModal';
 import { normalizeSlug } from './PageBuilder';
 import { SaveBar } from './CMSModules';
 import { showToast } from '../Toast';
+import { sha256hex } from '../../utils/hash';
 
 const newId = (p) => `${p}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 const rand = () => Math.random().toString(36).slice(2, 7);
@@ -45,9 +46,10 @@ const ClientGalleries = () => {
     return slug;
   };
 
-  const handleCreate = (vals) => {
+  const handleCreate = async (vals) => {
     const clientName = (vals.clientName || '').trim() || 'Client';
     const now = new Date().toISOString();
+    const galleryPasswordHash = vals.password ? await sha256hex(vals.password) : '';
     const page = {
       id: newId('pg'),
       slug: uniqueSlug(clientName),
@@ -55,13 +57,14 @@ const ClientGalleries = () => {
       title: clientName,
       seoTitle: `Galerie — ${clientName}`,
       seoDesc: '',
-      visible: true,       // accessible via le lien
-      indexable: false,    // jamais sur Google (privé)
+      visible: true,       // accessible via le lien / la grille
+      indexable: false,    // pages individuelles non référencées par Google
       galleryClientName: clientName,
       galleryUrl: (vals.galleryUrl || '').trim(),
       galleryMessage: vals.message || '',
       galleryCoverImage: (vals.coverImage || '').trim(),
       galleryEventDate: (vals.eventDate || '').trim(),
+      galleryPasswordHash,
       createdAt: now,
       updatedAt: now,
       sections: buildGallerySections(clientName, (vals.galleryUrl || '').trim(), vals.message),
@@ -70,9 +73,11 @@ const ClientGalleries = () => {
     showToast("Galerie créée — copiez le lien pour l'envoyer à votre client.", 'success');
   };
 
-  const handleEdit = (vals) => {
+  const handleEdit = async (vals) => {
     const clientName = (vals.clientName || '').trim() || 'Client';
     const url = (vals.galleryUrl || '').trim();
+    // Mot de passe : vide = on garde l'existant (on ne peut pas le réafficher).
+    const galleryPasswordHash = vals.password ? await sha256hex(vals.password) : (editing.galleryPasswordHash || '');
     updateContent({
       customPages: pages.map((p) => (p.id === editing.id ? {
         ...p,
@@ -83,6 +88,7 @@ const ClientGalleries = () => {
         galleryMessage: vals.message || '',
         galleryCoverImage: (vals.coverImage || '').trim(),
         galleryEventDate: (vals.eventDate || '').trim(),
+        galleryPasswordHash,
         sections: buildGallerySections(clientName, url, vals.message),
         updatedAt: new Date().toISOString(),
       } : p)),
@@ -110,6 +116,7 @@ const ClientGalleries = () => {
     { key: 'coverImage', label: "Photo de couverture (vignette sur la page Galerie)", type: 'image', value: g?.galleryCoverImage || '' },
     { key: 'galleryUrl', label: "Lien OU code d'intégration (iframe) de la galerie", type: 'textarea', value: g?.galleryUrl || '' },
     { key: 'message', label: "Message d'accueil (optionnel)", type: 'textarea', value: g?.galleryMessage || '' },
+    { key: 'password', label: 'Mot de passe (optionnel — laisser vide = inchangé)', type: 'text', value: '' },
   ]);
 
   return (
