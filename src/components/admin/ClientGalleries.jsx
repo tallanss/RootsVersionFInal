@@ -60,6 +60,8 @@ const ClientGalleries = () => {
       galleryClientName: clientName,
       galleryUrl: (vals.galleryUrl || '').trim(),
       galleryMessage: vals.message || '',
+      galleryCoverImage: (vals.coverImage || '').trim(),
+      galleryEventDate: (vals.eventDate || '').trim(),
       createdAt: now,
       updatedAt: now,
       sections: buildGallerySections(clientName, (vals.galleryUrl || '').trim(), vals.message),
@@ -79,6 +81,8 @@ const ClientGalleries = () => {
         galleryClientName: clientName,
         galleryUrl: url,
         galleryMessage: vals.message || '',
+        galleryCoverImage: (vals.coverImage || '').trim(),
+        galleryEventDate: (vals.eventDate || '').trim(),
         sections: buildGallerySections(clientName, url, vals.message),
         updatedAt: new Date().toISOString(),
       } : p)),
@@ -101,7 +105,9 @@ const ClientGalleries = () => {
   };
 
   const galleryFields = (g) => ([
-    { key: 'clientName', label: 'Nom du client (ex : Sophie & Marc)', type: 'text', value: g?.galleryClientName || '' },
+    { key: 'clientName', label: 'Nom de l\'événement / du client (ex : Sophie & Marc)', type: 'text', value: g?.galleryClientName || '' },
+    { key: 'eventDate', label: "Date de l'événement (optionnel, ex : Juin 2026)", type: 'text', value: g?.galleryEventDate || '' },
+    { key: 'coverImage', label: "Photo de couverture (vignette sur la page Galerie)", type: 'image', value: g?.galleryCoverImage || '' },
     { key: 'galleryUrl', label: "Lien OU code d'intégration (iframe) de la galerie", type: 'textarea', value: g?.galleryUrl || '' },
     { key: 'message', label: "Message d'accueil (optionnel)", type: 'textarea', value: g?.galleryMessage || '' },
   ]);
@@ -112,8 +118,8 @@ const ClientGalleries = () => {
         <div>
           <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '6px' }}>Galeries clients</h2>
           <p style={{ color: '#64748b', fontSize: '14px' }}>
-            Après un événement, créez une page privée avec les photos de votre client, et envoyez-lui
-            le lien. Chaque galerie a une adresse unique et n'apparaît jamais sur Google.
+            Après un événement, créez l'album photo de votre client. Il apparaît sur votre page
+            « Galerie » publique (grille des événements) et possède sa propre adresse à partager.
           </p>
         </div>
         <button

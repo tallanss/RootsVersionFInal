@@ -1,267 +1,136 @@
-import { useState, lazy, Suspense } from 'react';
-import { Camera, Calendar, MapPin, Plus } from 'lucide-react';
-import { haptic } from '../hooks/useHaptic';
-import { GALLERY_CATEGORIES, displayTitle, galleryAlt, normalizeCategory } from '../utils/galleryFormat';
+import { Link } from 'react-router-dom';
+import { Camera, ArrowRight } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
-const Lightbox = lazy(() => import('../components/Lightbox'));
 import FadeIn from '../components/FadeIn';
 import { useContent } from '../context/ContentContext';
 import { useAdmin } from '../context/AdminContext';
-import EditModal from '../components/admin/EditModal';
 import EditableBlock from '../components/admin/EditableBlock';
 
+/**
+ * Page /galerie — « Album en ligne » : grille des albums photo des événements.
+ * Chaque carte ouvre la galerie dédiée du client (/p/:slug).
+ * Les albums sont gérés depuis le dashboard → « Galeries clients ».
+ */
 const Gallery = () => {
   const { content, updateContent } = useContent();
   const { isAdminMode } = useAdmin();
-  const [filter, setFilter] = useState("Tous");
-  const [lightboxIndex, setLightboxIndex] = useState(null);
-  const [addOpen, setAddOpen] = useState(false);
 
-  const gallery = content.gallery || [];
+  const albums = (content.customPages || [])
+    .filter((p) => p.kind === 'gallery')
+    .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
 
-  // Liste de filtres = "Tous" + catégories officielles + toute catégorie
-  // présente dans les données (legacy comprise) → aucune photo invisible.
-  const CATEGORIES = ["Tous", ...new Set([
-    ...GALLERY_CATEGORIES,
-    ...gallery.map(g => normalizeCategory(g.category)),
-  ])];
-
-  const filteredData = filter === "Tous"
-    ? gallery
-    : gallery.filter(item => normalizeCategory(item.category) === filter);
-
-  const categoryCounts = CATEGORIES.reduce((acc, cat) => {
-    acc[cat] = cat === 'Tous'
-      ? gallery.length
-      : gallery.filter(g => normalizeCategory(g.category) === cat).length;
-    return acc;
-  }, {});
-
-  const handleAddPhoto = (vals) => {
-    const newItem = {
-      id: Date.now(),
-      title: vals.title || 'Nouvel événement',
-      image: vals.image || '',
-      category: vals.category || 'Mariage',
-      location: vals.location || 'Normandie',
-      date: vals.date || new Date().getFullYear().toString(),
-    };
-    updateContent({ ...content, gallery: [...gallery, newItem] });
-  };
-
-  const handleDelete = (id) => {
-    updateContent({ ...content, gallery: gallery.filter(g => g.id !== id) });
-  };
-
-  const handleEditPhoto = (id, vals) => {
-    const newGallery = gallery.map(g => g.id === id ? { ...g, ...vals } : g);
-    updateContent({ ...content, gallery: newGallery });
-  };
+  const title = content.galleryTitle || 'Galeries de nos événements';
+  const subtitle = content.gallerySubtitle
+    || 'Retrouvez les albums photo de nos événements passés. Cliquez sur le vôtre pour revivre vos souvenirs.';
 
   return (
     <div className="animate-in">
       <Helmet>
-        <title>Galerie Événements | PhotoRoots Photobooth Normandie</title>
-        <meta name="description" content="Découvrez nos derniers événements en Normandie. Photos de mariages, soirées d'entreprise et anniversaires avec notre photobooth premium." />
+        <title>Galerie des événements | PhotoRoots Photobooth Normandie</title>
+        <meta name="description" content="Découvrez les albums photo de nos événements en Normandie : mariages, soirées d'entreprise, anniversaires. Retrouvez le vôtre et revivez vos souvenirs." />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://photoroots.fr/galerie" />
-        <meta property="og:title" content="Galerie Événements | PhotoRoots Photobooth Normandie" />
-        <meta property="og:description" content="Découvrez nos derniers événements en Normandie. Photos de mariages, soirées d'entreprise et anniversaires avec notre photobooth premium." />
+        <meta property="og:title" content="Galerie des événements | PhotoRoots Photobooth Normandie" />
+        <meta property="og:description" content="Les albums photo de nos événements en Normandie : mariages, entreprises, anniversaires." />
         <meta property="og:image" content="https://photoroots.fr/photobooth-hero.png" />
         <meta property="og:locale" content="fr_FR" />
         <meta property="og:site_name" content="PhotoRoots" />
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Galerie Événements | PhotoRoots Photobooth Normandie" />
-        <meta name="twitter:description" content="Découvrez nos derniers événements en Normandie. Photos de mariages, soirées d'entreprise et anniversaires avec notre photobooth premium." />
+        <meta name="twitter:title" content="Galerie des événements | PhotoRoots Photobooth Normandie" />
+        <meta name="twitter:description" content="Les albums photo de nos événements en Normandie." />
         <meta name="twitter:image" content="https://photoroots.fr/photobooth-hero.png" />
         <link rel="canonical" href="https://photoroots.fr/galerie" />
       </Helmet>
 
-      {/* HEADER */}
+      {/* EN-TÊTE */}
       <section className="container" style={{ padding: '32px 20px 24px' }}>
-        <div className="section-tag"><Camera size={14} /> Galerie</div>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
-          <div>
-            <EditableBlock
-              label="Titre Galerie"
-              modalTitle="Modifier le Titre"
-              fields={[{ key: 'galleryTitle', label: 'Titre', type: 'text', value: content.galleryTitle || 'Derniers Événements' }]}
-              onSave={(vals) => updateContent({ ...content, ...vals })}
-            >
-              <h1 className="section-title" style={{ fontSize: '32px' }}>{content.galleryTitle || 'Derniers Événements'}</h1>
-            </EditableBlock>
+        <div className="section-tag"><Camera size={14} /> Album en ligne</div>
 
-            <EditableBlock
-              label="Sous-titre Galerie"
-              modalTitle="Modifier le Sous-titre"
-              fields={[{ key: 'gallerySubtitle', label: 'Texte', type: 'textarea', value: content.gallerySubtitle || 'Découvrez l\'ambiance PhotoRoots à travers nos prestations récentes au Havre, Rouen et Dieppe.' }]}
-              onSave={(vals) => updateContent({ ...content, ...vals })}
-            >
-              <p className="section-subtitle">
-                {content.gallerySubtitle || 'Découvrez l\'ambiance PhotoRoots à travers nos prestations récentes au Havre, Rouen et Dieppe.'}
-              </p>
-            </EditableBlock>
-          </div>
-          {isAdminMode && (
-            <button
-              onClick={() => setAddOpen(true)}
-              style={{
-                flexShrink: 0,
-                background: 'var(--primary)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '20px',
-                padding: '10px 16px',
-                fontWeight: 700,
-                fontSize: '13px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                boxShadow: '0 4px 14px var(--accent-glow)',
-                marginTop: '8px',
-              }}
-            >
-              <Plus size={14} /> Ajouter une photo
-            </button>
-          )}
-        </div>
+        <EditableBlock
+          label="Titre Galerie"
+          modalTitle="Modifier le Titre"
+          fields={[{ key: 'galleryTitle', label: 'Titre', type: 'text', value: title }]}
+          onSave={(vals) => updateContent({ ...content, ...vals })}
+        >
+          <h1 className="section-title" style={{ fontSize: '32px' }}>{title}</h1>
+        </EditableBlock>
 
-        {/* FILTERS */}
-        <div className="filter-container">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat}
-              className={`filter-btn ${filter === cat ? 'active' : ''}`}
-              onClick={() => { haptic(8); setFilter(cat); }}
-            >
-              {cat}
-              {categoryCounts[cat] > 0 && (
-                <span style={{ marginLeft: '5px', opacity: 0.65, fontSize: '11px', fontWeight: 500 }}>
-                  ({categoryCounts[cat]})
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
+        <EditableBlock
+          label="Sous-titre Galerie"
+          modalTitle="Modifier le Sous-titre"
+          fields={[{ key: 'gallerySubtitle', label: 'Texte', type: 'textarea', value: subtitle }]}
+          onSave={(vals) => updateContent({ ...content, ...vals })}
+        >
+          <p className="section-subtitle">{subtitle}</p>
+        </EditableBlock>
+
+        {isAdminMode && (
+          <p style={{ fontSize: '12px', color: 'var(--text-light)', marginTop: '8px' }}>
+            Astuce admin : ajoutez et gérez les albums depuis le dashboard → « Galeries clients ».
+          </p>
+        )}
       </section>
 
-      {/* MASONRY GRID */}
+      {/* GRILLE D'ALBUMS */}
       <section className="container" style={{ padding: '0 20px 48px' }}>
-        <div className="gallery-masonry">
-          {filteredData.map((item, index) => (
-            <FadeIn direction="up" delay={index * 0.05} key={item.id}>
-              <EditableBlock
-                label="Modifier"
-                modalTitle="Modifier la photo"
-                fields={[
-                  { key: 'title', label: 'Titre', type: 'text', value: item.title },
-                  { key: 'image', label: 'URL de l\'image', type: 'image', value: item.image },
-                  { key: 'category', label: 'Catégorie', type: 'select', value: item.category, options: CATEGORIES.filter(c => c !== 'Tous').map(c => ({ value: c, label: c })) },
-                  { key: 'location', label: 'Lieu', type: 'text', value: item.location || '' },
-                  { key: 'date', label: 'Date/Année', type: 'text', value: item.date || '' },
-                ]}
-                onSave={(vals) => handleEditPhoto(item.id, vals)}
-                onDelete={() => handleDelete(item.id)}
-              >
-                <div 
-                  className="masonry-item"
-                  onClick={() => !isAdminMode && setLightboxIndex(index)}
-                  style={{ cursor: isAdminMode ? 'default' : 'pointer' }}
-                >
-                  <PremiumImage
-                    src={item.image}
-                    alt={galleryAlt(item)}
-                  />
-                  <div className="masonry-overlay">
-                    <span className="masonry-tag">{item.category}</span>
-                    {displayTitle(item.title) && (
-                      <h3 className="masonry-title">{displayTitle(item.title)}</h3>
-                    )}
-                    <div style={{ display: 'flex', gap: '12px', color: 'rgba(255,255,255,0.6)', fontSize: '12px' }}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <MapPin size={12} /> {item.location}
-                      </span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Calendar size={12} /> {item.date}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </EditableBlock>
-            </FadeIn>
-          ))}
-        </div>
-
-        {filteredData.length === 0 && (
-          <div style={{
-            textAlign: 'center', padding: '72px 24px',
-            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px',
-          }}>
-            <div style={{
-              width: '72px', height: '72px', borderRadius: '50%',
-              background: 'var(--bg-secondary)', display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-              border: '2px dashed var(--border-medium)',
-            }}>
+        {albums.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '72px 24px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+            <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px dashed var(--border-medium)' }}>
               <Camera size={28} color="var(--text-light)" />
             </div>
             <div>
               <p style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', marginBottom: '6px' }}>
-                {isAdminMode ? 'Galerie vide' : 'Aucune photo dans cette catégorie'}
+                {isAdminMode ? 'Aucun album pour le moment' : 'Les albums de nos événements arrivent bientôt.'}
               </p>
               <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
                 {isAdminMode
-                  ? 'Cliquez sur "Ajouter une photo" en haut à droite pour commencer.'
-                  : filter === 'Tous'
-                    ? 'Les photos de nos événements arrivent bientôt.'
-                    : `Aucun événement "${filter}" pour le moment.`
-                }
+                  ? 'Créez le premier depuis le dashboard → « Galeries clients ».'
+                  : 'Revenez bientôt pour découvrir nos réalisations.'}
               </p>
             </div>
-            {isAdminMode && (
-              <button
-                onClick={() => setAddOpen(true)}
-                className="btn-primary"
-                style={{ padding: '12px 24px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}
-              >
-                <Plus size={16} /> Ajouter une photo
-              </button>
-            )}
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px' }}>
+            {albums.map((a, i) => (
+              <FadeIn key={a.id} direction="up" delay={Math.min(i * 0.05, 0.4)}>
+                <Link
+                  to={`/p/${a.slug}`}
+                  aria-label={`Voir les photos : ${a.galleryClientName || a.title}`}
+                  style={{ textDecoration: 'none', display: 'block', height: '100%' }}
+                >
+                  <article
+                    className="album-card"
+                    style={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '18px', overflow: 'hidden', border: '1px solid var(--border-light)', background: 'var(--bg-card)', boxShadow: 'var(--shadow-md)' }}
+                  >
+                    <div style={{ aspectRatio: '4 / 3', overflow: 'hidden', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {a.galleryCoverImage
+                        ? <PremiumImage src={a.galleryCoverImage} alt={a.galleryClientName || a.title} style={{ width: '100%', height: '100%' }} />
+                        : <Camera size={34} color="var(--text-light)" />}
+                    </div>
+                    <div style={{ padding: '14px 16px', flexGrow: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <h3 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--text-main)', margin: 0, lineHeight: 1.3 }}>
+                        {a.galleryClientName || a.title}
+                      </h3>
+                      {a.galleryEventDate && (
+                        <span style={{ fontSize: '12px', color: 'var(--text-light)' }}>{a.galleryEventDate}</span>
+                      )}
+                      <span style={{ marginTop: '8px', color: 'var(--primary)', fontWeight: 700, fontSize: '14px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                        Voir les photos <ArrowRight size={15} />
+                      </span>
+                    </div>
+                  </article>
+                </Link>
+              </FadeIn>
+            ))}
           </div>
         )}
       </section>
 
-      {/* LIGHTBOX (mode public uniquement) */}
-      {lightboxIndex !== null && !isAdminMode && (
-        <Suspense fallback={null}>
-          <Lightbox
-            images={filteredData.map(d => ({
-              src: d.image,
-              alt: galleryAlt(d),
-            }))}
-            initialIndex={lightboxIndex}
-            onClose={() => setLightboxIndex(null)}
-          />
-        </Suspense>
-      )}
-
-      {/* Add Photo Modal */}
-      {addOpen && (
-        <EditModal
-          title="Ajouter une photo"
-          fields={[
-            { key: 'title', label: 'Titre de l\'événement', type: 'text', value: '' },
-            { key: 'image', label: 'URL de l\'image', type: 'image', value: '' },
-            { key: 'category', label: 'Catégorie', type: 'select', value: 'Mariage', options: CATEGORIES.filter(c => c !== 'Tous').map(c => ({ value: c, label: c })) },
-            { key: 'location', label: 'Lieu', type: 'text', value: '' },
-            { key: 'date', label: 'Année', type: 'text', value: new Date().getFullYear().toString() },
-          ]}
-          onSave={handleAddPhoto}
-          onClose={() => setAddOpen(false)}
-        />
-      )}
+      <style>{`
+        .album-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .album-card:hover { transform: translateY(-4px); box-shadow: 0 28px 50px rgba(0,0,0,0.18); }
+      `}</style>
     </div>
   );
 };
