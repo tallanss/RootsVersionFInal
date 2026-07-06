@@ -43,6 +43,7 @@ const ROUTES = [
   '/options-a-louer',
   '/galerie',
   '/contact',
+  '/save-the-date',
   '/mentions-legales',
   '/blog',
   ...BLOG_SLUGS.map((s) => `/blog/${s}`),

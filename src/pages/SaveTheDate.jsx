@@ -129,8 +129,20 @@ const SaveTheDate = () => {
   return (
     <div className="animate-in pb-20">
       <Helmet>
-        <title>Save The Date | PhotoRoots</title>
-        <meta name="description" content="Créez une page de partage personnalisée pour votre mariage — compte à rebours en direct pour vos invités." />
+        <title>Save The Date en ligne pour votre mariage | PhotoRoots</title>
+        <meta name="description" content="Créez gratuitement une page Save The Date personnalisée pour votre mariage : compte à rebours en direct et lien à partager avec tous vos invités." />
+        <link rel="canonical" href="https://photoroots.fr/save-the-date" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://photoroots.fr/save-the-date" />
+        <meta property="og:title" content="Save The Date en ligne pour votre mariage | PhotoRoots" />
+        <meta property="og:description" content="Créez gratuitement une page Save The Date personnalisée avec compte à rebours et lien à partager avec vos invités." />
+        <meta property="og:image" content="https://photoroots.fr/photobooth-hero.png" />
+        <meta property="og:locale" content="fr_FR" />
+        <meta property="og:site_name" content="PhotoRoots" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Save The Date en ligne pour votre mariage | PhotoRoots" />
+        <meta name="twitter:description" content="Créez gratuitement une page Save The Date avec compte à rebours et lien à partager." />
+        <meta name="twitter:image" content="https://photoroots.fr/photobooth-hero.png" />
       </Helmet>
 
       {/* HEADER */}

@@ -63,6 +63,17 @@ const Home = () => {
         <meta name="description" content="Location photobooth à partir de 99€ — Bornes photo pour mariages, anniversaires et événements d'entreprise en Seine-Maritime. Devis gratuit en 24h." />
         <meta name="keywords" content="location photobooth le havre, photobooth rouen, borne photo dieppe, photobooth mariage normandie, seine-maritime, 76" />
         <link rel="canonical" href="https://photoroots.fr/" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://photoroots.fr/" />
+        <meta property="og:title" content="PhotoRoots | Location Photobooth à partir de 99€ — Le Havre, Rouen, Dieppe" />
+        <meta property="og:description" content="Location photobooth à partir de 99€ — Bornes photo pour mariages, anniversaires et événements d'entreprise en Seine-Maritime. Devis gratuit en 24h." />
+        <meta property="og:image" content="https://photoroots.fr/photobooth-hero.png" />
+        <meta property="og:locale" content="fr_FR" />
+        <meta property="og:site_name" content="PhotoRoots" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="PhotoRoots | Location Photobooth à partir de 99€" />
+        <meta name="twitter:description" content="Location photobooth à partir de 99€ pour mariages, anniversaires et événements d'entreprise en Seine-Maritime. Devis gratuit en 24h." />
+        <meta name="twitter:image" content="https://photoroots.fr/photobooth-hero.png" />
         {faqs && faqs.length > 0 && (
           <script type="application/ld+json">
             {JSON.stringify({
