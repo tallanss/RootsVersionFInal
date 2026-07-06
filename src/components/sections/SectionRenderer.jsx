@@ -18,6 +18,8 @@ import {
   Mail,
   Heading1,
   Images,
+  Share2,
+  Check,
 } from 'lucide-react';
 import PremiumImage from '../PremiumImage';
 import AnimatedButton from '../AnimatedButton';
@@ -262,6 +264,24 @@ const safeIframeUrl = (input) => {
 const IframeBlock = ({ url, height, buttonLabel }) => {
   const src = safeIframeUrl(url);
   const h = Number(height) || 720;
+  const [shared, setShared] = useState(false);
+
+  // Partage l'adresse PhotoRoots de CETTE page (et non le lien fotoshare) :
+  // menu de partage natif sur mobile, sinon copie du lien dans le presse-papier.
+  const shareGallery = async () => {
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try { await navigator.share({ title: document.title, url: shareUrl }); } catch (_) { /* partage annulé */ }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShared(true);
+      setTimeout(() => setShared(false), 2500);
+    } catch (_) {
+      window.prompt('Copiez le lien de la galerie :', shareUrl);
+    }
+  };
 
   if (!src) {
     return (
@@ -287,6 +307,27 @@ const IframeBlock = ({ url, height, buttonLabel }) => {
           style={{ width: '100%', height: `${h}px`, border: 0, display: 'block' }}
         />
       </div>
+
+      {/* Bouton de partage : partage le lien PhotoRoots de la galerie (pas fotoshare). */}
+      <div style={{ textAlign: 'center', marginTop: '16px' }}>
+        <button
+          type="button"
+          onClick={shareGallery}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            background: shared ? 'rgba(34,197,94,0.12)' : 'var(--primary)',
+            color: shared ? '#16a34a' : '#fff',
+            border: 'none', borderRadius: '999px', padding: '11px 22px',
+            fontWeight: 700, fontSize: '14px', cursor: 'pointer',
+            boxShadow: shared ? 'none' : '0 4px 14px var(--accent-glow)',
+            transition: 'background 0.2s ease, color 0.2s ease',
+          }}
+        >
+          {shared ? <Check size={16} /> : <Share2 size={16} />}
+          {shared ? 'Lien copié !' : 'Partager la galerie'}
+        </button>
+      </div>
+
       {/* Repli : si le service bloque l'affichage en iframe, ce lien reste cliquable. */}
       <div style={{ textAlign: 'center', marginTop: '14px' }}>
         <a
