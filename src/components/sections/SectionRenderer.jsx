@@ -263,14 +263,16 @@ const safeIframeUrl = (input) => {
 
 // Largeur de l'iframe selon le nombre de photos par ligne souhaité.
 // fotoshare adapte sa grille à la largeur disponible → moins large = moins
-// de colonnes. Valeurs calées pour donner ~1 / ~3 / ~5 photos par ligne.
-const PER_ROW_WIDTH = { 1: 320, 3: 600, 5: 920 };
+// de colonnes. Largeurs mesurées sur les albums du client (photos grandes) :
+// ~480px = 1 · ~720px = 2 · ~880px = 3 photos par ligne.
+const PER_ROW_WIDTH = { 1: 480, 2: 720, 3: 880 };
+const PER_ROW_OPTIONS = [1, 2, 3];
 
 const IframeBlock = ({ url, height }) => {
   const src = safeIframeUrl(url);
   const h = Number(height) || 720;
   const [shared, setShared] = useState(false);
-  const [perRow, setPerRow] = useState(3); // 1 | 3 | 5 photos par ligne
+  const [perRow, setPerRow] = useState(3); // 1 | 2 | 3 photos par ligne
 
   // Partage l'adresse PhotoRoots de CETTE page (et non le lien fotoshare) :
   // menu de partage natif sur mobile, sinon copie du lien dans le presse-papier.
@@ -314,7 +316,7 @@ const IframeBlock = ({ url, height }) => {
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '9px' }}>
           <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)' }}>Photos par ligne</span>
           <div style={{ display: 'inline-flex', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', borderRadius: '999px', padding: '3px', gap: '3px' }}>
-            {[1, 3, 5].map((n) => (
+            {PER_ROW_OPTIONS.map((n) => (
               <button key={n} type="button" onClick={() => setPerRow(n)} style={rowBtn(perRow === n)} aria-label={`${n} photos par ligne`}>
                 {n}
               </button>
