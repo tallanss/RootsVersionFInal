@@ -274,7 +274,9 @@ const IframeBlock = ({ url, height, buttonLabel }) => {
   }
 
   return (
-    <section className="container" style={{ padding: '16px 20px 32px' }}>
+    // Conteneur élargi sur PC (≥1024px) : fotoshare adapte sa grille à la
+    // largeur de l'iframe → plusieurs photos par ligne au lieu d'une seule.
+    <section className="gallery-iframe-wrap">
       <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-md)', background: 'var(--bg-card)' }}>
         <iframe
           src={src}

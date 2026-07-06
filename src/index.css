@@ -294,6 +294,19 @@ button:active { transform: scale(0.97); }
   overflow-wrap: break-word;
 }
 
+/* Galerie client : sur mobile l'iframe garde la largeur "app" (1 photo par
+   ligne, normal sur téléphone) ; sur PC elle s'élargit à ~920px pour que le
+   service photo (fotoshare, etc.) affiche 3 photos par ligne. */
+.gallery-iframe-wrap {
+  max-width: 540px;
+  margin: 0 auto;
+  padding: 16px 20px 32px;
+  width: 100%;
+}
+@media (min-width: 900px) {
+  .gallery-iframe-wrap { max-width: 920px; }
+}
+
 #root {
   width: 100%;
   max-width: 100%;
