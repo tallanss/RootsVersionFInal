@@ -261,10 +261,16 @@ const safeIframeUrl = (input) => {
   }
 };
 
-const IframeBlock = ({ url, height, buttonLabel }) => {
+// Largeur de l'iframe selon le nombre de photos par ligne souhaité.
+// fotoshare adapte sa grille à la largeur disponible → moins large = moins
+// de colonnes. Valeurs calées pour donner ~1 / ~3 / ~5 photos par ligne.
+const PER_ROW_WIDTH = { 1: 320, 3: 600, 5: 920 };
+
+const IframeBlock = ({ url, height }) => {
   const src = safeIframeUrl(url);
   const h = Number(height) || 720;
   const [shared, setShared] = useState(false);
+  const [perRow, setPerRow] = useState(3); // 1 | 3 | 5 photos par ligne
 
   // Partage l'adresse PhotoRoots de CETTE page (et non le lien fotoshare) :
   // menu de partage natif sur mobile, sinon copie du lien dans le presse-papier.
@@ -293,23 +299,29 @@ const IframeBlock = ({ url, height, buttonLabel }) => {
     );
   }
 
-  return (
-    // Conteneur élargi sur PC (≥1024px) : fotoshare adapte sa grille à la
-    // largeur de l'iframe → plusieurs photos par ligne au lieu d'une seule.
-    <section className="gallery-iframe-wrap">
-      <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-md)', background: 'var(--bg-card)' }}>
-        <iframe
-          src={src}
-          title="Galerie photos"
-          loading="lazy"
-          sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox allow-downloads"
-          allow="fullscreen; web-share; clipboard-write"
-          style={{ width: '100%', height: `${h}px`, border: 0, display: 'block' }}
-        />
-      </div>
+  const rowBtn = (active) => ({
+    minWidth: '34px', padding: '7px 13px', borderRadius: '999px', border: 'none', cursor: 'pointer',
+    fontSize: '13px', fontWeight: 700, lineHeight: 1,
+    background: active ? 'var(--primary)' : 'transparent',
+    color: active ? '#fff' : 'var(--text-muted)',
+    transition: 'background 0.2s ease, color 0.2s ease',
+  });
 
-      {/* Bouton de partage : partage le lien PhotoRoots de la galerie (pas fotoshare). */}
-      <div style={{ textAlign: 'center', marginTop: '16px' }}>
+  return (
+    <section className="gallery-iframe-wrap">
+      {/* Barre au-dessus de la galerie : choix du nombre de photos par ligne + partage */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '9px' }}>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-muted)' }}>Photos par ligne</span>
+          <div style={{ display: 'inline-flex', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', borderRadius: '999px', padding: '3px', gap: '3px' }}>
+            {[1, 3, 5].map((n) => (
+              <button key={n} type="button" onClick={() => setPerRow(n)} style={rowBtn(perRow === n)} aria-label={`${n} photos par ligne`}>
+                {n}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <button
           type="button"
           onClick={shareGallery}
@@ -317,7 +329,7 @@ const IframeBlock = ({ url, height, buttonLabel }) => {
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             background: shared ? 'rgba(34,197,94,0.12)' : 'var(--primary)',
             color: shared ? '#16a34a' : '#fff',
-            border: 'none', borderRadius: '999px', padding: '11px 22px',
+            border: 'none', borderRadius: '999px', padding: '10px 20px',
             fontWeight: 700, fontSize: '14px', cursor: 'pointer',
             boxShadow: shared ? 'none' : '0 4px 14px var(--accent-glow)',
             transition: 'background 0.2s ease, color 0.2s ease',
@@ -328,19 +340,18 @@ const IframeBlock = ({ url, height, buttonLabel }) => {
         </button>
       </div>
 
-      {/* Repli : si le service bloque l'affichage en iframe, ce lien reste cliquable. */}
-      <div style={{ textAlign: 'center', marginTop: '14px' }}>
-        <a
-          href={src}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}
-        >
-          {buttonLabel || 'Voir mes photos'} <ArrowRight size={16} />
-        </a>
-        <p style={{ fontSize: '12px', color: 'var(--text-light)', marginTop: '6px' }}>
-          La galerie ne s'affiche pas ci-dessus ? Ouvrez-la dans un nouvel onglet.
-        </p>
+      {/* Galerie : la largeur pilote le nombre de photos par ligne côté fotoshare */}
+      <div style={{ maxWidth: `${PER_ROW_WIDTH[perRow]}px`, width: '100%', margin: '0 auto' }}>
+        <div style={{ borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-md)', background: 'var(--bg-card)' }}>
+          <iframe
+            src={src}
+            title="Galerie photos"
+            loading="lazy"
+            sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox allow-downloads"
+            allow="fullscreen; web-share; clipboard-write"
+            style={{ width: '100%', height: `${h}px`, border: 0, display: 'block' }}
+          />
+        </div>
       </div>
     </section>
   );
@@ -357,11 +368,10 @@ export const SECTION_LIBRARY = {
     hint: "Colle le lien OU le code d'intégration (iframe) de la galerie",
     icon: Images,
     Component: IframeBlock,
-    defaultProps: { url: '', height: 720, buttonLabel: 'Voir mes photos' },
+    defaultProps: { url: '', height: 720 },
     fields: [
       { key: 'url', label: "Lien OU code d'intégration (iframe) de la galerie", type: 'textarea' },
       { key: 'height', label: 'Hauteur en pixels (ex : 720)', type: 'text' },
-      { key: 'buttonLabel', label: 'Texte du bouton de secours', type: 'text' },
     ],
   },
   hero: {
