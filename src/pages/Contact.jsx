@@ -629,7 +629,7 @@ const Contact = () => {
         </section>
       )}
 
-      {/* ============ FORMULAIRE DEVIS (3 ÉTAPES) ============ */}
+      {/* ============ FORMULAIRE DEVIS (2 ÉTAPES) ============ */}
       {mode === 'devis' && (
       <section className="container" style={{ padding: '16px 20px 24px' }}>
         {!isConfigured() && (
@@ -1057,7 +1057,7 @@ const FieldHint = ({ children }) => (
 const StepHeading = ({ n, title, subtitle }) => (
   <div style={{ marginBottom: '20px' }}>
     <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--primary)', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
-      Étape {n} sur 3
+      Étape {n} sur {STEPS.length}
     </span>
     <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0 4px' }}>{title}</h2>
     {subtitle && <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5, margin: 0 }}>{subtitle}</p>}
