@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Image as ImageIcon,
   Tag,
   Settings,
   LogOut,
@@ -39,7 +38,6 @@ import {
   LeadCenter,
   NavEditor,
   AnalyticsHub,
-  MediaLib,
   ReviewCenter,
   PriceArchitect,
   FAQMaster,
@@ -71,7 +69,6 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
     { id: 'pages', label: 'Mes pages', icon: Layout, category: 'CONTENU' },
     { id: 'galleries', label: 'Galeries clients', icon: Images, category: 'CONTENU' },
     { id: 'services', label: 'Services', icon: Sparkles, category: 'CONTENU' },
-    { id: 'gallery', label: 'Photos', icon: ImageIcon, category: 'CONTENU' },
     { id: 'savethedate', label: 'Save The Date', icon: Heart, category: 'CONTENU' },
     { id: 'disponibilites', label: 'Disponibilités', icon: CalendarX, category: 'CONTENU' },
     { id: 'reviews', label: 'Avis clients', icon: Star, category: 'CONTENU' },
@@ -97,7 +94,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
   const mobileNavItems = [
     { id: 'home', icon: Home, label: 'Accueil' },
     { id: 'messages', icon: Mail, label: 'Demandes', badge: unreadCount },
-    { id: 'gallery', icon: ImageIcon, label: 'Photos' },
+    { id: 'galleries', icon: Images, label: 'Galeries' },
   ];
 
   const renderContent = () => {
@@ -111,7 +108,6 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
       case 'pages': return <PagesManager />;
       case 'galleries': return <ClientGalleries />;
       case 'services': return <ServicesManager />;
-      case 'gallery': return <MediaLib />;
       case 'savethedate': return <SaveTheDateManager />;
       case 'disponibilites': return <DisponibilitesManager />;
       case 'reviews': return <ReviewCenter />;

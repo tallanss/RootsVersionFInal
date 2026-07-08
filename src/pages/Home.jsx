@@ -12,7 +12,7 @@ import { useContent } from '../context/ContentContext';
 import { useAdmin } from '../context/AdminContext';
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
-import { isPlaceholderTitle, formatPrice } from '../utils/galleryFormat';
+import { formatPrice } from '../utils/galleryFormat';
 
 // Local fallbacks moved to context
 
@@ -520,49 +520,46 @@ const Home = () => {
       </section>
       </FadeIn>
 
-      {/* ===== GALLERY TEASER — Derniers Événements ===== */}
-      <FadeIn direction="up">
-      <section className="container" style={{ padding: '48px 24px' }}>
-        <div className="section-tag"><Image size={14} /> Souvenirs</div>
-        <h2 className="section-title">Derniers Événements</h2>
-        <p className="section-subtitle">Aperçu des moments capturés récemment par nos clients.</p>
+      {/* ===== GALLERY TEASER — Derniers Événements (albums clients) ===== */}
+      {(() => {
+        const albums = (content.customPages || [])
+          .filter((p) => p.kind === 'gallery')
+          .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')))
+          .slice(0, 4);
+        if (albums.length === 0) return null;
+        return (
+          <FadeIn direction="up">
+          <section className="container" style={{ padding: '48px 24px' }}>
+            <div className="section-tag"><Image size={14} /> Souvenirs</div>
+            <h2 className="section-title">Derniers Événements</h2>
+            <p className="section-subtitle">Aperçu des moments capturés récemment par nos clients.</p>
 
-        <div className="gallery-teaser-grid">
-          {(content.gallery || []).slice(0, 4).map((item) => (
-            <EditableBlock
-              key={item.id}
-              label="Photo"
-              modalTitle="Modifier la photo"
-              fields={[
-                { key: 'title', label: 'Titre', type: 'text', value: item.title },
-                { key: 'image', label: 'URL de l\'image', type: 'image', value: item.image },
-              ]}
-              onSave={(vals) => {
-                const newGallery = content.gallery.map(g => g.id === item.id ? { ...g, ...vals } : g);
-                updateContent({ ...content, gallery: newGallery });
-              }}
-              onDelete={() => {
-                const newGallery = content.gallery.filter(g => g.id !== item.id);
-                updateContent({ ...content, gallery: newGallery });
-              }}
-            >
-              <div className="masonry-item" style={{ borderRadius: 'var(--radius-md)' }}>
-                <PremiumImage
-                  src={item.image}
-                  alt={isPlaceholderTitle(item.title) ? `Photobooth ${item.category || ''} ${item.location || ''}`.trim() : item.title}
-                />
-              </div>
-            </EditableBlock>
-          ))}
-        </div>
+            <div className="gallery-teaser-grid">
+              {albums.map((a) => (
+                <Link
+                  key={a.id}
+                  to={`/p/${a.slug}`}
+                  aria-label={`Voir les photos : ${a.galleryClientName || a.title}`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <div className="masonry-item" style={{ borderRadius: 'var(--radius-md)', position: 'relative' }}>
+                    {a.galleryCoverImage
+                      ? <PremiumImage src={a.galleryCoverImage} alt={a.galleryClientName || a.title} />
+                      : <div style={{ width: '100%', aspectRatio: '1 / 1', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Image size={28} color="var(--text-light)" /></div>}
+                  </div>
+                </Link>
+              ))}
+            </div>
 
-        <div style={{ textAlign: 'center', marginTop: '24px' }}>
-          <AnimatedButton to="/galerie" style={{ width: 'auto', padding: '16px 36px' }}>
-            Accéder à la Galerie <ArrowRight size={18} />
-          </AnimatedButton>
-        </div>
-      </section>
-      </FadeIn>
+            <div style={{ textAlign: 'center', marginTop: '24px' }}>
+              <AnimatedButton to="/galerie" style={{ width: 'auto', padding: '16px 36px' }}>
+                Accéder à la Galerie <ArrowRight size={18} />
+              </AnimatedButton>
+            </div>
+          </section>
+          </FadeIn>
+        );
+      })()}
 
       {/* ===== FAQ ===== */}
       <FadeIn direction="up">
