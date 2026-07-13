@@ -172,6 +172,7 @@ const Tarifs = () => {
   const [selectedPlanId, setSelectedPlanId] = useState(null);
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [compareMode, setCompareMode] = useState(false);
+  const [prestationView, setPrestationView] = useState('photobooth'); // 'photobooth' | slug produit
 
   // Handle pre-selection from URL (e.g. /tarifs?pack=premium)
   useEffect(() => {
@@ -277,6 +278,9 @@ const Tarifs = () => {
 
   const plans = content.pricing_plans || defaultPlans;
 
+  // Prestations actives (produits visibles) → pour le filtre de la page Tarifs.
+  const activeProducts = (content.products || []).filter((p) => p.visible !== false);
+
   // Options à la carte gérées via le CMS (dashboard → « Options à louer »).
   const options = (content.addons || []).filter(o => o.enabled !== false);
 
@@ -378,6 +382,36 @@ const Tarifs = () => {
         </EditableBlock>
       </section>
 
+      {/* FILTRE PRESTATION — n'apparaît que s'il existe une autre prestation active */}
+      {activeProducts.length > 0 && (
+        <section className="container" style={{ padding: '0 20px 12px' }}>
+          <label className="form-label" style={{ display: 'block', marginBottom: '8px' }}>Voir les tarifs de :</label>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {[{ key: 'photobooth', label: 'Photobooth' }, ...activeProducts.map((p) => ({ key: p.slug, label: p.name }))].map((t) => {
+              const active = prestationView === t.key;
+              return (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => { haptic(8); setPrestationView(t.key); setSelectedPlanId(null); setSelectedOptions([]); }}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    padding: '10px 16px', borderRadius: '999px', cursor: 'pointer', fontSize: '14px', fontWeight: 700,
+                    background: active ? 'var(--primary)' : 'var(--bg-secondary)',
+                    color: active ? '#fff' : 'var(--text-muted)',
+                    border: active ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {prestationView === 'photobooth' && (<>
       {/* LIEN VERS LES OPTIONS À LOUER */}
       <section className="container" style={{ padding: '0 20px 8px' }}>
         <Link
@@ -813,6 +847,62 @@ const Tarifs = () => {
           </div>
         </div>
       )}
+      </>)}
+
+      {/* VUE PRESTATION (produit sélectionné) — détail du prix */}
+      {prestationView !== 'photobooth' && (() => {
+        const prod = activeProducts.find((p) => p.slug === prestationView);
+        if (!prod) return null;
+        return (
+          <section className="container" style={{ padding: '0 20px 32px' }}>
+            <div style={{ borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)', background: 'var(--bg-card)', boxShadow: 'var(--shadow-md)', overflow: 'hidden' }}>
+              {prod.image && (
+                <div style={{ aspectRatio: '16 / 9', overflow: 'hidden', background: 'var(--bg-secondary)' }}>
+                  <img src={prod.image} alt={prod.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                </div>
+              )}
+              <div style={{ padding: '24px' }}>
+                {prod.badge && (
+                  <span style={{ display: 'inline-block', background: 'var(--primary)', color: '#fff', fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '999px', marginBottom: '8px' }}>{prod.badge}</span>
+                )}
+                <h2 style={{ fontSize: '22px', fontWeight: 900, margin: '0 0 2px', color: 'var(--text-main)' }}>{prod.name}</h2>
+                {prod.tagline && <p style={{ color: 'var(--text-muted)', fontSize: '14px', margin: 0 }}>{prod.tagline}</p>}
+                <div style={{ fontSize: '34px', fontWeight: 900, color: 'var(--primary)', margin: '14px 0 2px', lineHeight: 1 }}>
+                  {prod.priceFrom != null ? `À partir de ${prod.priceFrom}€` : 'Sur devis'}
+                </div>
+                {prod.description && <p style={{ fontSize: '15px', lineHeight: 1.6, color: 'var(--text-main)', whiteSpace: 'pre-line', margin: '10px 0 0' }}>{prod.description}</p>}
+
+                {prod.features?.length > 0 && (
+                  <div style={{ margin: '20px 0 0', display: 'grid', gap: '10px' }}>
+                    <p style={{ fontSize: '12px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-light)', margin: 0 }}>Ce qui est inclus</p>
+                    {prod.features.map((f, i) => (
+                      <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                        <span style={{ flexShrink: 0, width: '22px', height: '22px', borderRadius: '50%', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '1px' }}>
+                          <CheckCircle2 size={13} color="var(--primary)" />
+                        </span>
+                        <span style={{ fontSize: '15px', color: 'var(--text-main)', lineHeight: 1.5 }}>{f}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', alignItems: 'center', marginTop: '22px' }}>
+                  <AnimatedButton
+                    to={`/contact?mode=devis&prestation=${encodeURIComponent(prod.slug)}`}
+                    className="btn-primary"
+                    style={{ width: 'auto', padding: '14px 28px', fontWeight: 800 }}
+                  >
+                    Demander un devis <ArrowRight size={18} />
+                  </AnimatedButton>
+                  <Link to={`/prestations/${prod.slug}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--primary)', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
+                    Voir la page complète <ArrowRight size={15} />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* TRUST */}
       <FadeIn direction="up" delay={0.4}>
