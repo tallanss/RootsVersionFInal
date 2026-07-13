@@ -130,7 +130,6 @@ const DEFAULT_CONTENT = {
   },
   navigation: [
     { id: 'home', label: 'Accueil', path: '/' },
-    { id: 'photobooth', label: 'Photobooth', path: '/photobooth' },
     { id: 'tarifs', label: 'Tarifs', path: '/tarifs' },
     { id: 'prestations', label: 'Prestations', path: '/prestations', icon: 'prestations' },
     { id: 'galerie', label: 'Galerie', path: '/galerie' },
@@ -223,15 +222,20 @@ const buildMergedContent = (parsed = {}) => {
     // Garde : une navigation vide (ou invalide) retombe sur le défaut — sinon
     // le site n'aurait plus AUCUN menu (la barre du bas est la seule navigation).
     navigation: (() => {
-      const base = (Array.isArray(parsed.navigation) && parsed.navigation.length > 0)
+      let base = (Array.isArray(parsed.navigation) && parsed.navigation.length > 0)
         ? parsed.navigation
         : DEFAULT_CONTENT.navigation;
+      // Retrait de l'onglet « Photobooth » du menu (le photobooth reste accessible
+      // via la page « Prestations », le lien du pied de page et la home).
+      base = base.filter((n) => n.id !== 'photobooth' && n.path !== '/photobooth');
       // Migration : garantir l'onglet « Prestations » (ajouté après coup), inséré
       // juste après « Tarifs ». Le propriétaire peut le renommer/déplacer via le CMS.
-      if (base.some((n) => n.id === 'prestations' || n.path === '/prestations')) return base;
-      const item = { id: 'prestations', label: 'Prestations', path: '/prestations', icon: 'prestations' };
-      const idx = base.findIndex((n) => n.id === 'tarifs' || n.path === '/tarifs');
-      return idx >= 0 ? [...base.slice(0, idx + 1), item, ...base.slice(idx + 1)] : [...base, item];
+      if (!base.some((n) => n.id === 'prestations' || n.path === '/prestations')) {
+        const item = { id: 'prestations', label: 'Prestations', path: '/prestations', icon: 'prestations' };
+        const idx = base.findIndex((n) => n.id === 'tarifs' || n.path === '/tarifs');
+        base = idx >= 0 ? [...base.slice(0, idx + 1), item, ...base.slice(idx + 1)] : [...base, item];
+      }
+      return base;
     })(),
     legal: {
       ...DEFAULT_CONTENT.legal,
