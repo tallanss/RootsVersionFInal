@@ -32,6 +32,7 @@ import {
   PlusCircle,
   Pencil,
   Tag,
+  Package,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../../context/ContentContext';
@@ -99,6 +100,7 @@ export const DashboardHome = ({ onNavigate }) => {
   const shortcuts = [
     { id: 'messages', icon: Mail, label: 'Voir mes demandes', color: '#c5a059', badge: newLeads },
     { id: 'tarifs', icon: Tag, label: 'Changer mes prix', color: '#10b981' },
+    { id: 'products', icon: Package, label: 'Mes prestations', color: '#f59e0b' },
     { id: 'galleries', icon: ImageIcon, label: 'Galeries clients', color: '#818cf8' },
     { id: 'disponibilites', icon: CalendarX, label: 'Bloquer une date', color: '#f87171' },
     { id: 'pagecontent', icon: Type, label: 'Modifier mes textes', color: '#38bdf8' },

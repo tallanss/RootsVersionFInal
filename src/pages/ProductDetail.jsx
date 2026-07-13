@@ -29,6 +29,16 @@ export default function ProductDetail() {
   const image = product.image || 'https://photoroots.fr/hero-premium.png';
   const indexable = product.indexable !== false && product.visible !== false;
 
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Accueil', item: 'https://photoroots.fr/' },
+      { '@type': 'ListItem', position: 2, name: 'Nos prestations', item: 'https://photoroots.fr/prestations' },
+      { '@type': 'ListItem', position: 3, name: product.name, item: canonical },
+    ],
+  };
+
   const productSchema = {
     '@context': 'https://schema.org',
     '@type': 'Product',
@@ -65,6 +75,7 @@ export default function ProductDetail() {
         <meta name="twitter:title" content={seoTitle} />
         <meta name="twitter:description" content={seoDesc} />
         <meta name="twitter:image" content={image} />
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(productSchema)}</script>
       </Helmet>
 
