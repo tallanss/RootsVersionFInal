@@ -40,6 +40,8 @@ import Tarifs from './pages/Tarifs';
 import RentalOptions from './pages/RentalOptions';
 import Contact from './pages/Contact';
 import Gallery from './pages/Gallery';
+import Products from './pages/Products';
+import ProductDetail from './pages/ProductDetail';
 import Legal from './pages/Legal';
 import SaveTheDate from './pages/SaveTheDate';
 import CityPage from './pages/CityPage';
@@ -122,6 +124,8 @@ function PageContent() {
               <Route path="/options-a-louer" element={<RentalOptions />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/galerie" element={<Gallery />} />
+              <Route path="/prestations" element={<Products />} />
+              <Route path="/prestations/:slug" element={<ProductDetail />} />
               <Route path="/admin" element={<Admin />} />
               <Route path="/mentions-legales" element={<Legal />} />
               <Route path="/save-the-date" element={<SaveTheDate />} />

@@ -23,6 +23,7 @@ export default defineConfig({
         '/photobooth',
         '/tarifs',
         '/options-a-louer',
+        '/prestations',
         '/galerie',
         '/contact',
         '/save-the-date',

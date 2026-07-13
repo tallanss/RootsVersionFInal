@@ -105,6 +105,7 @@ const Contact = () => {
     contactPreference: '',
     referralSource: '',
     addons: [],
+    prestations: [],
   });
 
   // Formules disponibles (depuis le CMS, avec fallback) — incluent prix + desc
@@ -125,12 +126,40 @@ const Contact = () => {
     ];
   }, [content.pricing_plans]);
 
+  // Prestations sélectionnables dans le devis = Photobooth + les produits du CMS
+  const prestationOptions = useMemo(() => {
+    const prods = (content.products || [])
+      .filter((p) => p.visible !== false)
+      .map((p) => p.name);
+    return ['Photobooth', ...prods];
+  }, [content.products]);
+
+  const togglePrestation = (name) => setFormData((prev) => ({
+    ...prev,
+    prestations: prev.prestations.includes(name)
+      ? prev.prestations.filter((p) => p !== name)
+      : [...prev.prestations, name],
+  }));
+
   // Synchroniser le mode avec le paramètre d'URL (?mode=message)
   useEffect(() => {
     const m = new URLSearchParams(location.search).get('mode');
     if (m === 'message') setMode('message');
     else if (m === 'devis') setMode('devis');
   }, [location.search]);
+
+  // Pré-sélectionner la prestation depuis l'URL (?prestation=slug), une seule fois
+  const prestationPrefilled = useRef(false);
+  useEffect(() => {
+    if (prestationPrefilled.current) return;
+    const slug = new URLSearchParams(location.search).get('prestation');
+    if (!slug) { prestationPrefilled.current = true; return; }
+    const prod = (content.products || []).find((p) => p.slug === slug);
+    if (prod) {
+      setFormData((prev) => ({ ...prev, prestations: [prod.name] }));
+      prestationPrefilled.current = true;
+    }
+  }, [location.search, content.products]);
 
   // Le calendrier ne bloque QUE les dates marquées indisponibles à la main
   // dans le dashboard (onglet « Disponibilités »). La détection automatique
@@ -249,7 +278,10 @@ const Contact = () => {
     const selectedAddons = (content.addons || []).filter(a => formData.addons.includes(a.id));
     const addonsText = selectedAddons.map(a => `${a.name} (${a.price}€)`).join(', ');
 
+    const prestationsText = formData.prestations.join(', ');
+
     const autoMessage = [
+      prestationsText ? `Prestation(s) souhaitée(s) : ${prestationsText}` : null,
       formData.guests ? `Nombre d'invités : ${formData.guests}` : null,
       formData.formula ? `Pack souhaité : ${formData.formula}` : null,
       addonsText ? `Options souhaitées : ${addonsText}` : null,
@@ -259,6 +291,7 @@ const Contact = () => {
 
     const booking = {
       date: formData.date,
+      prestation: prestationsText,
       formula: formData.formula || 'Demande de devis',
       addons: addonsText,
       name: formData.name,
@@ -286,6 +319,7 @@ const Contact = () => {
         subject: formData.eventType || 'Demande de devis',
         location: formData.location,
         guests: formData.guests,
+        prestation: prestationsText,
         formula: formData.formula || 'Demande de devis',
         addons: addonsText,
         fullMessage: autoMessage,
@@ -841,6 +875,36 @@ const Contact = () => {
                     <input className="form-input" type="text" id="location" name="location" placeholder="Salle des fêtes, Le Havre" value={formData.location} onChange={handleChange} style={{ paddingLeft: '38px' }} required />
                   </div>
                 </div>
+
+                {/* Quelle prestation ? (Photobooth, 360, …) */}
+                {prestationOptions.length > 1 && (
+                  <div className="form-group">
+                    <label className="form-label">Quelle prestation vous intéresse ? <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(plusieurs possibles)</span></label>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
+                      {prestationOptions.map((name) => {
+                        const active = formData.prestations.includes(name);
+                        return (
+                          <button
+                            type="button"
+                            key={name}
+                            onClick={() => togglePrestation(name)}
+                            style={{
+                              display: 'inline-flex', alignItems: 'center', gap: '7px',
+                              padding: '10px 15px', borderRadius: '999px', cursor: 'pointer', fontSize: '14px', fontWeight: 700,
+                              background: active ? 'var(--primary)' : 'var(--bg-app)',
+                              color: active ? '#fff' : 'var(--text-muted)',
+                              border: active ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                              transition: 'all 0.2s',
+                            }}
+                          >
+                            {active && <CheckCircle2 size={15} />}
+                            {name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* Formule souhaitée — nom + nombre de tirages */}
                 <div className="form-group">

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Heart, Briefcase, PartyPopper, Phone, Shield, Clock, ChevronDown, CheckCircle2, BadgeCheck, Sparkles, Camera, Tag, Image, Users, GraduationCap, Gift, Cake } from 'lucide-react';
+import { ArrowRight, Star, Heart, Briefcase, PartyPopper, Phone, Shield, Clock, ChevronDown, CheckCircle2, BadgeCheck, Sparkles, Camera, Tag, Image, Users, GraduationCap, Gift, Cake, Package } from 'lucide-react';
 import { useInView } from 'framer-motion';
 import useScrollAnimation from '../hooks/useScrollAnimation';
 import useCountUp from '../hooks/useCountUp';
@@ -519,6 +519,46 @@ const Home = () => {
         </div>
       </section>
       </FadeIn>
+
+      {/* ===== PRESTATIONS TEASER — Nos machines/produits ===== */}
+      {(() => {
+        const prods = (content.products || []).filter((p) => p.visible !== false).slice(0, 4);
+        if (prods.length === 0) return null;
+        return (
+          <FadeIn direction="up">
+          <section className="container" style={{ padding: '48px 24px' }}>
+            <div className="section-tag"><Package size={14} /> Nos prestations</div>
+            <h2 className="section-title">Bien plus qu'un photobooth</h2>
+            <p className="section-subtitle">Photobooth, borne 360 et plus encore : trouvez l'animation idéale pour votre événement.</p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px', marginTop: '8px' }}>
+              {prods.map((p) => (
+                <Link key={p.id} to={`/prestations/${p.slug}`} aria-label={`Découvrir : ${p.name}`} style={{ textDecoration: 'none' }}>
+                  <div style={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-light)', background: 'var(--bg-card)', boxShadow: 'var(--shadow-md)', height: '100%' }}>
+                    <div style={{ position: 'relative', aspectRatio: '4 / 3', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {p.image
+                        ? <PremiumImage src={p.image} alt={p.name} style={{ width: '100%', height: '100%' }} />
+                        : <Package size={30} color="var(--text-light)" />}
+                      {p.badge && <span style={{ position: 'absolute', top: '8px', left: '8px', background: 'var(--primary)', color: '#fff', fontSize: '10px', fontWeight: 800, padding: '3px 8px', borderRadius: '999px' }}>{p.badge}</span>}
+                    </div>
+                    <div style={{ padding: '12px 14px' }}>
+                      <p style={{ fontSize: '15px', fontWeight: 800, color: 'var(--text-main)', margin: 0 }}>{p.name}</p>
+                      <p style={{ fontSize: '13px', fontWeight: 700, color: 'var(--primary)', margin: '4px 0 0' }}>{p.priceFrom != null ? `Dès ${p.priceFrom}€` : 'Sur devis'}</p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div style={{ textAlign: 'center', marginTop: '24px' }}>
+              <AnimatedButton to="/prestations" style={{ width: 'auto', padding: '16px 36px' }}>
+                Voir toutes nos prestations <ArrowRight size={18} />
+              </AnimatedButton>
+            </div>
+          </section>
+          </FadeIn>
+        );
+      })()}
 
       {/* ===== GALLERY TEASER — Derniers Événements (albums clients) ===== */}
       {(() => {

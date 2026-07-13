@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Camera, Tag, Heart, Image as ImageIcon, Mail, BookOpen, MapPin, Sparkles, Star, Gift, Calendar } from 'lucide-react';
+import { Home, Camera, Tag, Heart, Image as ImageIcon, Mail, BookOpen, MapPin, Sparkles, Star, Gift, Calendar, Package } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 
 const BottomNav = () => {
@@ -16,6 +16,7 @@ const BottomNav = () => {
     galerie: ImageIcon,
     invite: Heart,
     contact: Mail,
+    prestations: Package,
     blog: BookOpen,
     ville: MapPin,
     options: Sparkles,

@@ -41,6 +41,7 @@ const ROUTES = [
   '/photobooth',
   '/tarifs',
   '/options-a-louer',
+  '/prestations',
   '/galerie',
   '/contact',
   '/save-the-date',
@@ -124,6 +125,28 @@ async function main() {
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
     });
+  }
+
+  // --- Découverte dynamique des pages produits (/prestations/:slug) ---
+  // Les produits sont gérés via le CMS : on lit les liens réellement rendus sur
+  // /prestations pour prérendre chaque page produit (SEO), sans liste en dur.
+  try {
+    const dpage = await browser.newPage();
+    await dpage.goto(base + '/prestations', { waitUntil: 'networkidle0', timeout: 30000 });
+    await dpage.waitForFunction(
+      () => document.querySelectorAll('a[href*="/prestations/"]').length > 0,
+      { timeout: 8000 }
+    ).catch(() => {});
+    const productRoutes = await dpage.evaluate(() => Array.from(new Set(
+      Array.from(document.querySelectorAll('a[href*="/prestations/"]'))
+        .map((a) => new URL(a.href).pathname)
+        .filter((p) => /^\/prestations\/.+/.test(p))
+    )));
+    await dpage.close();
+    for (const r of productRoutes) if (!ROUTES.includes(r)) ROUTES.push(r);
+    console.log(`[prerender] Pages produits découvertes : ${productRoutes.length}`);
+  } catch (e) {
+    console.warn('[prerender] découverte produits échouée :', e.message);
   }
 
   const results = [];

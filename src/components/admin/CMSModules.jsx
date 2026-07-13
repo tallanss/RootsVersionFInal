@@ -1316,6 +1316,7 @@ const NAV_ICON_OPTIONS = [
   { value: 'galerie', label: 'Image' },
   { value: 'invite', label: 'Cœur' },
   { value: 'contact', label: 'Enveloppe' },
+  { value: 'prestations', label: 'Colis / Prestation' },
   { value: 'blog', label: 'Livre' },
   { value: 'ville', label: 'Épingle carte' },
   { value: 'options', label: 'Étincelles' },

@@ -92,6 +92,34 @@ const DEFAULT_CONTENT = {
     { id: 'usb',       name: 'Clé USB souvenirs',  price: 15, desc: 'Toutes les photos en HD', enabled: true },
     { id: 'branding',  name: 'Branding Écran',     price: 29, desc: "Votre logo sur l'interface", enabled: true },
   ],
+  // « Prestations » = les machines/produits proposés à la location (au-delà du
+  // photobooth classique). Gérées en self-service via le dashboard → Prestations.
+  // Le 360 ci-dessous est un EXEMPLE pré-rempli : à modifier ou supprimer.
+  products: [
+    {
+      id: 'prod-360',
+      slug: 'photobooth-360',
+      name: 'Photobooth 360',
+      tagline: 'La vidéo qui tourne autour de vos invités',
+      priceFrom: 290,
+      description: "La sensation du moment : une plateforme sur laquelle vos invités montent pendant qu'une caméra tourne à 360° pour créer des vidéos ralenties spectaculaires, prêtes à partager sur les réseaux. Effet garanti sur tous vos événements.",
+      image: '',
+      features: [
+        'Vidéos 360° ralenties, effet « waouh »',
+        'Plateau lumineux jusqu\'à 3 personnes',
+        'Partage instantané par QR code',
+        'Technicien présent tout l\'événement',
+        'Musique, effets et logo personnalisables',
+      ],
+      badge: 'Nouveau',
+      visible: true,
+      indexable: true,
+      seoTitle: 'Location Photobooth 360 en Normandie — Le Havre, Rouen | PhotoRoots',
+      seoDesc: 'Louez un photobooth 360 pour vos événements en Seine-Maritime : vidéos 360° ralenties à partager, installation et technicien inclus. Devis gratuit en 24h.',
+      createdAt: '2026-07-12T00:00:00.000Z',
+      updatedAt: '2026-07-12T00:00:00.000Z',
+    },
+  ],
   theme: {
     primary: "#c5a059",
     accent: "#e3c18c",
@@ -104,6 +132,7 @@ const DEFAULT_CONTENT = {
     { id: 'home', label: 'Accueil', path: '/' },
     { id: 'photobooth', label: 'Photobooth', path: '/photobooth' },
     { id: 'tarifs', label: 'Tarifs', path: '/tarifs' },
+    { id: 'prestations', label: 'Prestations', path: '/prestations', icon: 'prestations' },
     { id: 'galerie', label: 'Galerie', path: '/galerie' },
     { id: 'invite', label: 'Invite', path: '/save-the-date' },
     { id: 'contact', label: 'Contact', path: '/contact' }
@@ -193,9 +222,17 @@ const buildMergedContent = (parsed = {}) => {
     theme: { ...DEFAULT_CONTENT.theme, ...(parsed.theme || {}) },
     // Garde : une navigation vide (ou invalide) retombe sur le défaut — sinon
     // le site n'aurait plus AUCUN menu (la barre du bas est la seule navigation).
-    navigation: (Array.isArray(parsed.navigation) && parsed.navigation.length > 0)
-      ? parsed.navigation
-      : DEFAULT_CONTENT.navigation,
+    navigation: (() => {
+      const base = (Array.isArray(parsed.navigation) && parsed.navigation.length > 0)
+        ? parsed.navigation
+        : DEFAULT_CONTENT.navigation;
+      // Migration : garantir l'onglet « Prestations » (ajouté après coup), inséré
+      // juste après « Tarifs ». Le propriétaire peut le renommer/déplacer via le CMS.
+      if (base.some((n) => n.id === 'prestations' || n.path === '/prestations')) return base;
+      const item = { id: 'prestations', label: 'Prestations', path: '/prestations', icon: 'prestations' };
+      const idx = base.findIndex((n) => n.id === 'tarifs' || n.path === '/tarifs');
+      return idx >= 0 ? [...base.slice(0, idx + 1), item, ...base.slice(idx + 1)] : [...base, item];
+    })(),
     legal: {
       ...DEFAULT_CONTENT.legal,
       ...(parsed.legal || {}),
@@ -222,6 +259,7 @@ const buildMergedContent = (parsed = {}) => {
       return stored;
     })(),
     addons: parsed.addons || DEFAULT_CONTENT.addons,
+    products: parsed.products || DEFAULT_CONTENT.products,
     pricing_plans: (() => {
       const stored = parsed.pricing_plans;
       if (!stored) return DEFAULT_CONTENT.pricing_plans;
