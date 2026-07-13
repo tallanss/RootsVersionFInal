@@ -189,7 +189,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
               <ShieldCheck size={18} />
             </div>
             <span style={{ fontWeight: 900, fontSize: '16px', color: '#fff' }}>
-              Power CMS <span style={{ color: 'var(--primary)', fontSize: '10px' }}>v3.0</span>
+              PhotoCMS <span style={{ color: 'var(--primary)', fontSize: '10px' }}>v4.0</span>
             </span>
           </div>
           <button
@@ -260,7 +260,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
             <div style={{ background: 'var(--primary)', padding: '5px', borderRadius: '7px', color: '#fff', display: 'flex' }}>
               <ShieldCheck size={15} />
             </div>
-            <span style={{ fontWeight: 900, fontSize: '14px', color: '#fff' }}>Power CMS</span>
+            <span style={{ fontWeight: 900, fontSize: '14px', color: '#fff' }}>PhotoCMS</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             {/* Save Button Mobile */}

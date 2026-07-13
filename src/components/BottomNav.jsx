@@ -40,8 +40,12 @@ const BottomNav = () => {
     ...(isActive ? { filter: 'drop-shadow(0 0 6px rgba(197,160,89,0.2))' } : {}),
   });
 
-  // Show all navigation items in bottom nav
-  const navItems = content.navigation || [];
+  // L'onglet « Prestations » n'apparaît que s'il existe au moins une prestation
+  // active (produit visible). Sinon on le retire du menu.
+  const hasActiveProducts = (content.products || []).some((p) => p.visible !== false);
+  const navItems = (content.navigation || []).filter(
+    (item) => hasActiveProducts || (item.id !== 'prestations' && item.path !== '/prestations')
+  );
 
   return (
     <nav className="ios-nav" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, padding: '8px 16px 0' }}>

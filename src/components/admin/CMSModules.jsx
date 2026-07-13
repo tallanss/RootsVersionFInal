@@ -978,7 +978,7 @@ export const SystemTools = () => {
         <div style={{ fontSize: '13px', color: '#64748b', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>Version du moteur</span>
-            <span style={{ fontWeight: 800, color: '#fff' }}>Power CMS v3.0 (Ultimate)</span>
+            <span style={{ fontWeight: 800, color: '#fff' }}>PhotoCMS v4.0 (Ultimate)</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>Statut de la base</span>

@@ -16,6 +16,8 @@ const safeUrl = (url) => {
 const Footer = () => {
   const { content, updateContent } = useContent();
   const currentYear = new Date().getFullYear();
+  // L'onglet « Prestations » n'apparaît que s'il y a au moins une prestation active.
+  const hasActiveProducts = (content.products || []).some((p) => p.visible !== false);
 
   return (
     <footer style={{ 
@@ -59,9 +61,11 @@ const Footer = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)' }}>Navigation</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {content.navigation?.map(item => (
-              <Link key={item.id} to={item.path} style={linkStyle}>{item.label}</Link>
-            ))}
+            {content.navigation
+              ?.filter(item => hasActiveProducts || (item.id !== 'prestations' && item.path !== '/prestations'))
+              .map(item => (
+                <Link key={item.id} to={item.path} style={linkStyle}>{item.label}</Link>
+              ))}
             {/* Liens fixes — masqués si le client les a déjà ajoutés à son menu (anti-doublon) */}
             {!content.navigation?.some(i => i.path === '/blog') && <Link to="/blog" style={linkStyle}>Blog &amp; conseils</Link>}
             {!content.navigation?.some(i => i.path === '/options-a-louer') && <Link to="/options-a-louer" style={linkStyle}>Options à louer</Link>}
