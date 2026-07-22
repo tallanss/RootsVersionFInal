@@ -94,6 +94,7 @@ const Home = () => {
 
       {/* ===== HERO ===== */}
         <section className="hero-section container" id="hero">
+          <div className="hero-text">
           <EditableBlock
             label="Badge"
             modalTitle="Modifier le Badge"
@@ -159,7 +160,9 @@ const Home = () => {
               );
             })()}
           </FadeIn>
+          </div>
 
+          <div className="hero-media">
           <FadeIn direction="up" delay={0.6} duration={1.2}>
             <EditableBlock
               label="Image Hero"
@@ -175,6 +178,7 @@ const Home = () => {
               </div>
             </EditableBlock>
           </FadeIn>
+          </div>
         </section>
 
       {/* ===== TRUST BAR ===== */}
@@ -259,6 +263,18 @@ const Home = () => {
             baptism: Sparkles, hen: Gift, seminar: Users,
             prom: GraduationCap, xmas: PartyPopper,
           };
+          // Photo d'ambiance par occasion (mappée sur la clé d'icône).
+          const SERVICE_PHOTOS = {
+            wedding: '/events/wedding-1.webp',
+            corporate: '/events/corporate-1.webp',
+            birthday: '/events/birthday-1.webp',
+            baptism: '/events/boho-1.webp',
+            hen: '/events/party-1.webp',
+            seminar: '/events/corporate-1.webp',
+            prom: '/events/gala-1.webp',
+            xmas: '/events/gala-1.webp',
+            _default: '/events/party-1.webp',
+          };
           // Services gérés via le CMS (dashboard → « Services »). ICON_MAP ci-dessus
           // reste la source de vérité des clés d'icônes disponibles.
           const services = content.services || [];
@@ -272,6 +288,7 @@ const Home = () => {
                 {loop.map((s, i) => {
                   const Icon = ICON_MAP[s.icon] || Sparkles;
                   const isClone = i >= services.length;
+                  const photo = SERVICE_PHOTOS[s.icon] || SERVICE_PHOTOS._default;
                   return (
                     <Link
                       key={`${s.id}-${i}`}
@@ -281,11 +298,14 @@ const Home = () => {
                       tabIndex={isClone ? -1 : 0}
                       onClick={(e) => { if (isAdminMode) e.preventDefault(); }}
                     >
-                      <div className={`service-card-icon ${s.icon}`}>
-                        <Icon size={22} />
+                      <img className="service-card-photo" src={photo} alt={s.title} loading="eager" decoding="async" />
+                      <div className="service-card-body">
+                        <div className={`service-card-icon ${s.icon}`}>
+                          <Icon size={19} />
+                        </div>
+                        <h3>{s.title}</h3>
+                        <p>{s.desc}</p>
                       </div>
-                      <h3>{s.title}</h3>
-                      <p>{s.desc}</p>
                     </Link>
                   );
                 })}

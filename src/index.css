@@ -79,6 +79,12 @@
     0 8px 20px rgba(197,160,89,0.10) !important;
 }
 
+/* « Pour chaque occasion » : cartes sans ombre portée (au repos comme au survol) */
+.service-card,
+.service-card:hover {
+  box-shadow: none !important;
+}
+
 /* Version SANS OMBRE pour Tarifs et Avis */
 .testimonial-card, .pricing-card {
   backdrop-filter: blur(20px) saturate(1.6);
@@ -718,59 +724,89 @@ button:active { transform: scale(0.97); }
   .services-marquee { overflow-x: auto; scroll-snap-type: x mandatory; }
 }
 
+/* ---- Cartes « occasion » : tuiles-photos (vraies photos d'événements) ---- */
 .service-card {
-  flex: 0 0 240px;
-  min-height: 170px;
-  padding: 22px 20px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  flex: 0 0 246px;
+  height: 340px;
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  overflow: hidden;
+  position: relative;
+  display: block;
   text-decoration: none;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.3s, box-shadow 0.3s, background 0.3s;
+  border: none !important;
+  background: var(--bg-secondary) !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   scroll-snap-align: start;
 }
-.service-card:hover {
-  transform: translateY(-6px);
-  border-color: var(--primary);
-  background: rgba(255, 255, 255, 0.06);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+.service-card-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.service-card:hover .service-card-photo { transform: scale(1.07); }
+/* Dégradé sombre pour la lisibilité du texte en bas */
+.service-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(12,10,20,0.90) 0%, rgba(12,10,20,0.38) 46%, rgba(12,10,20,0.04) 76%);
+  z-index: 1;
+}
+/* Filet doré en haut, qui se déploie au survol */
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), #e3c18c);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 3;
+}
+.service-card:hover::before { transform: scaleX(1); }
+.service-card:hover { transform: translateY(-6px); }
 
+.service-card-body {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 20px;
+}
 .service-card-icon {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  align-self: flex-start;
+  margin-bottom: 4px;
+  background: rgba(197,160,89,0.92) !important;
+  color: #fff !important;
+  border: none !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.service-card-icon.wedding    { background: #fce7f3; color: #ec4899; }
-.service-card-icon.corporate  { background: #dbeafe; color: #3b82f6; }
-.service-card-icon.birthday   { background: #fef3c7; color: #f59e0b; }
-.service-card-icon.baptism    { background: #e0f2fe; color: #0284c7; }
-.service-card-icon.hen        { background: #fae8ff; color: #a855f7; }
-.service-card-icon.seminar    { background: #dcfce7; color: #16a34a; }
-.service-card-icon.prom       { background: #ede9fe; color: #7c3aed; }
-.service-card-icon.xmas       { background: #fee2e2; color: #dc2626; }
-
+.service-card:hover .service-card-icon { transform: scale(1.08) rotate(-4deg); }
 .service-card h3 {
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 800;
-  color: var(--text-main);
+  color: #fff;
   margin: 0;
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 .service-card p {
   font-size: 13px;
-  color: var(--text-muted);
+  color: rgba(255,255,255,0.82);
   line-height: 1.45;
   margin: 0;
 }
@@ -2503,4 +2539,67 @@ body.cookie-banner-visible .date-checker-pill {
   .btn-secondary,
   .filter-btn { transition: none; }
   .animated-border-wrapper .pricing-card.featured { transform: none; }
+}
+
+/* ============================================================
+   DESKTOP (>= 1024px) — le site respire sur grand écran.
+   La barre de navigation du bas est CONSERVÉE (choix produit).
+   ============================================================ */
+@media (min-width: 1024px) {
+  /* Contenu plus large */
+  .container { max-width: 1080px; }
+
+  /* Lisibilité : les blocs de texte ne s'étirent pas sur toute la largeur */
+  .section-title { font-size: 34px; }
+  .section-subtitle { max-width: 660px; }
+
+  /* HERO en 2 colonnes : texte à gauche, image à droite */
+  .hero-section {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 48px;
+    align-items: center;
+    text-align: left;
+    padding: 72px 24px 56px;
+  }
+  .hero-badge { margin-bottom: 20px; }
+  .hero-title { font-size: 50px; max-width: none; margin: 0 0 16px; }
+  .hero-subtitle { font-size: 18px; max-width: 500px; margin: 0 0 28px; }
+  .hero-image { max-width: 100%; margin: 0; }
+  .hero-image img { height: 520px; }
+
+  /* Tarifs : les formules s'affichent côte à côte */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+    align-items: stretch;
+  }
+  .pricing-wrapper { height: 100%; }
+
+  /* Le bouton du hero ne s'étire pas sur toute la largeur */
+  .hero-section .btn-primary { width: auto; min-width: 260px; }
+
+  /* Formulaires : colonne centrée et lisible (pas de champs pleine largeur) */
+  .container form { max-width: 640px; margin-left: auto; margin-right: auto; }
+  .form-input, .form-select, .form-textarea { max-width: 620px; }
+
+  /* « Comment ça marche ? » : scrollytelling en 2 colonnes — les étapes
+     défilent à gauche, l'image (collée/sticky) se dévoile à droite au fil
+     du scroll. L'image carrée n'est plus rognée par un bandeau trop plat. */
+  .scrolly-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+  .scrolly-steps { grid-column: 1; grid-row: 1; }
+  .scrolly-sticky-viewport {
+    grid-column: 2;
+    grid-row: 1;
+    height: auto !important;
+    aspect-ratio: 4 / 3;
+    max-width: 100%;
+    margin: 0 !important;
+  }
 }
