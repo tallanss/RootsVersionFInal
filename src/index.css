@@ -719,6 +719,11 @@ button:active { transform: scale(0.97); }
   to   { transform: translateX(-50%); }
 }
 
+/* Sur mobile, on voit peu de cartes : on accélère le défilement (moins « lent »). */
+@media (max-width: 768px) {
+  .services-marquee-track { animation-duration: 25s; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .services-marquee-track { animation: none; }
   .services-marquee { overflow-x: auto; scroll-snap-type: x mandatory; }
