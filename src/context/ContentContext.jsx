@@ -245,11 +245,12 @@ const buildMergedContent = (parsed = {}) => {
     },
     socials: (() => {
       const s = { ...DEFAULT_CONTENT.socials, ...(parsed.socials || {}) };
-      // Un lien social vide ou resté sur le placeholder « # » → on retombe sur
-      // le bon lien par défaut (corrige les comptes Insta/Facebook).
-      for (const k of ['instagram', 'facebook', 'whatsapp']) {
-        if (!s[k] || s[k] === '#') s[k] = DEFAULT_CONTENT.socials[k];
-      }
+      // Comptes réseaux OFFICIELS forcés : une mauvaise valeur avait été
+      // enregistrée en base et réapparaissait. On garantit ici les bons liens.
+      // (Pour en changer un jour : modifier ces 2 lignes.)
+      s.instagram = 'https://www.instagram.com/photoroots_normandie/';
+      s.facebook = 'https://www.facebook.com/profile.php?id=61575125582188';
+      if (!s.whatsapp || s.whatsapp === '#') s.whatsapp = DEFAULT_CONTENT.socials.whatsapp;
       return s;
     })(),
     contact: { ...DEFAULT_CONTENT.contact, ...(parsed.contact || {}) },
