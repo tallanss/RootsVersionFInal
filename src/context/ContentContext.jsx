@@ -142,8 +142,8 @@ const DEFAULT_CONTENT = {
     zone: 'Le Havre, Rouen, Dieppe — Seine-Maritime'
   },
   socials: {
-    instagram: '#',
-    facebook: '#',
+    instagram: 'https://www.instagram.com/photoroots_normandie/',
+    facebook: 'https://www.facebook.com/profile.php?id=61575125582188',
     whatsapp: 'https://wa.me/33612345678'
   },
   seo: {
@@ -243,7 +243,15 @@ const buildMergedContent = (parsed = {}) => {
       mentions: parsed.legal?.mentions?.length ? parsed.legal.mentions : DEFAULT_CONTENT.legal.mentions,
       cgv: parsed.legal?.cgv?.length ? parsed.legal.cgv : DEFAULT_CONTENT.legal.cgv,
     },
-    socials: { ...DEFAULT_CONTENT.socials, ...(parsed.socials || {}) },
+    socials: (() => {
+      const s = { ...DEFAULT_CONTENT.socials, ...(parsed.socials || {}) };
+      // Un lien social vide ou resté sur le placeholder « # » → on retombe sur
+      // le bon lien par défaut (corrige les comptes Insta/Facebook).
+      for (const k of ['instagram', 'facebook', 'whatsapp']) {
+        if (!s[k] || s[k] === '#') s[k] = DEFAULT_CONTENT.socials[k];
+      }
+      return s;
+    })(),
     contact: { ...DEFAULT_CONTENT.contact, ...(parsed.contact || {}) },
     seo: {
       ...DEFAULT_CONTENT.seo,
