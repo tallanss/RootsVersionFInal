@@ -719,9 +719,9 @@ button:active { transform: scale(0.97); }
   to   { transform: translateX(-50%); }
 }
 
-/* Sur mobile, on voit peu de cartes : on accélère le défilement (moins « lent »). */
+/* Sur mobile, on voit peu de cartes : défilement nettement plus rapide. */
 @media (max-width: 768px) {
-  .services-marquee-track { animation-duration: 25s; }
+  .services-marquee-track { animation-duration: 13s; }
 }
 
 @media (prefers-reduced-motion: reduce) {
