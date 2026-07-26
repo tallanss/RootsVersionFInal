@@ -709,9 +709,14 @@ button:active { transform: scale(0.97); }
   will-change: transform;
 }
 
-.services-marquee:hover .services-marquee-track,
-.services-marquee:focus-within .services-marquee-track {
-  animation-play-state: paused;
+/* Pause au survol : UNIQUEMENT sur appareils avec un vrai survol (desktop).
+   Sur tactile, le :hover « collant » figeait le ruban après un simple appui
+   (il paraissait alors arrêté / très lent). */
+@media (hover: hover) and (pointer: fine) {
+  .services-marquee:hover .services-marquee-track,
+  .services-marquee:focus-within .services-marquee-track {
+    animation-play-state: paused;
+  }
 }
 
 @keyframes services-marquee-scroll {
@@ -721,7 +726,7 @@ button:active { transform: scale(0.97); }
 
 /* Sur mobile, on voit peu de cartes : défilement nettement plus rapide. */
 @media (max-width: 768px) {
-  .services-marquee-track { animation-duration: 13s; }
+  .services-marquee-track { animation-duration: 10s; }
 }
 
 @media (prefers-reduced-motion: reduce) {
