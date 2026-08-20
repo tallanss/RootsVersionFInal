@@ -94,32 +94,9 @@ const DEFAULT_CONTENT = {
   ],
   // « Prestations » = les machines/produits proposés à la location (au-delà du
   // photobooth classique). Gérées en self-service via le dashboard → Prestations.
-  // Le 360 ci-dessous est un EXEMPLE pré-rempli : à modifier ou supprimer.
-  products: [
-    {
-      id: 'prod-360',
-      slug: 'photobooth-360',
-      name: 'Photobooth 360',
-      tagline: 'La vidéo qui tourne autour de vos invités',
-      priceFrom: 290,
-      description: "La sensation du moment : une plateforme sur laquelle vos invités montent pendant qu'une caméra tourne à 360° pour créer des vidéos ralenties spectaculaires, prêtes à partager sur les réseaux. Effet garanti sur tous vos événements.",
-      image: '',
-      features: [
-        'Vidéos 360° ralenties, effet « waouh »',
-        'Plateau lumineux jusqu\'à 3 personnes',
-        'Partage instantané par QR code',
-        'Technicien présent tout l\'événement',
-        'Musique, effets et logo personnalisables',
-      ],
-      badge: 'Nouveau',
-      visible: true,
-      indexable: true,
-      seoTitle: 'Location Photobooth 360 en Normandie — Le Havre, Rouen | PhotoRoots',
-      seoDesc: 'Louez un photobooth 360 pour vos événements en Seine-Maritime : vidéos 360° ralenties à partager, installation et technicien inclus. Devis gratuit en 24h.',
-      createdAt: '2026-07-12T00:00:00.000Z',
-      updatedAt: '2026-07-12T00:00:00.000Z',
-    },
-  ],
+  // Aucune prestation par défaut : l'onglet « Prestations » reste masqué tant
+  // que le propriétaire n'en a pas ajouté au moins une.
+  products: [],
   theme: {
     primary: "#c5a059",
     accent: "#e3c18c",
@@ -272,7 +249,9 @@ const buildMergedContent = (parsed = {}) => {
       return stored;
     })(),
     addons: parsed.addons || DEFAULT_CONTENT.addons,
-    products: parsed.products || DEFAULT_CONTENT.products,
+    // On retire l'ancien exemple « Photobooth 360 » (seed id 'prod-360') s'il traîne
+    // encore en base — par son id exact, donc aucun vrai produit n'est impacté.
+    products: (parsed.products || DEFAULT_CONTENT.products).filter((p) => p.id !== 'prod-360'),
     pricing_plans: (() => {
       const stored = parsed.pricing_plans;
       if (!stored) return DEFAULT_CONTENT.pricing_plans;
