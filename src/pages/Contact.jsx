@@ -9,7 +9,7 @@ import {
 import { processBooking, formatDateFR, invalidateBusySlotsCache } from '../services/emailService';
 import { trackEvent } from '../utils/analytics';
 import { isConfigured } from '../config/emailjs';
-import { formatPrice, priceToNumber } from '../utils/galleryFormat';
+import { formatPrice, priceToNumber, formatEuro } from '../utils/galleryFormat';
 const Confetti = lazy(() => import('../components/Confetti'));
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
@@ -166,6 +166,20 @@ const Contact = () => {
     else if (m === 'devis') setMode('devis');
   }, [location.search]);
 
+  // Pré-sélectionner la machine depuis l'URL (?machine=<id>), une seule fois.
+  // Alimenté par la section « Nos machines » de l'accueil (« Réserver ce modèle »).
+  const machinePrefilled = useRef(false);
+  useEffect(() => {
+    if (machinePrefilled.current) return;
+    const id = new URLSearchParams(location.search).get('machine');
+    if (!id) { machinePrefilled.current = true; return; }
+    const m = (content.machines || []).find((x) => x.id === id && x.visible !== false);
+    if (m) {
+      setFormData((prev) => ({ ...prev, machine: m.id }));
+      machinePrefilled.current = true;
+    }
+  }, [location.search, content.machines]);
+
   // Le calendrier ne bloque QUE les dates marquées indisponibles à la main
   // dans le dashboard (onglet « Disponibilités »). La détection automatique
   // « 2+ événements dans l'agenda Google → date complète » a été retirée.
@@ -284,10 +298,10 @@ const Contact = () => {
     const addonsText = selectedAddons.map(a => `${a.name} (${a.price}€)`).join(', ');
 
     const machineText = selectedMachine
-      ? `${selectedMachine.name}${machineSupplement > 0 ? ` (+${machineSupplement}€)` : ''}`
+      ? `${selectedMachine.name}${machineSupplement > 0 ? ` (+${formatEuro(machineSupplement)}€)` : ''}`
       : '';
     const estimationText = showEstimate
-      ? `Estimation : ${fromPrefix}${estimatedTotal}€ (${formData.formula} ${formulaBase}€${machineSupplement > 0 ? ` + ${selectedMachine.name} ${machineSupplement}€` : ''})`
+      ? `Estimation : ${fromPrefix}${formatEuro(estimatedTotal)}€ (${formData.formula} ${formatEuro(formulaBase)}€${machineSupplement > 0 ? ` + ${selectedMachine.name} ${formatEuro(machineSupplement)}€` : ''})`
       : '';
 
     const autoMessage = [
@@ -912,7 +926,7 @@ const Contact = () => {
                             <span style={{ fontWeight: 800, fontSize: '15px', color: 'var(--text-main)' }}>{m.name}</span>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
                               <span style={{ fontSize: '13px', fontWeight: 700, color: supp > 0 ? 'var(--primary)' : 'var(--text-muted)' }}>
-                                {supp > 0 ? `+${supp}€` : 'Inclus'}
+                                {supp > 0 ? `+${formatEuro(supp)}€` : 'Inclus'}
                               </span>
                               <span style={{
                                 width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
@@ -993,11 +1007,11 @@ const Contact = () => {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '14px 16px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--primary)' }}>
                       <div>
                         <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)' }}>
-                          {formData.formula} ({formulaBase}€){machineSupplement > 0 ? ` + ${selectedMachine.name} (+${machineSupplement}€)` : ''}
+                          {formData.formula} ({formatEuro(formulaBase)}€){machineSupplement > 0 ? ` + ${selectedMachine.name} (+${formatEuro(machineSupplement)}€)` : ''}
                         </div>
-                        <div style={{ fontSize: '11px', color: 'var(--text-light)', marginTop: '2px' }}>Estimation indicative — devis personnalisé sous 24h</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>Estimation indicative — devis personnalisé sous 24h</div>
                       </div>
-                      <div style={{ fontSize: '24px', fontWeight: 900, color: 'var(--primary)', whiteSpace: 'nowrap' }}>{fromPrefix}{estimatedTotal}€</div>
+                      <div style={{ fontSize: '24px', fontWeight: 900, color: 'var(--primary)', whiteSpace: 'nowrap' }}>{fromPrefix}{formatEuro(estimatedTotal)}€</div>
                     </div>
                   </div>
                 )}

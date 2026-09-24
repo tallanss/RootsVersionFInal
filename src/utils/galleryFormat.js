@@ -80,3 +80,17 @@ export const priceToNumber = (price) => {
   const n = parseFloat(cleaned);
   return Number.isFinite(n) ? n : 0;
 };
+
+/**
+ * Formate un montant CALCULÉ (somme de prix) en euros à la française, SANS le
+ * symbole € (l'appelant l'ajoute). Arrondit au centime pour éviter le bruit
+ * flottant (189,9 + 49,9 = 239,8 et non 239,79999…) et n'affiche les décimales
+ * que si nécessaire : 239 → "239", 239,8 → "239,80".
+ */
+export const formatEuro = (value) => {
+  const n = Math.round((Number(value) || 0) * 100) / 100;
+  return n.toLocaleString('fr-FR', {
+    minimumFractionDigits: Number.isInteger(n) ? 0 : 2,
+    maximumFractionDigits: 2,
+  });
+};

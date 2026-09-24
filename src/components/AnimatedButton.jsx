@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2, CheckCircle2 } from 'lucide-react';
 import MagneticEffect from './MagneticEffect';
 
-const AnimatedButton = ({ 
-  to, 
-  children, 
-  className = "btn-primary", 
-  style = {} 
+const AnimatedButton = ({
+  to,
+  children,
+  className = "btn-primary",
+  style = {},
+  'aria-label': ariaLabel,
 }) => {
   const [status, setStatus] = useState('idle'); // 'idle' | 'loading' | 'success'
   const navigate = useNavigate();
@@ -34,8 +35,9 @@ const AnimatedButton = ({
 
   return (
     <MagneticEffect strength={0.2}>
-      <button 
+      <button
       className={`${className} ${status !== 'idle' ? 'animating' : ''}`}
+      aria-label={ariaLabel}
       style={{
         ...style,
         position: 'relative',
