@@ -29,6 +29,7 @@ import {
   X,
   Images,
   Package,
+  Camera,
 } from 'lucide-react';
 
 import { useContent } from '../context/ContentContext';
@@ -53,6 +54,7 @@ import {
 import PagesManager from './admin/PagesManager';
 import ClientGalleries from './admin/ClientGalleries';
 import ProductsManager from './admin/ProductsManager';
+import MachinesManager from './admin/MachinesManager';
 
 const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) => {
   const { content, saveStatus, updateContent } = useContent();
@@ -65,6 +67,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
     { id: 'analytics', label: 'Statistiques', icon: BarChart3, category: 'BUSINESS' },
     { id: 'messages', label: 'Demandes reçues', icon: Mail, category: 'BUSINESS' },
     { id: 'tarifs', label: 'Formules & prix', icon: Tag, category: 'BUSINESS' },
+    { id: 'machines', label: 'Machines', icon: Camera, category: 'BUSINESS' },
     { id: 'products', label: 'Prestations', icon: Package, category: 'BUSINESS' },
     { id: 'addons', label: 'Options à louer', icon: PlusCircle, category: 'BUSINESS' },
 
@@ -106,6 +109,7 @@ const AdminSidebar = ({ activeTab, setActiveTab, onLogout, isOpen, setIsOpen }) 
       case 'analytics': return <AnalyticsHub />;
       case 'messages': return <LeadCenter />;
       case 'tarifs': return <PriceArchitect />;
+      case 'machines': return <MachinesManager />;
       case 'products': return <ProductsManager />;
       case 'addons': return <AddonsManager />;
       case 'pagecontent': return <PageContentEditor />;

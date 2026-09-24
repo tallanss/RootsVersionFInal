@@ -164,6 +164,7 @@ function createCalendarEvent(data) {
     'Lieu : ' + (data.location || 'Non renseigné') + '\n' +
     'Nombre d\'invités : ' + (data.guests || 'Non précisé') + '\n' +
     'Pack souhaité : ' + (data.formula || 'Non précisé') + '\n' +
+    'Machine : ' + (data.machine || 'Non précisée') + '\n' +
     'Options : ' + (data.addons || 'Aucune') + '\n' +
     'Préférence de contact : ' + (data.contactPreference || 'Non précisée') + '\n' +
     'Connu via : ' + (data.referralSource || 'Non précisé') + '\n\n' +
@@ -196,6 +197,7 @@ function sendClientEmail(data) {
     ['Lieu',                data.location || 'À préciser'],
     ['Nombre d\'invités',   data.guests || 'À préciser'],
     ['Pack souhaité',       data.formula || 'À préciser'],
+    ['Machine',             data.machine || 'À préciser'],
     ['Téléphone',           data.phone || '—'],
     ['Préférence de contact', data.contactPreference || '—'],
   ];
@@ -241,6 +243,7 @@ function sendOwnerEmail(data) {
     ['Lieu',                  data.location || 'Non renseigné'],
     ['Nombre d\'invités',     data.guests || '—'],
     ['Pack souhaité',         data.formula || '—'],
+    ['Machine',               data.machine || '—'],
     ['Préférence de contact', data.contactPreference || '—'],
     ['Connu via',             data.referralSource || '—'],
   ];

@@ -9,7 +9,7 @@ import {
 import { processBooking, formatDateFR, invalidateBusySlotsCache } from '../services/emailService';
 import { trackEvent } from '../utils/analytics';
 import { isConfigured } from '../config/emailjs';
-import { formatPrice } from '../utils/galleryFormat';
+import { formatPrice, priceToNumber } from '../utils/galleryFormat';
 const Confetti = lazy(() => import('../components/Confetti'));
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
@@ -105,7 +105,7 @@ const Contact = () => {
     contactPreference: '',
     referralSource: '',
     addons: [],
-    prestations: [],
+    machine: '', // id de la machine choisie
   });
 
   // Formules disponibles (depuis le CMS, avec fallback) — incluent prix + desc
@@ -126,20 +126,38 @@ const Contact = () => {
     ];
   }, [content.pricing_plans]);
 
-  // Prestations sélectionnables dans le devis = Photobooth + les produits du CMS
-  const prestationOptions = useMemo(() => {
-    const prods = (content.products || [])
-      .filter((p) => p.visible !== false)
-      .map((p) => p.name);
-    return ['Photobooth', ...prods];
-  }, [content.products]);
+  // Machines réservables (depuis le CMS). Le client en choisit UNE ; son
+  // supplément s'ajoute au prix de la formule choisie.
+  const machineOptions = useMemo(
+    () => (content.machines || []).filter((m) => m.visible !== false),
+    [content.machines]
+  );
+  const selectedMachine = useMemo(
+    () => machineOptions.find((m) => m.id === formData.machine) || null,
+    [machineOptions, formData.machine]
+  );
+  const machineSupplement = selectedMachine ? (Number(selectedMachine.supplement) || 0) : 0;
 
-  const togglePrestation = (name) => setFormData((prev) => ({
-    ...prev,
-    prestations: prev.prestations.includes(name)
-      ? prev.prestations.filter((p) => p !== name)
-      : [...prev.prestations, name],
-  }));
+  // Formule choisie (objet complet) + son prix de base numérique. Une formule
+  // « Sur devis » ou l'option « Je ne sais pas encore » n'a pas de prix
+  // chiffrable → base 0 (et donc aucune estimation trompeuse, voir showEstimate).
+  const selectedFormula = useMemo(
+    () => formulaOptions.find((o) => o.name === formData.formula) || null,
+    [formulaOptions, formData.formula]
+  );
+  const formulaBase = selectedFormula ? priceToNumber(selectedFormula.price) : 0;
+  // Prix « à partir de » / « dès X€ » : on garde la nuance plutôt que d'afficher
+  // un total présenté comme exact.
+  const formulaIsFrom = selectedFormula
+    ? /à\s*partir|d[eè]s\b|\bfrom\b/i.test(String(selectedFormula.price || ''))
+    : false;
+  const fromPrefix = formulaIsFrom ? 'dès ' : '';
+  const estimatedTotal = formulaBase + machineSupplement;
+  // On n'affiche / n'envoie une estimation chiffrée QUE si la formule a un vrai
+  // prix numérique (> 0). Évite un faux « 0€ » ou un total trompeur (« Sur devis »).
+  const showEstimate = Boolean(formData.formula && formulaBase > 0);
+
+  const selectMachine = (id) => setFormData((prev) => ({ ...prev, machine: prev.machine === id ? '' : id }));
 
   // Synchroniser le mode avec le paramètre d'URL (?mode=message)
   useEffect(() => {
@@ -147,19 +165,6 @@ const Contact = () => {
     if (m === 'message') setMode('message');
     else if (m === 'devis') setMode('devis');
   }, [location.search]);
-
-  // Pré-sélectionner la prestation depuis l'URL (?prestation=slug), une seule fois
-  const prestationPrefilled = useRef(false);
-  useEffect(() => {
-    if (prestationPrefilled.current) return;
-    const slug = new URLSearchParams(location.search).get('prestation');
-    if (!slug) { prestationPrefilled.current = true; return; }
-    const prod = (content.products || []).find((p) => p.slug === slug);
-    if (prod) {
-      setFormData((prev) => ({ ...prev, prestations: [prod.name] }));
-      prestationPrefilled.current = true;
-    }
-  }, [location.search, content.products]);
 
   // Le calendrier ne bloque QUE les dates marquées indisponibles à la main
   // dans le dashboard (onglet « Disponibilités »). La détection automatique
@@ -278,10 +283,16 @@ const Contact = () => {
     const selectedAddons = (content.addons || []).filter(a => formData.addons.includes(a.id));
     const addonsText = selectedAddons.map(a => `${a.name} (${a.price}€)`).join(', ');
 
-    const prestationsText = formData.prestations.join(', ');
+    const machineText = selectedMachine
+      ? `${selectedMachine.name}${machineSupplement > 0 ? ` (+${machineSupplement}€)` : ''}`
+      : '';
+    const estimationText = showEstimate
+      ? `Estimation : ${fromPrefix}${estimatedTotal}€ (${formData.formula} ${formulaBase}€${machineSupplement > 0 ? ` + ${selectedMachine.name} ${machineSupplement}€` : ''})`
+      : '';
 
     const autoMessage = [
-      prestationsText ? `Prestation(s) souhaitée(s) : ${prestationsText}` : null,
+      machineText ? `Machine choisie : ${machineText}` : null,
+      estimationText || null,
       formData.guests ? `Nombre d'invités : ${formData.guests}` : null,
       formData.formula ? `Pack souhaité : ${formData.formula}` : null,
       addonsText ? `Options souhaitées : ${addonsText}` : null,
@@ -291,7 +302,7 @@ const Contact = () => {
 
     const booking = {
       date: formData.date,
-      prestation: prestationsText,
+      machine: machineText,
       formula: formData.formula || 'Demande de devis',
       addons: addonsText,
       name: formData.name,
@@ -319,7 +330,7 @@ const Contact = () => {
         subject: formData.eventType || 'Demande de devis',
         location: formData.location,
         guests: formData.guests,
-        prestation: prestationsText,
+        machine: machineText,
         formula: formData.formula || 'Demande de devis',
         addons: addonsText,
         fullMessage: autoMessage,
@@ -876,29 +887,42 @@ const Contact = () => {
                   </div>
                 </div>
 
-                {/* Quelle prestation ? (Photobooth, 360, …) */}
-                {prestationOptions.length > 1 && (
+                {/* Choix de la machine (borne) — une seule ; le prix s'adapte */}
+                {machineOptions.length > 0 && (
                   <div className="form-group">
-                    <label className="form-label">Quelle prestation vous intéresse ? <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(plusieurs possibles)</span></label>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
-                      {prestationOptions.map((name) => {
-                        const active = formData.prestations.includes(name);
+                    <label className="form-label">Quelle machine ? <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(le prix s'adapte)</span></label>
+                    <div style={{ display: 'grid', gap: '8px', marginTop: '4px' }}>
+                      {machineOptions.map((m) => {
+                        const active = formData.machine === m.id;
+                        const supp = Number(m.supplement) || 0;
                         return (
                           <button
                             type="button"
-                            key={name}
-                            onClick={() => togglePrestation(name)}
+                            key={m.id}
+                            onClick={() => selectMachine(m.id)}
                             style={{
-                              display: 'inline-flex', alignItems: 'center', gap: '7px',
-                              padding: '10px 15px', borderRadius: '999px', cursor: 'pointer', fontSize: '14px', fontWeight: 700,
-                              background: active ? 'var(--primary)' : 'var(--bg-app)',
-                              color: active ? '#fff' : 'var(--text-muted)',
+                              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+                              padding: '14px 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left',
+                              background: active ? 'var(--bg-secondary)' : 'var(--bg-app)',
                               border: active ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                              boxShadow: active ? '0 0 0 3px var(--accent-glow)' : 'none',
                               transition: 'all 0.2s',
                             }}
                           >
-                            {active && <CheckCircle2 size={15} />}
-                            {name}
+                            <span style={{ fontWeight: 800, fontSize: '15px', color: 'var(--text-main)' }}>{m.name}</span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+                              <span style={{ fontSize: '13px', fontWeight: 700, color: supp > 0 ? 'var(--primary)' : 'var(--text-muted)' }}>
+                                {supp > 0 ? `+${supp}€` : 'Inclus'}
+                              </span>
+                              <span style={{
+                                width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
+                                border: active ? 'none' : '2px solid var(--border-medium)',
+                                background: active ? 'var(--primary)' : 'transparent',
+                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              }}>
+                                {active && <CheckCircle2 size={16} color="#fff" />}
+                              </span>
+                            </span>
                           </button>
                         );
                       })}
@@ -961,6 +985,22 @@ const Contact = () => {
                     </button>
                   </div>
                 </div>
+
+                {/* Estimation de prix : formule (+ supplément machine si choisie).
+                    Masquée si la formule n'a pas de prix chiffrable (« Sur devis »). */}
+                {showEstimate && (
+                  <div className="form-group">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '14px 16px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--primary)' }}>
+                      <div>
+                        <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)' }}>
+                          {formData.formula} ({formulaBase}€){machineSupplement > 0 ? ` + ${selectedMachine.name} (+${machineSupplement}€)` : ''}
+                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-light)', marginTop: '2px' }}>Estimation indicative — devis personnalisé sous 24h</div>
+                      </div>
+                      <div style={{ fontSize: '24px', fontWeight: 900, color: 'var(--primary)', whiteSpace: 'nowrap' }}>{fromPrefix}{estimatedTotal}€</div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Options à louer (add-ons) */}
                 {(content.addons || []).filter(a => a.enabled !== false).length > 0 && (

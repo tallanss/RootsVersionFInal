@@ -97,6 +97,16 @@ const DEFAULT_CONTENT = {
   // Aucune prestation par défaut : l'onglet « Prestations » reste masqué tant
   // que le propriétaire n'en a pas ajouté au moins une.
   products: [],
+  // « Machines » = les bornes proposées à la réservation. Chaque machine a un
+  // supplément (€) qui s'ajoute au prix de la formule choisie. Éditables en
+  // self-service via le dashboard → « Machines » (nom, description, photo, prix).
+  machines: [
+    { id: 'm-noir',   name: 'Classique Noir',  description: 'Notre borne photo, finition noire élégante.',           image: '', supplement: 0,  visible: true },
+    { id: 'm-blanc',  name: 'Classique Blanc', description: 'Notre borne photo, finition blanche épurée.',            image: '', supplement: 0,  visible: true },
+    { id: 'm-bois',   name: 'Classique Bois',  description: 'Notre borne photo, habillage bois chaleureux.',          image: '', supplement: 0,  visible: true },
+    { id: 'm-miroir', name: 'Miroir Booth',    description: 'Le miroir photo interactif grand format, effet waouh.',  image: '', supplement: 50, visible: true },
+    { id: 'm-360',    name: 'Photobooth 360',  description: 'La plateforme vidéo 360° pour des clips spectaculaires.', image: '', supplement: 0,  visible: true },
+  ],
   theme: {
     primary: "#c5a059",
     accent: "#e3c18c",
@@ -252,6 +262,10 @@ const buildMergedContent = (parsed = {}) => {
     // On retire l'ancien exemple « Photobooth 360 » (seed id 'prod-360') s'il traîne
     // encore en base — par son id exact, donc aucun vrai produit n'est impacté.
     products: (parsed.products || DEFAULT_CONTENT.products).filter((p) => p.id !== 'prod-360'),
+    // Absent/undefined → on installe les machines par défaut (1re fois / migration).
+    // Un tableau VIDE volontaire (le proprio a tout supprimé) est conservé tel quel,
+    // sinon la suppression serait annulée au rechargement.
+    machines: Array.isArray(parsed.machines) ? parsed.machines : DEFAULT_CONTENT.machines,
     pricing_plans: (() => {
       const stored = parsed.pricing_plans;
       if (!stored) return DEFAULT_CONTENT.pricing_plans;
