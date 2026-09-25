@@ -10,6 +10,7 @@ import { processBooking, formatDateFR, invalidateBusySlotsCache } from '../servi
 import { trackEvent } from '../utils/analytics';
 import { isConfigured } from '../config/emailjs';
 import { formatPrice, priceToNumber, formatEuro } from '../utils/galleryFormat';
+import { RENTAL_OPTIONS_ENABLED } from '../config/features';
 const Confetti = lazy(() => import('../components/Confetti'));
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
@@ -1019,8 +1020,8 @@ const Contact = () => {
                   </div>
                 )}
 
-                {/* Options à louer (add-ons) */}
-                {(content.addons || []).filter(a => a.enabled !== false).length > 0 && (
+                {/* Options à louer (add-ons) — masquées via RENTAL_OPTIONS_ENABLED */}
+                {RENTAL_OPTIONS_ENABLED && (content.addons || []).filter(a => a.enabled !== false).length > 0 && (
                   <div className="form-group">
                     <label className="form-label">Options souhaitées <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
                     <div style={{ display: 'grid', gap: '8px', marginTop: '4px' }}>

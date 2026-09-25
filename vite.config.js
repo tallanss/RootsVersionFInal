@@ -22,7 +22,7 @@ export default defineConfig({
       dynamicRoutes: [
         '/photobooth',
         '/tarifs',
-        '/options-a-louer',
+        // '/options-a-louer',  // RENTAL_OPTIONS masqué — réactiver avec le drapeau
         '/prestations',
         '/galerie',
         '/contact',

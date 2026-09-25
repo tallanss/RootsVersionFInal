@@ -9,6 +9,7 @@ import { useContent } from '../context/ContentContext';
 import EditableBlock from '../components/admin/EditableBlock';
 import { useAdmin } from '../context/AdminContext';
 import { formatPrice, priceToNumber } from '../utils/galleryFormat';
+import { RENTAL_OPTIONS_ENABLED } from '../config/features';
 
 /* ── Helper : formate l'affichage du prix de façon robuste ──
    - Prix numérique (ex: "249" ou 249)      → "249€" taille normale
@@ -282,7 +283,8 @@ const Tarifs = () => {
   const activeProducts = (content.products || []).filter((p) => p.visible !== false);
 
   // Options à la carte gérées via le CMS (dashboard → « Options à louer »).
-  const options = (content.addons || []).filter(o => o.enabled !== false);
+  // Masquées tant que RENTAL_OPTIONS_ENABLED est false → liste vide = section cachée.
+  const options = RENTAL_OPTIONS_ENABLED ? (content.addons || []).filter(o => o.enabled !== false) : [];
 
   const toggleOption = (id) => {
     haptic(8);
@@ -412,7 +414,8 @@ const Tarifs = () => {
       )}
 
       {prestationView === 'photobooth' && (<>
-      {/* LIEN VERS LES OPTIONS À LOUER */}
+      {/* LIEN VERS LES OPTIONS À LOUER — masqué via RENTAL_OPTIONS_ENABLED */}
+      {RENTAL_OPTIONS_ENABLED && (
       <section className="container" style={{ padding: '0 20px 8px' }}>
         <Link
           to="/options-a-louer"
@@ -427,6 +430,7 @@ const Tarifs = () => {
           <Tag size={15} /> Voir toutes les options à louer <ArrowRight size={15} />
         </Link>
       </section>
+      )}
 
       {/* COMPARE TOGGLE */}
       <section className="container" style={{ padding: '0 20px 16px' }}>

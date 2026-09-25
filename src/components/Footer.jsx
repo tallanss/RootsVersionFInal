@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Instagram, Facebook, Mail, Phone, MapPin } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 import EditableBlock from './admin/EditableBlock';
+import { RENTAL_OPTIONS_ENABLED } from '../config/features';
 
 const safeUrl = (url) => {
   if (!url) return '#';
@@ -69,7 +70,7 @@ const Footer = () => {
             {/* Liens fixes — masqués si le client les a déjà ajoutés à son menu (anti-doublon) */}
             {!content.navigation?.some(i => i.path === '/photobooth') && <Link to="/photobooth" style={linkStyle}>Photobooth</Link>}
             {!content.navigation?.some(i => i.path === '/blog') && <Link to="/blog" style={linkStyle}>Blog &amp; conseils</Link>}
-            {!content.navigation?.some(i => i.path === '/options-a-louer') && <Link to="/options-a-louer" style={linkStyle}>Options à louer</Link>}
+            {RENTAL_OPTIONS_ENABLED && !content.navigation?.some(i => i.path === '/options-a-louer') && <Link to="/options-a-louer" style={linkStyle}>Options à louer</Link>}
           </div>
         </div>
 

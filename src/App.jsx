@@ -38,6 +38,7 @@ import Home from './pages/Home';
 import Photobooth from './pages/Photobooth';
 import Tarifs from './pages/Tarifs';
 import RentalOptions from './pages/RentalOptions';
+import { RENTAL_OPTIONS_ENABLED } from './config/features';
 import Contact from './pages/Contact';
 import Gallery from './pages/Gallery';
 import Products from './pages/Products';
@@ -121,7 +122,7 @@ function PageContent() {
               <Route path="/" element={<Home />} />
               <Route path="/photobooth" element={<Photobooth />} />
               <Route path="/tarifs" element={<Tarifs />} />
-              <Route path="/options-a-louer" element={<RentalOptions />} />
+              {RENTAL_OPTIONS_ENABLED && <Route path="/options-a-louer" element={<RentalOptions />} />}
               <Route path="/contact" element={<Contact />} />
               <Route path="/galerie" element={<Gallery />} />
               <Route path="/prestations" element={<Products />} />

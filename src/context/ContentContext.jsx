@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../config/supabase';
+import { RENTAL_OPTIONS_ENABLED } from '../config/features';
 
 const ContentContext = createContext();
 
@@ -215,6 +216,11 @@ const buildMergedContent = (parsed = {}) => {
       // Retrait de l'onglet « Photobooth » du menu (le photobooth reste accessible
       // via la page « Prestations », le lien du pied de page et la home).
       base = base.filter((n) => n.id !== 'photobooth' && n.path !== '/photobooth');
+      // « Options à louer » masquées temporairement (RENTAL_OPTIONS_ENABLED) → on
+      // retire aussi l'entrée de menu si le client l'avait ajoutée.
+      if (!RENTAL_OPTIONS_ENABLED) {
+        base = base.filter((n) => n.path !== '/options-a-louer');
+      }
       // Migration : garantir l'onglet « Prestations » (ajouté après coup), inséré
       // juste après « Tarifs ». Le propriétaire peut le renommer/déplacer via le CMS.
       if (!base.some((n) => n.id === 'prestations' || n.path === '/prestations')) {
