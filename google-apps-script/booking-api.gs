@@ -374,6 +374,7 @@ function notifyOwnerFallback_(data, resendErr) {
     'Lieu : ' + (data.location || '—') + '\n' +
     'Nombre d\'invités : ' + (data.guests || '—') + '\n' +
     'Pack souhaité : ' + (data.formula || '—') + '\n' +
+    'Machine : ' + (data.machine || '—') + '\n' +
     'Options : ' + (data.addons || '—') + '\n' +
     'Préférence de contact : ' + (data.contactPreference || '—') + '\n' +
     'Message : ' + (data.message || '—') + '\n\n' +
