@@ -964,14 +964,17 @@ const Contact = () => {
                             transition: 'all 0.2s',
                           }}
                         >
-                          <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, fontSize: '15px', color: 'var(--text-main)' }}>
-                            {f.name}
-                            {f.featured && (
-                              <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary)', background: 'var(--bg-secondary)', border: '1px solid var(--primary)', borderRadius: '999px', padding: '2px 8px' }}>★ POPULAIRE</span>
-                            )}
+                          <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', minWidth: 0 }}>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, fontSize: '15px', color: 'var(--text-main)' }}>
+                              {f.name}
+                              {f.featured && (
+                                <span style={{ fontSize: '10px', fontWeight: 800, color: 'var(--primary)', background: 'var(--bg-secondary)', border: '1px solid var(--primary)', borderRadius: '999px', padding: '2px 8px' }}>★ POPULAIRE</span>
+                              )}
+                            </span>
+                            {f.tirages && <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)' }}>{f.tirages}</span>}
                           </span>
                           <span style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-                            {f.tirages && <span style={{ fontSize: '13px', fontWeight: 700, color: active ? 'var(--primary)' : 'var(--text-muted)' }}>{f.tirages}</span>}
+                            {f.price && <span style={{ fontSize: '15px', fontWeight: 800, color: active ? 'var(--primary)' : 'var(--text-main)', whiteSpace: 'nowrap' }}>{f.price}</span>}
                             <span style={{
                               width: '22px', height: '22px', borderRadius: '50%', flexShrink: 0,
                               border: active ? 'none' : '2px solid var(--border-medium)',
