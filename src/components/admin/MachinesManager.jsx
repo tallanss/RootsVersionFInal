@@ -10,7 +10,10 @@ const newId = (p) => `${p}-${Date.now()}-${Math.random().toString(36).slice(2, 7
 
 // Parse un supplément saisi librement (« 50 », « 50€ », « 49,90 », « 49.90 »)
 // SANS tronquer le séparateur décimal, et refuse les valeurs négatives / vides.
+// (priceToNumber retire le signe « - » ; on rejette donc explicitement une
+// saisie négative pour qu'elle devienne 0 au lieu de sa valeur absolue.)
 const toSupplement = (v) => {
+  if (String(v ?? '').trim().startsWith('-')) return 0;
   const n = priceToNumber(v);
   return Number.isFinite(n) && n > 0 ? n : 0;
 };

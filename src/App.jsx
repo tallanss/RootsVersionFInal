@@ -1,5 +1,5 @@
 import React, { useEffect, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 
 class ErrorBoundary extends React.Component {
@@ -122,7 +122,10 @@ function PageContent() {
               <Route path="/" element={<Home />} />
               <Route path="/photobooth" element={<Photobooth />} />
               <Route path="/tarifs" element={<Tarifs />} />
-              {RENTAL_OPTIONS_ENABLED && <Route path="/options-a-louer" element={<RentalOptions />} />}
+              {/* Options à louer masquées : la page redirige vers /tarifs (évite un 404
+                  sur d'anciens liens / résultats Google) tant que le drapeau est off. */}
+              <Route path="/options-a-louer" element={RENTAL_OPTIONS_ENABLED ? <RentalOptions /> : <Navigate to="/tarifs" replace />} />
+
               <Route path="/contact" element={<Contact />} />
               <Route path="/galerie" element={<Gallery />} />
               <Route path="/prestations" element={<Products />} />

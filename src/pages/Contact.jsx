@@ -107,6 +107,7 @@ const Contact = () => {
     referralSource: '',
     addons: [],
     machine: '', // id de la machine choisie
+    prestation: '', // nom de la prestation pré-remplie depuis une page produit (?prestation=slug)
   });
 
   // Formules disponibles (depuis le CMS, avec fallback) — incluent prix + desc
@@ -153,7 +154,15 @@ const Contact = () => {
     ? /à\s*partir|d[eè]s\b|\bfrom\b/i.test(String(selectedFormula.price || ''))
     : false;
   const fromPrefix = formulaIsFrom ? 'dès ' : '';
-  const estimatedTotal = formulaBase + machineSupplement;
+  // Total des options à louer sélectionnées (0 tant que « Options à louer » est
+  // masqué). Inclus dans l'estimation pour qu'elle reste juste si on réactive.
+  const addonsTotal = useMemo(() => {
+    if (!RENTAL_OPTIONS_ENABLED) return 0;
+    return (content.addons || [])
+      .filter((a) => a.enabled !== false && formData.addons.includes(a.id))
+      .reduce((sum, a) => sum + (Number(a.price) || 0), 0);
+  }, [content.addons, formData.addons]);
+  const estimatedTotal = formulaBase + machineSupplement + addonsTotal;
   // On n'affiche / n'envoie une estimation chiffrée QUE si la formule a un vrai
   // prix numérique (> 0). Évite un faux « 0€ » ou un total trompeur (« Sur devis »).
   const showEstimate = Boolean(formData.formula && formulaBase > 0);
@@ -180,6 +189,21 @@ const Contact = () => {
       machinePrefilled.current = true;
     }
   }, [location.search, content.machines]);
+
+  // Pré-remplir la prestation depuis l'URL (?prestation=<slug>), une seule fois.
+  // Alimenté par les pages « Prestations » (ProductDetail + cartes Tarifs) : on
+  // conserve ainsi le contexte du lead (quelle prestation) dans le récap envoyé.
+  const prestationPrefilled = useRef(false);
+  useEffect(() => {
+    if (prestationPrefilled.current) return;
+    const slug = new URLSearchParams(location.search).get('prestation');
+    if (!slug) { prestationPrefilled.current = true; return; }
+    const prod = (content.products || []).find((p) => p.slug === slug && p.visible !== false);
+    if (prod) {
+      setFormData((prev) => ({ ...prev, prestation: prod.name }));
+      prestationPrefilled.current = true;
+    }
+  }, [location.search, content.products]);
 
   // Le calendrier ne bloque QUE les dates marquées indisponibles à la main
   // dans le dashboard (onglet « Disponibilités »). La détection automatique
@@ -302,10 +326,11 @@ const Contact = () => {
       ? `${selectedMachine.name}${machineSupplement > 0 ? ` (+${formatEuro(machineSupplement)}€)` : ''}`
       : '';
     const estimationText = showEstimate
-      ? `Estimation : ${fromPrefix}${formatEuro(estimatedTotal)}€ (${formData.formula} ${formatEuro(formulaBase)}€${machineSupplement > 0 ? ` + ${selectedMachine.name} ${formatEuro(machineSupplement)}€` : ''})`
+      ? `Estimation : ${fromPrefix}${formatEuro(estimatedTotal)}€ (${formData.formula} ${formatEuro(formulaBase)}€${machineSupplement > 0 ? ` + ${selectedMachine.name} ${formatEuro(machineSupplement)}€` : ''}${addonsTotal > 0 ? ` + options ${formatEuro(addonsTotal)}€` : ''})`
       : '';
 
     const autoMessage = [
+      formData.prestation ? `Prestation souhaitée : ${formData.prestation}` : null,
       machineText ? `Machine choisie : ${machineText}` : null,
       estimationText || null,
       formData.guests ? `Nombre d'invités : ${formData.guests}` : null,
@@ -317,6 +342,7 @@ const Contact = () => {
 
     const booking = {
       date: formData.date,
+      prestation: formData.prestation,
       machine: machineText,
       formula: formData.formula || 'Demande de devis',
       addons: addonsText,
@@ -345,6 +371,7 @@ const Contact = () => {
         subject: formData.eventType || 'Demande de devis',
         location: formData.location,
         guests: formData.guests,
+        prestation: formData.prestation,
         machine: machineText,
         formula: formData.formula || 'Demande de devis',
         addons: addonsText,
@@ -482,6 +509,7 @@ const Contact = () => {
 
   // ===== Récap (pills) — rappelle les infos saisies à l'étape 1 =====
   const recapPills = [
+    formData.prestation && { icon: Sparkles, text: formData.prestation },
     formData.name.trim() && { icon: CheckCircle2, text: formData.name.trim() },
     formData.email.trim() && { icon: Mail, text: formData.email.trim() },
   ].filter(Boolean);
@@ -708,6 +736,15 @@ const Contact = () => {
             {step === 1 && (
               <div>
                 <StepHeading n={1} title="Vos coordonnées" subtitle="Pour pouvoir vous envoyer votre devis personnalisé." />
+
+                {formData.prestation && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 14px', marginBottom: '16px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--primary)' }}>
+                    <Sparkles size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                    <span style={{ fontSize: '13.5px', color: 'var(--text-main)' }}>
+                      Prestation souhaitée : <strong>{formData.prestation}</strong>
+                    </span>
+                  </div>
+                )}
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 18px' }}>
                   <div className="form-group">
@@ -1011,7 +1048,7 @@ const Contact = () => {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '14px 16px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--primary)' }}>
                       <div>
                         <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)' }}>
-                          {formData.formula} ({formatEuro(formulaBase)}€){machineSupplement > 0 ? ` + ${selectedMachine.name} (+${formatEuro(machineSupplement)}€)` : ''}
+                          {formData.formula} ({formatEuro(formulaBase)}€){machineSupplement > 0 ? ` + ${selectedMachine.name} (+${formatEuro(machineSupplement)}€)` : ''}{addonsTotal > 0 ? ` + options (+${formatEuro(addonsTotal)}€)` : ''}
                         </div>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>Estimation indicative — devis personnalisé sous 24h</div>
                       </div>
