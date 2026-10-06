@@ -12,7 +12,7 @@ import { useContent } from '../context/ContentContext';
 import { useAdmin } from '../context/AdminContext';
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
-import { formatPrice, priceToNumber, formatEuro } from '../utils/galleryFormat';
+import { formatPrice } from '../utils/galleryFormat';
 
 // Local fallbacks moved to context
 
@@ -540,57 +540,53 @@ const Home = () => {
       </section>
       </FadeIn>
 
-      {/* ===== NOS MACHINES — bornes réservables, prix tout compris (pack + machine) ===== */}
+      {/* ===== BANNIÈRE BORNES — image pleine largeur + CTA vers /nos-bornes (CMS) ===== */}
       {(() => {
-        const machines = (content.machines || []).filter((m) => m.visible !== false);
-        if (machines.length === 0) return null;
-        // Prix « tout compris » = pack de base le moins cher + supplément machine.
-        // Le pack de base est la formule chiffrée la moins chère du CMS.
-        const bases = (content.pricing_plans || [])
-          .map((p) => priceToNumber(p.price))
-          .filter((n) => n > 0);
-        const entryBase = bases.length > 0 ? Math.min(...bases) : 0;
+        const hasMachines = (content.machines || []).some((m) => m.visible !== false);
+        if (!hasMachines) return null;
+        const banner = content.bornesBanner || {};
+        const bImg = banner.image || '/hero-premium.png';
+        const bTitle = banner.title || 'Des bornes pour chaque événement';
+        const bSub = banner.subtitle || 'Classique, miroir, 360°… trouvez la borne qui fera sensation.';
+        const bBtn = banner.btnLabel || 'Découvrir nos bornes';
         return (
           <FadeIn direction="up">
-          <section className="container" style={{ padding: '32px 24px' }} id="machines">
-            <div className="section-tag"><Camera size={14} /> Nos machines</div>
-            <h2 className="section-title">Choisissez votre borne</h2>
-            <p className="section-subtitle">Chaque modèle est proposé tout compris : pack + machine. Réservez le vôtre en un clic.</p>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px', marginTop: '8px' }}>
-              {machines.map((m) => {
-                const supp = Number(m.supplement) || 0;
-                const allIn = entryBase > 0 ? entryBase + supp : null;
-                return (
-                  <div key={m.id} style={{ display: 'flex', flexDirection: 'column', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border-light)', background: 'var(--bg-card)', boxShadow: 'var(--shadow-md)' }}>
-                    <div style={{ position: 'relative', aspectRatio: '4 / 3', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {m.image
-                        ? <PremiumImage src={m.image} alt={m.name} style={{ width: '100%', height: '100%' }} />
-                        : <Camera size={34} color="var(--text-light)" />}
-                      {allIn != null && supp > 0 && (
-                        <span style={{ position: 'absolute', top: '10px', right: '10px', background: 'var(--primary)', color: '#fff', fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '999px' }}>+{formatEuro(supp)}€</span>
-                      )}
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: '16px 18px 18px' }}>
-                      <h3 style={{ fontSize: '17px', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 6px' }}>{m.name}</h3>
-                      {m.description && <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', lineHeight: 1.5, margin: '0 0 14px' }}>{m.description}</p>}
-                      <div style={{ marginTop: 'auto' }}>
-                        {allIn != null && (
-                          <div style={{ marginBottom: '12px' }}>
-                            <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600 }}>Tout compris, dès</span>
-                            <div style={{ fontSize: '24px', fontWeight: 900, color: 'var(--primary)', lineHeight: 1.1 }}>{formatEuro(allIn)}€</div>
-                          </div>
-                        )}
-                        <AnimatedButton to={`/contact?mode=devis&machine=${m.id}`} className="btn-primary" style={{ width: '100%' }} aria-label={`Réserver le modèle ${m.name}`}>
-                          Réserver ce modèle <ArrowRight size={16} />
-                        </AnimatedButton>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
+          <EditableBlock
+            label="Bannière bornes"
+            modalTitle="Modifier la bannière « Nos bornes »"
+            fields={[
+              { key: 'image', label: 'Image de fond (pleine largeur)', type: 'image', value: bImg },
+              { key: 'title', label: 'Titre', type: 'text', value: bTitle },
+              { key: 'subtitle', label: 'Sous-titre', type: 'text', value: bSub },
+              { key: 'btnLabel', label: 'Texte du bouton', type: 'text', value: bBtn },
+            ]}
+            onSave={(vals) => updateContent({ ...content, bornesBanner: { ...banner, ...vals } })}
+          >
+            <section
+              id="bornes-banner"
+              style={{
+                position: 'relative', width: '100%', minHeight: 'clamp(240px, 42vh, 460px)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center',
+                overflow: 'hidden', margin: '16px 0',
+              }}
+            >
+              <img
+                src={bImg}
+                alt="Nos bornes photo pour vos événements"
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                loading="lazy"
+                decoding="async"
+              />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg, rgba(0,0,0,0.70), rgba(0,0,0,0.35))' }} />
+              <div style={{ position: 'relative', zIndex: 2, padding: '40px 24px', maxWidth: '640px' }}>
+                <h2 style={{ fontSize: 'clamp(24px, 5vw, 40px)', fontWeight: 900, color: '#fff', margin: '0 0 10px', lineHeight: 1.15 }}>{bTitle}</h2>
+                <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.92)', margin: '0 0 22px', lineHeight: 1.5 }}>{bSub}</p>
+                <AnimatedButton to="/nos-bornes" className="btn-primary" style={{ width: 'auto', padding: '15px 32px', fontWeight: 800 }}>
+                  {bBtn} <ArrowRight size={18} />
+                </AnimatedButton>
+              </div>
+            </section>
+          </EditableBlock>
           </FadeIn>
         );
       })()}

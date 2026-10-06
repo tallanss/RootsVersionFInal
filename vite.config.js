@@ -24,6 +24,7 @@ export default defineConfig({
         '/tarifs',
         // '/options-a-louer',  // RENTAL_OPTIONS masqué — réactiver avec le drapeau
         '/prestations',
+        '/nos-bornes',
         '/galerie',
         '/contact',
         '/save-the-date',

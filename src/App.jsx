@@ -39,6 +39,7 @@ import Photobooth from './pages/Photobooth';
 import Tarifs from './pages/Tarifs';
 import RentalOptions from './pages/RentalOptions';
 import { RENTAL_OPTIONS_ENABLED } from './config/features';
+import Bornes from './pages/Bornes';
 import Contact from './pages/Contact';
 import Gallery from './pages/Gallery';
 import Products from './pages/Products';
@@ -128,6 +129,7 @@ function PageContent() {
 
               <Route path="/contact" element={<Contact />} />
               <Route path="/galerie" element={<Gallery />} />
+              <Route path="/nos-bornes" element={<Bornes />} />
               <Route path="/prestations" element={<Products />} />
               <Route path="/prestations/:slug" element={<ProductDetail />} />
               <Route path="/admin" element={<Admin />} />

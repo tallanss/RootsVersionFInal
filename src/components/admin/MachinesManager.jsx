@@ -31,6 +31,7 @@ const MachinesManager = () => {
       id: newId('m'),
       name: (vals.name || '').trim() || 'Nouvelle machine',
       description: (vals.description || '').trim(),
+      details: (vals.details || '').trim(),
       image: (vals.image || '').trim(),
       supplement: toSupplement(vals.supplement),
       visible: true,
@@ -45,6 +46,7 @@ const MachinesManager = () => {
         ...m,
         name: (vals.name || '').trim() || m.name,
         description: (vals.description || '').trim(),
+        details: (vals.details || '').trim(),
         image: (vals.image || '').trim(),
         supplement: toSupplement(vals.supplement),
       } : m)),
@@ -65,7 +67,8 @@ const MachinesManager = () => {
 
   const machineFields = (m) => ([
     { key: 'name', label: 'Nom de la machine (ex : Miroir Booth)', type: 'text', value: m?.name || '' },
-    { key: 'description', label: 'Description', type: 'textarea', value: m?.description || '' },
+    { key: 'description', label: 'Description courte (cartes + début de la fiche)', type: 'textarea', value: m?.description || '' },
+    { key: 'details', label: 'Détails (fiche « Nos bornes ») — points forts, infos complémentaires', type: 'textarea', value: m?.details || '' },
     { key: 'image', label: 'Photo de la machine', type: 'image', value: m?.image || '' },
     { key: 'supplement', label: 'Supplément en € (0 = inclus dans le prix de la formule)', type: 'text', value: m?.supplement != null ? String(m.supplement) : '0' },
   ]);

@@ -102,12 +102,20 @@ const DEFAULT_CONTENT = {
   // supplément (€) qui s'ajoute au prix de la formule choisie. Éditables en
   // self-service via le dashboard → « Machines » (nom, description, photo, prix).
   machines: [
-    { id: 'm-noir',   name: 'Classique Noir',  description: 'Notre borne photo, finition noire élégante.',           image: '', supplement: 0,  visible: true },
-    { id: 'm-blanc',  name: 'Classique Blanc', description: 'Notre borne photo, finition blanche épurée.',            image: '', supplement: 0,  visible: true },
-    { id: 'm-bois',   name: 'Classique Bois',  description: 'Notre borne photo, habillage bois chaleureux.',          image: '', supplement: 0,  visible: true },
-    { id: 'm-miroir', name: 'Miroir Booth',    description: 'Le miroir photo interactif grand format, effet waouh.',  image: '', supplement: 50, visible: true },
-    { id: 'm-360',    name: 'Photobooth 360',  description: 'La plateforme vidéo 360° pour des clips spectaculaires.', image: '', supplement: 0,  visible: true },
+    { id: 'm-noir',   name: 'Classique Noir',  description: 'Notre borne photo, finition noire élégante.',           details: 'Impressions illimitées sur place, accessoires fun, galerie en ligne et installation comprise. La valeur sûre pour tous vos événements.', image: '', supplement: 0,  visible: true },
+    { id: 'm-blanc',  name: 'Classique Blanc', description: 'Notre borne photo, finition blanche épurée.',            details: 'Même expérience que la Classique Noir, dans une finition blanche qui s’intègre parfaitement aux décors clairs et mariages.', image: '', supplement: 0,  visible: true },
+    { id: 'm-bois',   name: 'Classique Bois',  description: 'Notre borne photo, habillage bois chaleureux.',          details: 'Un habillage bois chaleureux pour une ambiance bohème ou champêtre. Impressions et galerie en ligne incluses.', image: '', supplement: 0,  visible: true },
+    { id: 'm-miroir', name: 'Miroir Booth',    description: 'Le miroir photo interactif grand format, effet waouh.',  details: 'Un miroir tactile grand format qui guide vos invités avec animations et signatures à l’écran. L’effet “waouh” garanti pour les grands événements.', image: '', supplement: 50, visible: true },
+    { id: 'm-360',    name: 'Photobooth 360',  description: 'La plateforme vidéo 360° pour des clips spectaculaires.', details: 'Vos invités montent sur la plateforme, une caméra tourne à 360° et génère des clips vidéo dynamiques à partager immédiatement.', image: '', supplement: 0,  visible: true },
   ],
+  // Bannière « Nos bornes » de la page d'accueil (image pleine largeur + CTA
+  // vers /nos-bornes). Entièrement éditable via le CMS (bloc « Bannière bornes »).
+  bornesBanner: {
+    image: '/hero-premium.png',
+    title: 'Des bornes pour chaque événement',
+    subtitle: 'Classique, miroir, 360°… trouvez la borne qui fera sensation.',
+    btnLabel: 'Découvrir nos bornes',
+  },
   theme: {
     primary: "#c5a059",
     accent: "#e3c18c",
@@ -207,6 +215,7 @@ const buildMergedContent = (parsed = {}) => {
     hero: { ...DEFAULT_CONTENT.hero, ...(parsed.hero || {}) },
     scrolly: { ...DEFAULT_CONTENT.scrolly, ...(parsed.scrolly || {}) },
     theme: { ...DEFAULT_CONTENT.theme, ...(parsed.theme || {}) },
+    bornesBanner: { ...DEFAULT_CONTENT.bornesBanner, ...(parsed.bornesBanner || {}) },
     // Garde : une navigation vide (ou invalide) retombe sur le défaut — sinon
     // le site n'aurait plus AUCUN menu (la barre du bas est la seule navigation).
     navigation: (() => {
