@@ -570,14 +570,24 @@ const Home = () => {
                 overflow: 'hidden', margin: '16px 0',
               }}
             >
+              {/* Fond flou : remplit la bande (évite les bandes vides) sans rogner l'image réelle */}
               <img
                 src={bImg}
-                alt="Nos bornes photo pour vos événements"
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                alt=""
+                aria-hidden="true"
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', filter: 'blur(22px) brightness(0.55)', transform: 'scale(1.12)' }}
                 loading="lazy"
                 decoding="async"
               />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg, rgba(0,0,0,0.70), rgba(0,0,0,0.35))' }} />
+              {/* Image complète, affichée en entier (non rognée) */}
+              <img
+                src={bImg}
+                alt="Nos bornes photo pour vos événements"
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }}
+                loading="lazy"
+                decoding="async"
+              />
+              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(0deg, rgba(0,0,0,0.55), rgba(0,0,0,0.28))' }} />
               <div style={{ position: 'relative', zIndex: 2, padding: '40px 24px', maxWidth: '640px' }}>
                 <h2 style={{ fontSize: 'clamp(24px, 5vw, 40px)', fontWeight: 900, color: '#fff', margin: '0 0 10px', lineHeight: 1.15 }}>{bTitle}</h2>
                 <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.92)', margin: '0 0 22px', lineHeight: 1.5 }}>{bSub}</p>
