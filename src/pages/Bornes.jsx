@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { Helmet } from 'react-helmet-async';
 import { Camera, X, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
@@ -109,15 +110,16 @@ export default function Bornes() {
       </section>
       </FadeIn>
 
-      {/* ===== MODALE DÉTAILS BORNE ===== */}
-      {selected && (
+      {/* ===== MODALE DÉTAILS BORNE (portée dans <body> pour passer au-dessus
+              du menu du bas, qui est piégé dans un autre contexte d'empilement) ===== */}
+      {selected && createPortal(
         <div
           onClick={() => setSelected(null)}
           role="dialog"
           aria-modal="true"
           aria-label={`Détails : ${selected.name}`}
           style={{
-            position: 'fixed', inset: 0, zIndex: 9000, background: 'rgba(0,0,0,0.6)',
+            position: 'fixed', inset: 0, zIndex: 10050, background: 'rgba(0,0,0,0.6)',
             display: 'flex', alignItems: 'flex-end', justifyContent: 'center', padding: '0',
             backdropFilter: 'blur(3px)', WebkitBackdropFilter: 'blur(3px)',
           }}
@@ -145,10 +147,10 @@ export default function Bornes() {
               <X size={18} />
             </button>
 
-            <div style={{ position: 'relative', aspectRatio: '16 / 10', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ position: 'relative', flexShrink: 0, height: selected.image ? 'clamp(170px, 26vh, 240px)' : '110px', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               {selected.image
                 ? <PremiumImage src={selected.image} alt={selected.name} style={{ width: '100%', height: '100%' }} />
-                : <Camera size={44} color="var(--text-light)" />}
+                : <Camera size={36} color="var(--text-light)" />}
             </div>
 
             <div style={{ padding: '22px 22px 26px' }}>
@@ -187,7 +189,8 @@ export default function Bornes() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <style>{`
