@@ -217,6 +217,29 @@ async function main() {
     await writeFile(outPath, html, 'utf-8');
   }
 
+  // --- Complément du sitemap : y ajouter les pages DYNAMIQUES réellement
+  // prérendues (/nos-bornes/:slug, /prestations/:slug) que le plugin sitemap
+  // (liste statique) ne connaît pas. Garde le sitemap aligné sur les vraies pages. ---
+  try {
+    const HOST = 'https://photoroots.fr';
+    const sitemapPath = join(DIST, 'sitemap.xml');
+    let xml = await readFile(sitemapPath, 'utf-8');
+    const dyn = results
+      .map((r) => r.route)
+      .filter((r) => /^\/(nos-bornes|prestations)\/.+/.test(r))
+      .filter((r) => !xml.includes(`<loc>${HOST}${r}</loc>`));
+    if (dyn.length > 0) {
+      const entries = dyn
+        .map((r) => `<url><loc>${HOST}${r}</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>`)
+        .join('\n');
+      xml = xml.replace('</urlset>', `${entries}\n</urlset>`);
+      await writeFile(sitemapPath, xml, 'utf-8');
+      console.log(`[prerender] Sitemap complété : +${dyn.length} page(s) dynamique(s).`);
+    }
+  } catch (e) {
+    console.warn('[prerender] complément sitemap échoué :', e.message);
+  }
+
   console.log(`[prerender] Terminé — ${results.length}/${ROUTES.length} routes prérendues.`);
 }
 
