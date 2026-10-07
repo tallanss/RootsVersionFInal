@@ -129,7 +129,7 @@ const DEFAULT_CONTENT = {
     { id: 'tarifs', label: 'Tarifs', path: '/tarifs' },
     { id: 'prestations', label: 'Prestations', path: '/prestations', icon: 'prestations' },
     { id: 'galerie', label: 'Galerie', path: '/galerie' },
-    { id: 'invite', label: 'Invite', path: '/save-the-date' },
+    { id: 'bornes', label: 'Nos bornes', path: '/nos-bornes', icon: 'photobooth' },
     { id: 'contact', label: 'Contact', path: '/contact' }
   ],
   contact: {
@@ -225,6 +225,12 @@ const buildMergedContent = (parsed = {}) => {
       // Retrait de l'onglet « Photobooth » du menu (le photobooth reste accessible
       // via la page « Prestations », le lien du pied de page et la home).
       base = base.filter((n) => n.id !== 'photobooth' && n.path !== '/photobooth');
+      // Migration : l'ancien onglet « Invite » (→ /save-the-date) est remplacé par
+      // « Nos bornes » (→ /nos-bornes, icône appareil photo), en gardant sa position.
+      // La page Save The Date reste accessible par ailleurs (lien dédié, URL directe).
+      base = base.map((n) => (n.id === 'invite' || n.path === '/save-the-date')
+        ? { id: 'bornes', label: 'Nos bornes', path: '/nos-bornes', icon: 'photobooth' }
+        : n);
       // « Options à louer » masquées temporairement (RENTAL_OPTIONS_ENABLED) → on
       // retire aussi l'entrée de menu si le client l'avait ajoutée.
       if (!RENTAL_OPTIONS_ENABLED) {
