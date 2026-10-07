@@ -94,3 +94,29 @@ export const formatEuro = (value) => {
     maximumFractionDigits: 2,
   });
 };
+
+/**
+ * Transforme un texte en slug d'URL (minuscules, sans accents ni caractères
+ * spéciaux). "Miroir Booth" → "miroir-booth".
+ */
+export const slugify = (s) =>
+  String(s || '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '') // retire les accents
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'borne';
+
+/**
+ * Ajoute un slug d'URL UNIQUE à chaque machine (basé sur le nom ; suffixe -2,
+ * -3… en cas de doublon de nom). À appeler avec la MÊME liste côté page liste
+ * et côté page de détail pour que les URLs correspondent.
+ */
+export const machinesWithSlugs = (machines = []) => {
+  const seen = {};
+  return (machines || []).map((m) => {
+    const base = slugify(m.name);
+    seen[base] = (seen[base] || 0) + 1;
+    const slug = seen[base] === 1 ? base : `${base}-${seen[base]}`;
+    return { ...m, slug };
+  });
+};

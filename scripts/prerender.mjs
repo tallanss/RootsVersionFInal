@@ -150,6 +150,28 @@ async function main() {
     console.warn('[prerender] découverte produits échouée :', e.message);
   }
 
+  // --- Découverte dynamique des pages bornes (/nos-bornes/:slug) ---
+  // Les bornes (machines) sont gérées via le CMS : on lit les liens rendus sur
+  // /nos-bornes pour prérendre chaque page borne (SEO), sans liste en dur.
+  try {
+    const dpage = await browser.newPage();
+    await dpage.goto(base + '/nos-bornes', { waitUntil: 'networkidle0', timeout: 30000 });
+    await dpage.waitForFunction(
+      () => document.querySelectorAll('a[href*="/nos-bornes/"]').length > 0,
+      { timeout: 8000 }
+    ).catch(() => {});
+    const borneRoutes = await dpage.evaluate(() => Array.from(new Set(
+      Array.from(document.querySelectorAll('a[href*="/nos-bornes/"]'))
+        .map((a) => new URL(a.href).pathname)
+        .filter((p) => /^\/nos-bornes\/.+/.test(p))
+    )));
+    await dpage.close();
+    for (const r of borneRoutes) if (!ROUTES.includes(r)) ROUTES.push(r);
+    console.log(`[prerender] Pages bornes découvertes : ${borneRoutes.length}`);
+  } catch (e) {
+    console.warn('[prerender] découverte bornes échouée :', e.message);
+  }
+
   const results = [];
   for (const route of ROUTES) {
     const page = await browser.newPage();
