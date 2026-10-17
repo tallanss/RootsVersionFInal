@@ -43,6 +43,7 @@ import { RENTAL_OPTIONS_ENABLED } from './config/features';
 import Bornes from './pages/Bornes';
 import BorneDetail from './pages/BorneDetail';
 import Contact from './pages/Contact';
+import MerciDevis from './pages/MerciDevis';
 import Gallery from './pages/Gallery';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
@@ -133,6 +134,7 @@ function PageContent() {
               <Route path="/options-a-louer" element={RENTAL_OPTIONS_ENABLED ? <RentalOptions /> : <Navigate to="/tarifs" replace />} />
 
               <Route path="/contact" element={<Contact />} />
+              <Route path="/demande-recue" element={<MerciDevis />} />
               <Route path="/galerie" element={<Gallery />} />
               <Route path="/nos-bornes" element={<Bornes />} />
               <Route path="/nos-bornes/:slug" element={<BorneDetail />} />

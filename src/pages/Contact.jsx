@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Mail, Phone, MapPin, CheckCircle2, Send, ChevronRight, ChevronLeft,
   Calendar, CalendarCheck, Loader2, AlertCircle, Users, Heart, Cake,
@@ -72,6 +72,7 @@ const extractTirages = (plan) => {
 const Contact = () => {
   const { content, updateContent } = useContent();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const eventTypes = content.formOptions?.eventTypes || ['Mariage', 'Anniversaire', 'Entreprise', 'Baptême', 'EVJF/EVG', 'Autre'];
 
@@ -380,15 +381,14 @@ const Contact = () => {
       const newMessages = [newMessage, ...(content.messages || [])];
       updateContent({ messages: newMessages });
 
-      setResult(res);
-      setSubmittedMode('devis');
       // Conversion GA4 : demande de devis envoyée
       trackEvent('generate_lead', {
         type_evenement: formData.eventType || 'non précisé',
         formule: formData.formula || 'non précisée',
       });
-      setSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // Page de confirmation dédiée (URL /demande-recue) pour le suivi des
+      // conversions GA4 / Google Ads (#23). Le lead est déjà enregistré ci-dessus.
+      navigate('/demande-recue', { state: { email: formData.email, eventType: formData.eventType } });
     } else {
       setError(res.error || 'Une erreur est survenue. Veuillez réessayer.');
     }
