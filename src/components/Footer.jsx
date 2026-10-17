@@ -1,8 +1,62 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, Facebook, Mail, Phone, MapPin } from 'lucide-react';
+import { Instagram, Facebook, Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
 import { useContent } from '../context/ContentContext';
 import EditableBlock from './admin/EditableBlock';
 import { RENTAL_OPTIONS_ENABLED } from '../config/features';
+import { processBooking } from '../services/emailService';
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Formulaire newsletter du pied de page (#62). En attendant une connexion Brevo,
+// chaque inscription est notifiée au propriétaire via le script e-mail existant.
+const NewsletterForm = () => {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState('idle'); // idle | loading | done | error
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!EMAIL_RE.test(email)) { setStatus('error'); return; }
+    setStatus('loading');
+    try {
+      await processBooking({ type: 'message', name: 'Inscription newsletter', email, message: `Nouvelle inscription à la newsletter (pied de page) : ${email}` });
+    } catch { /* no-cors : on ne peut pas lire la réponse, on considère l'envoi OK */ }
+    setStatus('done');
+    setEmail('');
+  };
+
+  if (status === 'done') {
+    return (
+      <p style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', color: 'var(--primary)', fontWeight: 700, fontSize: '15px', margin: 0 }}>
+        <CheckCircle2 size={18} /> Merci, votre inscription est bien prise en compte !
+      </p>
+    );
+  }
+
+  return (
+    <form onSubmit={submit} style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ minWidth: '220px' }}>
+        <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-main)', margin: '0 0 4px' }}>Restez informé</h3>
+        <p style={{ fontSize: '13.5px', color: 'var(--text-muted)', margin: 0 }}>Nos actus, offres et inspirations photobooth, de temps en temps.</p>
+      </div>
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', flex: 1, minWidth: '260px', maxWidth: '420px', justifyContent: 'flex-end' }}>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value); if (status === 'error') setStatus('idle'); }}
+          placeholder="Votre email"
+          aria-label="Votre email pour la newsletter"
+          className="form-input"
+          style={{ flex: 1, minWidth: '180px' }}
+        />
+        <button type="submit" disabled={status === 'loading'} className="btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '7px', padding: '12px 20px', fontWeight: 800, whiteSpace: 'nowrap' }}>
+          <Send size={16} /> {status === 'loading' ? '…' : "S'inscrire"}
+        </button>
+        {status === 'error' && <span style={{ width: '100%', textAlign: 'right', color: '#ef4444', fontSize: '12px' }}>Veuillez saisir un email valide.</span>}
+      </div>
+    </form>
+  );
+};
 
 const safeUrl = (url) => {
   if (!url) return '#';
@@ -114,10 +168,15 @@ const Footer = () => {
         </div>
       </div>
 
+      {/* NEWSLETTER (#62) */}
+      <div className="container" style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid var(--border-light)' }}>
+        <NewsletterForm />
+      </div>
+
       {/* BOTTOM BAR */}
-      <div className="container" style={{ 
-        marginTop: '60px', 
-        paddingTop: '24px', 
+      <div className="container" style={{
+        marginTop: '40px',
+        paddingTop: '24px',
         borderTop: '1px solid var(--border-light)',
         display: 'flex',
         flexWrap: 'wrap',
