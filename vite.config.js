@@ -21,6 +21,7 @@ export default defineConfig({
       // '/' est ajouté automatiquement depuis index.html — ne pas le répéter ici
       dynamicRoutes: [
         '/photobooth',
+        '/photobooth-360',
         '/tarifs',
         // '/options-a-louer',  // RENTAL_OPTIONS masqué — réactiver avec le drapeau
         '/prestations',

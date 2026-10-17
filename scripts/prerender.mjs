@@ -45,6 +45,7 @@ const BLOG_SLUGS = [
 const ROUTES = [
   '/',
   '/photobooth',
+  '/photobooth-360',
   '/tarifs',
   // '/options-a-louer',  // RENTAL_OPTIONS masqué — réactiver avec le drapeau (src/config/features.js)
   '/prestations',

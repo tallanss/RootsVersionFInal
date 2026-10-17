@@ -307,12 +307,18 @@ const Tarifs = () => {
 
   const isSelected = (id) => selectedPlanId === id;
 
+  // Schéma Service + Offres construit à partir des VRAIES formules du CMS
+  // (prix, devise, description exacts de chaque formule actuelle — #53).
+  const pricedPlans = plans
+    .map((p) => ({ name: p.name, price: priceToNumber(p.price), desc: p.desc }))
+    .filter((p) => p.price > 0);
+  const planPrices = pricedPlans.map((p) => p.price);
   const offerSchema = {
     '@context': 'https://schema.org',
     '@type': 'Service',
     serviceType: 'Location de photobooth',
     name: 'Formules location photobooth PhotoRoots',
-    description: "Formules de location de photobooth PhotoRoots en Seine-Maritime : Essentiel, Premium, Excellence et Sur-Mesure, pour mariages, anniversaires et événements d'entreprise.",
+    description: `Formules de location de photobooth PhotoRoots en Seine-Maritime${pricedPlans.length ? ' : ' + pricedPlans.map((p) => p.name).join(', ') : ''}, pour mariages, anniversaires et événements d'entreprise.`,
     provider: {
       '@type': 'LocalBusiness',
       name: 'PhotoRoots',
@@ -323,13 +329,24 @@ const Tarifs = () => {
       '@type': 'AdministrativeArea',
       name: 'Seine-Maritime, Normandie',
     },
-    offers: {
-      '@type': 'AggregateOffer',
-      lowPrice: 99,
-      highPrice: 389,
-      priceCurrency: 'EUR',
-      offerCount: 4,
-    },
+    ...(pricedPlans.length > 0 ? {
+      offers: {
+        '@type': 'AggregateOffer',
+        lowPrice: Math.min(...planPrices),
+        highPrice: Math.max(...planPrices),
+        priceCurrency: 'EUR',
+        offerCount: pricedPlans.length,
+        offers: pricedPlans.map((p) => ({
+          '@type': 'Offer',
+          name: p.name,
+          price: p.price,
+          priceCurrency: 'EUR',
+          ...(p.desc ? { description: p.desc } : {}),
+          availability: 'https://schema.org/InStock',
+          url: 'https://photoroots.fr/tarifs',
+        })),
+      },
+    } : {}),
   };
 
   return (

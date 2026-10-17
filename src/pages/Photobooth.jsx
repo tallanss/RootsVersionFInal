@@ -29,6 +29,15 @@ const DEFAULT_PHOTOBOOTH_GALLERY = [
 
 const ICONS = { CameraIcon, Monitor, Printer, Tv, Image, Palette, CheckCircle2 };
 
+// FAQ de la page /photobooth — source unique (affichage + schéma FAQPage, #51).
+const PHOTOBOOTH_FAQS = [
+  { q: "Combien de temps de mise en place faut-il prévoir ?", a: "Notre équipe arrive environ 1h à 1h30 avant le début de votre événement. L'installation complète (borne, éclairage, imprimante, accessoires, calibration) prend environ 45 minutes. Nous effectuons ensuite plusieurs tests avant de vous remettre la borne en parfait état de fonctionnement. Le démontage en fin de soirée prend environ 30 minutes." },
+  { q: "Avez-vous besoin d'électricité sur place ?", a: "Oui, une simple prise 220V standard à proximité (moins de 5 mètres) est suffisante. Notre matériel consomme l'équivalent d'un petit électroménager, sans risque de faire sauter les plombs. Si l'événement se déroule en extérieur ou dans un lieu sans alimentation, nous pouvons fournir une rallonge longue distance ou un groupe électrogène silencieux en option." },
+  { q: "Combien d'espace prévoir pour le photobooth ?", a: "Nous recommandons un espace minimum de 2,5 mètres de profondeur sur 2 mètres de largeur, avec une hauteur sous plafond d'au moins 2,2 mètres. Cela permet d'accueillir la borne, le fond personnalisé et de laisser suffisamment de recul pour les photos de groupe (jusqu'à 8 personnes ensemble). Un emplacement à proximité du dancefloor ou de l'espace cocktail est idéal pour maximiser l'animation." },
+  { q: "Le photobooth est-il adapté aux enfants ?", a: "Absolument ! Notre borne miroir tactile est conçue pour être utilisable dès l'âge de 5-6 ans, avec une interface ludique et des accessoires adaptés (chapeaux, lunettes, perruques sans risque). Les enfants adorent se voir à l'écran et déclencher la prise de photo. Pour les plus petits, un parent peut facilement les accompagner. Tous nos consommables (papier, encre) sont conformes aux normes européennes de sécurité." },
+  { q: "Que se passe-t-il en cas de panne pendant l'événement ?", a: "Notre matériel est testé avant chaque prestation et nous fournissons toujours des consommables en surplus (papier, cartouches d'encre). En cas de souci technique, une hotline dédiée est joignable pendant toute la durée de votre événement et notre technicien peut intervenir en moins de 60 minutes dans la zone Seine-Maritime. Si malgré tout la borne ne pouvait pas être remise en service, notre garantie zéro panne prévoit le remboursement intégral de la prestation." },
+];
+
 const Photobooth = () => {
   const { content, updateContent } = useContent();
   const { isAdminMode } = useAdmin();
@@ -79,6 +88,7 @@ const Photobooth = () => {
         <meta name="twitter:image" content="https://photoroots.fr/photobooth-hero.png" />
         <link rel="canonical" href="https://photoroots.fr/photobooth" />
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: PHOTOBOOTH_FAQS.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) })}</script>
       </Helmet>
 
       {/* HERO */}
@@ -405,40 +415,12 @@ const Photobooth = () => {
         <h2 className="section-title">Questions fréquentes sur la location</h2>
         <p className="section-subtitle">Les réponses aux questions que l'on nous pose le plus souvent.</p>
 
-        <div className="glass-panel" style={{ padding: '24px', marginBottom: '12px' }}>
-          <h3 style={{ color: 'var(--gold)', marginBottom: '8px', fontSize: '17px' }}>Combien de temps de mise en place faut-il prévoir ?</h3>
-          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-            Notre équipe arrive environ 1h à 1h30 avant le début de votre événement. L'installation complète (borne, éclairage, imprimante, accessoires, calibration) prend environ 45 minutes. Nous effectuons ensuite plusieurs tests avant de vous remettre la borne en parfait état de fonctionnement. Le démontage en fin de soirée prend environ 30 minutes.
-          </p>
-        </div>
-
-        <div className="glass-panel" style={{ padding: '24px', marginBottom: '12px' }}>
-          <h3 style={{ color: 'var(--gold)', marginBottom: '8px', fontSize: '17px' }}>Avez-vous besoin d'électricité sur place ?</h3>
-          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-            Oui, une simple prise 220V standard à proximité (moins de 5 mètres) est suffisante. Notre matériel consomme l'équivalent d'un petit électroménager, sans risque de faire sauter les plombs. Si l'événement se déroule en extérieur ou dans un lieu sans alimentation, nous pouvons fournir une rallonge longue distance ou un groupe électrogène silencieux en option.
-          </p>
-        </div>
-
-        <div className="glass-panel" style={{ padding: '24px', marginBottom: '12px' }}>
-          <h3 style={{ color: 'var(--gold)', marginBottom: '8px', fontSize: '17px' }}>Combien d'espace prévoir pour le photobooth ?</h3>
-          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-            Nous recommandons un espace minimum de 2,5 mètres de profondeur sur 2 mètres de largeur, avec une hauteur sous plafond d'au moins 2,2 mètres. Cela permet d'accueillir la borne, le fond personnalisé et de laisser suffisamment de recul pour les photos de groupe (jusqu'à 8 personnes ensemble). Un emplacement à proximité du dancefloor ou de l'espace cocktail est idéal pour maximiser l'animation.
-          </p>
-        </div>
-
-        <div className="glass-panel" style={{ padding: '24px', marginBottom: '12px' }}>
-          <h3 style={{ color: 'var(--gold)', marginBottom: '8px', fontSize: '17px' }}>Le photobooth est-il adapté aux enfants ?</h3>
-          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-            Absolument ! Notre borne miroir tactile est conçue pour être utilisable dès l'âge de 5-6 ans, avec une interface ludique et des accessoires adaptés (chapeaux, lunettes, perruques sans risque). Les enfants adorent se voir à l'écran et déclencher la prise de photo. Pour les plus petits, un parent peut facilement les accompagner. Tous nos consommables (papier, encre) sont conformes aux normes européennes de sécurité.
-          </p>
-        </div>
-
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <h3 style={{ color: 'var(--gold)', marginBottom: '8px', fontSize: '17px' }}>Que se passe-t-il en cas de panne pendant l'événement ?</h3>
-          <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-            Notre matériel est testé avant chaque prestation et nous fournissons toujours des consommables en surplus (papier, cartouches d'encre). En cas de souci technique, une hotline dédiée est joignable pendant toute la durée de votre événement et notre technicien peut intervenir en moins de 60 minutes dans la zone Seine-Maritime. Si malgré tout la borne ne pouvait pas être remise en service, notre garantie zéro panne prévoit le remboursement intégral de la prestation.
-          </p>
-        </div>
+        {PHOTOBOOTH_FAQS.map((f, i) => (
+          <div key={i} className="glass-panel" style={{ padding: '24px', marginBottom: i === PHOTOBOOTH_FAQS.length - 1 ? 0 : '12px' }}>
+            <h3 style={{ color: 'var(--gold)', marginBottom: '8px', fontSize: '17px' }}>{f.q}</h3>
+            <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>{f.a}</p>
+          </div>
+        ))}
       </section>
 
       {/* CTA */}
