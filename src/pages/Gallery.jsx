@@ -1,5 +1,6 @@
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Camera, ArrowRight, Lock } from 'lucide-react';
+import { Camera, ArrowRight, Lock, Search, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
 import FadeIn from '../components/FadeIn';
@@ -16,9 +17,19 @@ const Gallery = () => {
   const { content, updateContent } = useContent();
   const { isAdminMode } = useAdmin();
 
+  const [query, setQuery] = useState('');
+
   const albums = (content.customPages || [])
     .filter((p) => p.kind === 'gallery')
     .sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+
+  // Recherche d'événement (#26) : filtre par nom, titre ou date, sans accents.
+  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const filteredAlbums = useMemo(() => {
+    const q = norm(query).trim();
+    if (!q) return albums;
+    return albums.filter((a) => norm(`${a.galleryClientName || ''} ${a.title || ''} ${a.galleryEventDate || ''}`).includes(q));
+  }, [albums, query]);
 
   const title = content.galleryTitle || 'Galeries de nos événements';
   const subtitle = content.gallerySubtitle
@@ -70,6 +81,26 @@ const Gallery = () => {
             Astuce admin : ajoutez et gérez les albums depuis le dashboard → « Galeries clients ».
           </p>
         )}
+
+        {albums.length > 0 && (
+          <div style={{ position: 'relative', maxWidth: '420px', marginTop: '18px' }}>
+            <Search size={17} style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)', pointerEvents: 'none' }} />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Rechercher un événement (nom, date…)"
+              aria-label="Rechercher un événement"
+              className="form-input"
+              style={{ paddingLeft: '40px', paddingRight: query ? '40px' : '14px' }}
+            />
+            {query && (
+              <button type="button" onClick={() => setQuery('')} aria-label="Effacer la recherche" style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-light)', display: 'flex' }}>
+                <X size={16} />
+              </button>
+            )}
+          </div>
+        )}
       </section>
 
       {/* GRILLE D'ALBUMS */}
@@ -90,9 +121,13 @@ const Gallery = () => {
               </p>
             </div>
           </div>
+        ) : filteredAlbums.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '48px 24px', color: 'var(--text-muted)', fontSize: '15px' }}>
+            Aucun événement ne correspond à « <strong>{query}</strong> ». Essayez un autre nom ou une autre date.
+          </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '20px' }}>
-            {albums.map((a, i) => (
+            {filteredAlbums.map((a, i) => (
               <FadeIn key={a.id} direction="up" delay={Math.min(i * 0.05, 0.4)}>
                 <Link
                   to={`/p/${a.slug}`}

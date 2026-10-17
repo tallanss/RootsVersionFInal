@@ -14,6 +14,7 @@ import {
   Maximize2,
   BarChart3,
   Download,
+  Upload,
   Image as ImageIcon,
   Star,
   Hash,
@@ -944,7 +945,7 @@ export const DisponibilitesManager = () => {
 };
 
 export const SystemTools = () => {
-  const { resetToDefault } = useContent();
+  const { content, updateContent, resetToDefault } = useContent();
 
   const handleReset = () => {
     if (window.confirm("CRITIQUE : Voulez-vous vraiment réinitialiser TOUT le contenu du site par défaut ? Cette action est irréversible.")) {
@@ -953,12 +954,75 @@ export const SystemTools = () => {
     }
   };
 
+  // Sauvegarde : télécharge TOUT le contenu du site en un fichier .json (#24).
+  const handleBackup = () => {
+    try {
+      const blob = new Blob([JSON.stringify(content, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `photoroots-sauvegarde-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      window.alert('Erreur lors de la sauvegarde : ' + e.message);
+    }
+  };
+
+  // Restauration : recharge le contenu depuis un fichier de sauvegarde .json.
+  const handleRestore = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const parsed = JSON.parse(reader.result);
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('Format inattendu');
+        if (window.confirm('Restaurer cette sauvegarde ? Le contenu actuel du site sera remplacé par celui du fichier.')) {
+          updateContent(parsed);
+          window.alert('Sauvegarde restaurée ✓');
+        }
+      } catch (err) {
+        window.alert('Fichier de sauvegarde invalide : ' + err.message);
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <header>
         <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Outils Système</h2>
         <p style={{ color: '#64748b', fontSize: '14px' }}>Maintenance et configuration avancée du CMS.</p>
       </header>
+
+      <section className="cms-card">
+        <h3 className="cms-section-title"><Download size={18} /> Sauvegarde du site</h3>
+        <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '16px' }}>
+          Téléchargez une copie complète du contenu (textes, images, galeries, formules, réglages…).
+          <strong style={{ color: '#cbd5e1' }}> Conseil : faites-le régulièrement</strong> (par exemple chaque semaine) et conservez le fichier au cas où.
+        </p>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            onClick={handleBackup}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--primary)', color: '#fff', border: 'none', padding: '12px 20px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer' }}
+          >
+            <Download size={18} /> Télécharger une sauvegarde
+          </button>
+          <label
+            style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'rgba(255,255,255,0.05)', color: '#cbd5e1', border: '1px solid rgba(255,255,255,0.1)', padding: '12px 20px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer' }}
+          >
+            <Upload size={18} /> Restaurer une sauvegarde
+            <input type="file" accept="application/json,.json" onChange={handleRestore} style={{ display: 'none' }} />
+          </label>
+        </div>
+        <p style={{ fontSize: '11px', color: '#64748b', marginTop: '12px' }}>
+          💡 Pour une sécurité maximale, pensez aussi aux sauvegardes automatiques de votre base Supabase (côté hébergeur).
+        </p>
+      </section>
 
       <section className="cms-card" style={{ border: '1px solid rgba(239, 68, 68, 0.2)' }}>
         <h3 className="cms-section-title" style={{ color: '#ef4444' }}><AlertTriangle size={18} /> Zone de Danger</h3>
