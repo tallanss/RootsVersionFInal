@@ -26,6 +26,12 @@ const CITY_SLUGS = [
   'saint-romain-de-colbosc',
 ];
 
+// Pages événementielles (doivent rester alignées avec src/data/events.js)
+const EVENT_SLUGS = [
+  'photobooth-mariage', 'photobooth-entreprise', 'photobooth-anniversaire',
+  'photobooth-bapteme', 'photobooth-evjf-evg',
+];
+
 // Articles de blog (doivent rester alignés avec src/data/blog.js)
 const BLOG_SLUGS = [
   'combien-coute-location-photobooth',
@@ -48,6 +54,7 @@ const ROUTES = [
   '/save-the-date',
   '/mentions-legales',
   '/blog',
+  ...EVENT_SLUGS.map((s) => `/${s}`),
   ...BLOG_SLUGS.map((s) => `/blog/${s}`),
   ...CITY_SLUGS.map((s) => `/location-photobooth-${s}`),
 ];

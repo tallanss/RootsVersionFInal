@@ -48,6 +48,7 @@ import ProductDetail from './pages/ProductDetail';
 import Legal from './pages/Legal';
 import SaveTheDate from './pages/SaveTheDate';
 import CityPage from './pages/CityPage';
+import EventPage from './pages/EventPage';
 import BlogIndex from './pages/BlogIndex';
 import BlogArticle from './pages/BlogArticle';
 // Routes/composants non prérendus ou réservés admin → lazy (hors bundle visiteur)
@@ -65,6 +66,7 @@ import AdminToolbar from './components/admin/AdminToolbar';
 import GoogleAnalytics from './components/GoogleAnalytics';
 
 import { CITIES } from './data/cities';
+import { EVENTS } from './data/events';
 import { useContent } from './context/ContentContext';
 import { AdminProvider, useAdmin } from './context/AdminContext';
 
@@ -142,6 +144,10 @@ function PageContent() {
               <Route path="/blog/:slug" element={<BlogArticle />} />
               {Object.keys(CITIES).map((slug) => (
                 <Route key={slug} path={`/location-photobooth-${slug}`} element={<CityPage slug={slug} />} />
+              ))}
+              {/* Pages événementielles SEO (mariage, entreprise, anniversaire…) */}
+              {Object.keys(EVENTS).map((slug) => (
+                <Route key={slug} path={`/${slug}`} element={<EventPage slug={slug} />} />
               ))}
               {/* Pages libres créées via le CMS (dashboard → Pages libres) */}
               <Route path="/p/:slug" element={<CustomPage />} />
