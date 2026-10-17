@@ -409,6 +409,21 @@ const Photobooth = () => {
         </div>
       </section>
 
+      {/* NOS BORNES (#42) — liens vers les pages machines */}
+      <section className="container" style={{ padding: '0 20px 32px' }}>
+        <div className="section-tag"><CameraIcon size={14} /> Nos machines</div>
+        <h2 className="section-title">Découvrez nos bornes</h2>
+        <p className="section-subtitle">Classique, miroir ou 360 : trouvez la borne idéale pour votre événement.</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginTop: '16px' }}>
+          <Link to="/nos-bornes" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 22px', borderRadius: 'var(--radius-full, 999px)', background: 'var(--primary)', color: '#fff', fontWeight: 800, fontSize: '14px', textDecoration: 'none' }}>
+            Toutes nos bornes <ArrowRight size={16} />
+          </Link>
+          <Link to="/photobooth-360" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '12px 22px', borderRadius: 'var(--radius-full, 999px)', background: 'rgba(197,160,89,0.06)', color: 'var(--gold, #c5a059)', border: '1px solid var(--gold, #c5a059)', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
+            Le Photobooth 360 <ArrowRight size={16} />
+          </Link>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section className="container" style={{ padding: '0 20px 32px' }}>
         <div className="section-tag"><CheckCircle2 size={14} /> FAQ</div>
