@@ -34,6 +34,9 @@ const EVENT_SLUGS = [
 
 // Articles de blog (doivent rester alignés avec src/data/blog.js)
 const BLOG_SLUGS = [
+  'photobooth-classique-miroir-360-lequel-choisir',
+  'idees-themes-photobooth-anniversaire',
+  'photobooth-noel-entreprise',
   'combien-coute-location-photobooth',
   'photobooth-ou-photographe-mariage',
   'idees-accessoires-photobooth',

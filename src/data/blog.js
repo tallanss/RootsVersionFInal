@@ -5,6 +5,97 @@
 
 export const ARTICLES = [
   {
+    slug: 'photobooth-classique-miroir-360-lequel-choisir',
+    title: 'Photobooth classique, miroir ou 360 : lequel choisir ?',
+    description:
+      "Borne classique, Miroir Booth ou Photobooth 360 : comparatif complet pour choisir l'animation photo idéale selon votre événement, votre budget et l'effet recherché.",
+    date: '2026-10-17',
+    category: 'Guide',
+    readingTime: '6 min',
+    blocks: [
+      { type: 'p', text: "Le marché de l'animation photo a bien évolué : on ne parle plus seulement de « photobooth », mais de plusieurs machines très différentes. Borne classique, miroir interactif, plateforme 360… chacune a ses forces et son public. Avant de réserver, mieux vaut comprendre ce qui les distingue pour choisir l'animation qui collera vraiment à votre événement. Voici notre comparatif, sans jargon." },
+      { type: 'h2', text: "La borne photo classique : la valeur sûre" },
+      { type: 'p', text: "C'est le photobooth que tout le monde connaît : une borne élégante avec appareil photo professionnel, écran et imprimante ultra-rapide. Vos invités posent, choisissent, et repartent avec un tirage de qualité en quelques secondes. Simple, efficace et intemporel, il convient à absolument tous les événements, des anniversaires aux mariages." },
+      { type: 'ul', items: [
+        "Idéal pour : tous les événements, tous les âges.",
+        "Points forts : impressions instantanées, fiabilité, personnalisation du cadre.",
+        "Ambiance : conviviale et accessible, chacun repart avec son souvenir papier.",
+      ] },
+      { type: 'h2', text: "Le Miroir Booth : l'effet waouh interactif" },
+      { type: 'p', text: "Le miroir photo est un grand miroir tactile qui guide vos invités avec des animations à l'écran, des jeux et même une signature après la photo. Son format grand et lumineux attire l'œil et transforme la prise de photo en véritable petit spectacle. C'est l'option « premium » qui impressionne dès l'entrée de la salle." },
+      { type: 'ul', items: [
+        "Idéal pour : mariages et grands événements qui veulent une touche spectaculaire.",
+        "Points forts : interactivité, format imposant, effet élégant.",
+        "Ambiance : chic et moderne, très photogénique.",
+      ] },
+      { type: 'h2', text: "Le Photobooth 360 : la star des réseaux" },
+      { type: 'p', text: "Le 360 (ou vidéobooth) ne fait pas des photos mais des vidéos : vos invités montent sur une plateforme, une caméra tourne autour d'eux à 360°, et génère un clip dynamique en slow-motion prêt à partager. C'est l'animation la plus spectaculaire du moment, celle qui crée l'attroupement et qui tourne ensuite sur Instagram et TikTok." },
+      { type: 'ul', items: [
+        "Idéal pour : mariages tendance, soirées d'entreprise, événements où l'on veut faire le buzz.",
+        "Points forts : vidéos virales, effet spectaculaire, souvenirs partageables.",
+        "Ambiance : festive et dynamique, parfaite pour une génération connectée.",
+      ] },
+      { type: 'h2', text: "Alors, laquelle choisir ?" },
+      { type: 'p', text: "Il n'y a pas de mauvais choix, seulement celui qui correspond à votre événement. Pour un souvenir papier que tout le monde emporte, la borne classique est imbattable. Pour impressionner et soigner l'esthétique, le Miroir Booth fait merveille. Et pour créer le buzz et des vidéos à partager, le 360 est roi. Bonne nouvelle : rien ne vous empêche de combiner une borne classique et le 360 pour couvrir photo ET vidéo." },
+      { type: 'quote', text: "Notre conseil : partez de l'effet recherché (souvenir papier, élégance, ou buzz vidéo) plutôt que de la machine. Le reste suit naturellement." },
+      { type: 'p', text: "Chez PhotoRoots, nous louons les trois en Seine-Maritime, livraison et installation comprises. N'hésitez pas à nous décrire votre événement : nous vous orientons vers la borne la plus adaptée et nous vous faisons un devis gratuit sous 24h." },
+      { type: 'cta', text: 'Découvrir nos bornes', to: '/nos-bornes' },
+    ],
+  },
+  {
+    slug: 'idees-themes-photobooth-anniversaire',
+    title: "Photobooth anniversaire : idées et thèmes pour une fête réussie",
+    description:
+      "Des idées de thèmes, d'accessoires et de décors pour votre photobooth d'anniversaire : 18, 30, 40, 50 ans ou fête d'enfant, inspirez-vous pour une animation inoubliable.",
+    date: '2026-10-16',
+    category: 'Inspiration',
+    readingTime: '6 min',
+    blocks: [
+      { type: 'p', text: "Un anniversaire, c'est l'occasion rêvée de lâcher prise et de s'amuser. Et rien ne fédère mieux une fête qu'un photobooth : les invités s'y retrouvent, rigolent, et repartent avec un souvenir. Encore faut-il lui donner une âme. Voici nos idées de thèmes et d'accessoires pour transformer votre borne photo en véritable attraction, quel que soit l'âge." },
+      { type: 'h2', text: "Choisissez un thème qui raconte quelque chose" },
+      { type: 'p', text: "Un bon thème donne le ton et guide le choix des accessoires, du fond et du cadre d'impression. Il n'a pas besoin d'être compliqué : l'essentiel est qu'il parle à l'invité d'honneur et à ses proches." },
+      { type: 'ul', items: [
+        "Années folles / Gatsby : plumes, colliers, chapeaux, fond doré — parfait pour un 40 ou 50 ans chic.",
+        "Disco / années 80 : lunettes fluo, perruques, néons — idéal pour une ambiance festive et colorée.",
+        "Tropical / beach party : fleurs, lunettes de soleil, fond palmiers — pour une fête d'été.",
+        "Cinéma / Hollywood : clap, lunettes de star, tapis rouge — pour se sentir célèbre le temps d'une soirée.",
+        "Thème enfant (super-héros, licornes, pirates) : accessoires adaptés et sécurisés pour les plus petits.",
+      ] },
+      { type: 'h2', text: "Soignez le cadre d'impression" },
+      { type: 'p', text: "Le petit détail qui fait toute la différence : un cadre personnalisé avec le prénom et l'âge du héros du jour, la date, et un visuel assorti au thème. C'est gratuit à mettre en place et vos invités conservent un souvenir vraiment unique, pas un tirage anonyme." },
+      { type: 'h2', text: "Pensez au livre d'or photo" },
+      { type: 'p', text: "Pour un anniversaire marquant (18, 50 ans…), proposez un livre d'or où chaque invité colle une de ses photos et laisse un petit mot. L'invité d'honneur repart avec un album entier de souvenirs et de messages : c'est souvent le cadeau le plus émouvant de la soirée." },
+      { type: 'quote', text: "Un bon photobooth d'anniversaire, ce n'est pas qu'une machine : c'est un thème, des accessoires choisis et un cadre personnalisé qui racontent la fête." },
+      { type: 'p', text: "Dernier conseil : placez la borne près du buffet ou de la piste de danse, là où ça bouge. L'animation prend vie quand elle est au cœur de la fête. PhotoRoots installe votre photobooth d'anniversaire partout en Seine-Maritime, avec accessoires et impressions illimitées selon la formule." },
+      { type: 'cta', text: "Voir notre page anniversaire", to: '/photobooth-anniversaire' },
+    ],
+  },
+  {
+    slug: 'photobooth-noel-entreprise',
+    title: "Photobooth pour la soirée de Noël d'entreprise : nos conseils",
+    description:
+      "Réussir l'animation de votre soirée de Noël d'entreprise avec un photobooth : idées de personnalisation aux couleurs de la société, accessoires et organisation. Devis sous 24h.",
+    date: '2026-10-15',
+    category: 'Entreprise',
+    readingTime: '5 min',
+    blocks: [
+      { type: 'p', text: "La soirée de Noël, c'est LE moment de l'année où les équipes relâchent la pression et se retrouvent dans une ambiance détendue. Un photobooth y a toute sa place : il brise la glace entre services, fait rire tout le monde et laisse à chacun un souvenir tangible de la soirée. Voici comment en faire un vrai succès." },
+      { type: 'h2', text: "Personnalisez aux couleurs de l'entreprise" },
+      { type: 'p', text: "C'est ce qui distingue une animation « sympa » d'un vrai outil de communication interne. Logo sur les tirages, fond aux couleurs de la société, écran d'accueil brandé : chaque photo partagée par vos collaborateurs prolonge l'esprit d'équipe bien après la soirée, et valorise votre marque employeur." },
+      { type: 'h2', text: "Des accessoires de saison" },
+      { type: 'ul', items: [
+        "Bonnets de Père Noël, bois de renne, écharpes scintillantes.",
+        "Pancartes humoristiques « Meilleure équipe de l'année », « Team du café »…",
+        "Un fond festif (sapin, guirlandes, flocons) ou un décor aux couleurs de l'entreprise.",
+      ] },
+      { type: 'h2', text: "Anticipez l'organisation" },
+      { type: 'p', text: "Pour éviter l'attente et maximiser l'animation, prévoyez un emplacement visible mais pas sur le passage, à proximité du bar ou de la piste. Comptez une prise électrique à moins de 5 mètres. Et surtout, communiquez en amont : annoncez le photobooth dans l'invitation, l'effet d'attente fait toujours son effet." },
+      { type: 'quote', text: "Un photobooth personnalisé transforme une photo de soirée en support de communication interne — et en souvenir que vos équipes gardent toute l'année." },
+      { type: 'p', text: "Envie d'un effet encore plus marquant ? Le Photobooth 360 cartonne lors des soirées d'entreprise : les clips vidéo circulent sur les réseaux et prolongent l'événement. PhotoRoots accompagne les entreprises de toute la Seine-Maritime pour leurs soirées de fin d'année — devis et facturation entreprise sous 24h." },
+      { type: 'cta', text: "Voir notre page entreprise", to: '/photobooth-entreprise' },
+    ],
+  },
+  {
     slug: 'combien-coute-location-photobooth',
     title: "Combien coûte la location d'un photobooth en 2026 ?",
     description:
