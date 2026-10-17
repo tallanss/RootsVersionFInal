@@ -14,7 +14,7 @@ const getWebp = (src) => {
   return src;
 };
 
-const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) => {
+const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '', imgStyle = {} }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(() => getWebp(src));
@@ -99,7 +99,8 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '' }) =
             zIndex: 2,
             opacity: isLoaded ? 1 : 0,
             transition: 'opacity 0.4s ease',
-            display: 'block'
+            display: 'block',
+            ...imgStyle,
           }}
           loading="lazy"
         />

@@ -9,7 +9,7 @@ import { useAdmin } from '../context/AdminContext';
 const DEFAULT_SPECS = [
   { id: 'camera', icon: 'CameraIcon', title: 'Canon EOS 6D', desc: 'Appareil photo full-frame professionnel avec objectif ultra-performant pour des clichés d\'une netteté exceptionnelle et des couleurs vibrantes.' },
   { id: 'screen', icon: 'Monitor', title: 'Écran Tactile ASUS 1080p', desc: 'Naviguez facilement à travers les options et personnalisez vos photos grâce à l\'interface tactile intuitive haute définition.' },
-  { id: 'printer', icon: 'Printer', title: 'Imprimante Hilti Ultra-Rapide', desc: 'Vos photos prennent vie instantanément avec une qualité d\'impression professionnelle. Fini les temps d\'attente !' },
+  { id: 'printer', icon: 'Printer', title: 'Imprimante HITI Ultra-Rapide', desc: 'Vos photos prennent vie instantanément avec une qualité d\'impression professionnelle. Fini les temps d\'attente !' },
   { id: 'display', icon: 'Tv', title: 'Écran de Diffusion', desc: 'Écran intégré dans le pied pour diffuser vos vidéos, diaporamas, messages personnalisés ou revivre les photos de l\'événement en direct.' },
 ];
 

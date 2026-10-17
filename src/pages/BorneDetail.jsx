@@ -61,7 +61,7 @@ export default function BorneDetail() {
         {/* Image principale (hauteur maîtrisée pour ne pas créer un grand vide) */}
         <div style={{ position: 'relative', borderRadius: 'var(--radius-lg)', overflow: 'hidden', border: '1px solid var(--border-light)', background: 'var(--bg-secondary)', height: 'clamp(220px, 42vh, 420px)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {machine.image
-            ? <PremiumImage src={machine.image} alt={machine.name} style={{ width: '100%', height: '100%' }} />
+            ? <PremiumImage src={machine.image} alt={machine.name} style={{ width: '100%', height: '100%' }} imgStyle={{ objectFit: 'contain' }} />
             : <Camera size={46} color="var(--text-light)" />}
           {supp > 0 && (
             <span style={{ position: 'absolute', top: '12px', right: '12px', background: 'var(--primary)', color: '#fff', fontSize: '12px', fontWeight: 800, padding: '5px 12px', borderRadius: '999px' }}>+{formatEuro(supp)}€</span>

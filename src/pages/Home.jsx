@@ -275,6 +275,17 @@ const Home = () => {
             xmas: '/events/gala-1.webp',
             _default: '/events/party-1.webp',
           };
+          // Chaque occasion pointe vers sa page événementielle dédiée (#40).
+          // Fallback /tarifs pour les occasions sans page dédiée (ex : bal de promo).
+          const SERVICE_LINKS = {
+            wedding: '/photobooth-mariage',
+            corporate: '/photobooth-entreprise',
+            seminar: '/photobooth-entreprise',
+            xmas: '/photobooth-entreprise',
+            birthday: '/photobooth-anniversaire',
+            baptism: '/photobooth-bapteme',
+            hen: '/photobooth-evjf-evg',
+          };
           // Services gérés via le CMS (dashboard → « Services »). ICON_MAP ci-dessus
           // reste la source de vérité des clés d'icônes disponibles.
           const services = content.services || [];
@@ -292,7 +303,7 @@ const Home = () => {
                   return (
                     <Link
                       key={`${s.id}-${i}`}
-                      to="/tarifs"
+                      to={SERVICE_LINKS[s.icon] || '/tarifs'}
                       className="service-card"
                       aria-hidden={isClone ? 'true' : undefined}
                       tabIndex={isClone ? -1 : 0}

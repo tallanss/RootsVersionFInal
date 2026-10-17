@@ -66,7 +66,7 @@ export default function Bornes() {
                 >
                   <div style={{ position: 'relative', aspectRatio: '4 / 3', background: 'var(--bg-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     {m.image
-                      ? <PremiumImage src={m.image} alt={m.name} style={{ width: '100%', height: '100%' }} />
+                      ? <PremiumImage src={m.image} alt={m.name} style={{ width: '100%', height: '100%' }} imgStyle={{ objectFit: 'contain' }} />
                       : <Camera size={34} color="var(--text-light)" />}
                     {supp > 0 && (
                       <span style={{ position: 'absolute', top: '10px', right: '10px', background: 'var(--primary)', color: '#fff', fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '999px' }}>+{formatEuro(supp)}€</span>

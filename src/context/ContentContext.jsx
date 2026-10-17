@@ -126,10 +126,10 @@ const DEFAULT_CONTENT = {
   },
   navigation: [
     { id: 'home', label: 'Accueil', path: '/' },
+    { id: 'bornes', label: 'Nos bornes', path: '/nos-bornes', icon: 'photobooth' },
     { id: 'tarifs', label: 'Tarifs', path: '/tarifs' },
     { id: 'prestations', label: 'Prestations', path: '/prestations', icon: 'prestations' },
     { id: 'galerie', label: 'Galerie', path: '/galerie' },
-    { id: 'bornes', label: 'Nos bornes', path: '/nos-bornes', icon: 'photobooth' },
     { id: 'contact', label: 'Contact', path: '/contact' }
   ],
   contact: {
@@ -242,6 +242,13 @@ const buildMergedContent = (parsed = {}) => {
         const item = { id: 'prestations', label: 'Prestations', path: '/prestations', icon: 'prestations' };
         const idx = base.findIndex((n) => n.id === 'tarifs' || n.path === '/tarifs');
         base = idx >= 0 ? [...base.slice(0, idx + 1), item, ...base.slice(idx + 1)] : [...base, item];
+      }
+      // « Nos bornes » placé juste après « Accueil » (#22).
+      const bIdx = base.findIndex((n) => n.id === 'bornes' || n.path === '/nos-bornes');
+      if (bIdx > 1) {
+        const [b] = base.splice(bIdx, 1);
+        const homeIdx = base.findIndex((n) => n.id === 'home' || n.path === '/');
+        base.splice((homeIdx >= 0 ? homeIdx : -1) + 1, 0, b);
       }
       return base;
     })(),
