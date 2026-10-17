@@ -64,7 +64,7 @@ const Photobooth = () => {
     },
     offers: {
       '@type': 'AggregateOffer',
-      lowPrice: 99,
+      lowPrice: 119,
       priceCurrency: 'EUR',
     },
   };
@@ -73,18 +73,18 @@ const Photobooth = () => {
     <div className="animate-in">
       <Helmet>
         <title>{content.photoboothSeoTitle || 'Photobooth Premium en Seine-Maritime — Borne Photo Mariage & Entreprise | PhotoRoots'}</title>
-        <meta name="description" content={content.photoboothSeoDesc || 'Découvrez notre photobooth dernière génération : borne miroir tactile, impression instantanée, animation clé en main. Location au Havre, Rouen, Dieppe à partir de 99€.'} />
+        <meta name="description" content={content.photoboothSeoDesc || 'Découvrez notre photobooth dernière génération : borne miroir tactile, impression instantanée, animation clé en main. Location au Havre, Rouen, Dieppe à partir de 119€.'} />
         <meta name="keywords" content={content.photoboothSeoKeywords || 'borne photo le havre, location photobooth rouen, matériel photobooth seine-maritime, miroir photo dieppe'} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://photoroots.fr/photobooth" />
         <meta property="og:title" content={content.photoboothSeoTitle || 'Photobooth Premium en Seine-Maritime — Borne Photo Mariage & Entreprise | PhotoRoots'} />
-        <meta property="og:description" content={content.photoboothSeoDesc || 'Découvrez notre photobooth dernière génération : borne miroir tactile, impression instantanée, animation clé en main. Location au Havre, Rouen, Dieppe à partir de 99€.'} />
+        <meta property="og:description" content={content.photoboothSeoDesc || 'Découvrez notre photobooth dernière génération : borne miroir tactile, impression instantanée, animation clé en main. Location au Havre, Rouen, Dieppe à partir de 119€.'} />
         <meta property="og:image" content="https://photoroots.fr/photobooth-hero.png" />
         <meta property="og:locale" content="fr_FR" />
         <meta property="og:site_name" content="PhotoRoots" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={content.photoboothSeoTitle || 'Photobooth Premium en Seine-Maritime — Borne Photo Mariage & Entreprise | PhotoRoots'} />
-        <meta name="twitter:description" content={content.photoboothSeoDesc || 'Découvrez notre photobooth dernière génération : borne miroir tactile, impression instantanée, animation clé en main. Location au Havre, Rouen, Dieppe à partir de 99€.'} />
+        <meta name="twitter:description" content={content.photoboothSeoDesc || 'Découvrez notre photobooth dernière génération : borne miroir tactile, impression instantanée, animation clé en main. Location au Havre, Rouen, Dieppe à partir de 119€.'} />
         <meta name="twitter:image" content="https://photoroots.fr/photobooth-hero.png" />
         <link rel="canonical" href="https://photoroots.fr/photobooth" />
         <script type="application/ld+json">{JSON.stringify(serviceSchema)}</script>

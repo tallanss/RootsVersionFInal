@@ -18,7 +18,7 @@ Le Havre, c'est aussi une ville de fêtes. Entre les soirées d'entreprise des g
 
 Choisir PhotoRoots au Havre, c'est s'assurer une équipe locale qui connaît les contraintes de chaque salle havraise : la luminosité particulière des espaces face à la mer, les accès parfois étroits du centre Perret, la logistique des grandes salles type Pasino ou Carré des Docks. Nous arrivons préparés, jamais en repérage, ce qui garantit une installation rapide et sans accroc.
 
-Enfin, parce que nous travaillons quasi-exclusivement en Seine-Maritime, nos prix restent très compétitifs sur la zone du Havre : pas de surcoût kilométrique, pas de marge de "déplacement exceptionnel", juste un tarif transparent à partir de 99€ pour un photobooth premium installé chez vous, livraison et installation incluses.`,
+Enfin, parce que nous travaillons quasi-exclusivement en Seine-Maritime, nos prix restent très compétitifs sur la zone du Havre : pas de surcoût kilométrique, pas de marge de "déplacement exceptionnel", juste un tarif transparent à partir de 119€ pour un photobooth premium installé chez vous, livraison et installation incluses.`,
     useCases: [
       'Mariages dans les domaines des hauteurs (Octeville-sur-Mer, Sainte-Adresse) avec leur vue mer imprenable',
       "Soirées d'entreprise sur le port autonome et la zone industrielle de Gonfreville-l'Orcher",
@@ -75,7 +75,7 @@ Le tissu événementiel rouennais est particulièrement riche : grands hôtels d
 
 Travailler à Rouen, c'est aussi maîtriser les particularités de circulation et de stationnement du centre-ville historique, classé secteur sauvegardé. Notre équipe locale connaît les arrêtés municipaux, les zones piétonnes du quartier Vieux-Marché et les accès logistiques aux salles classées. Cette expertise terrain évite bien des mauvaises surprises le jour J.
 
-PhotoRoots est l'un des rares prestataires photobooth réellement basés en Seine-Maritime à intervenir aussi régulièrement sur le bassin rouennais. Cela nous permet d'offrir des tarifs cohérents — à partir de 99€, livraison et installation incluses — sans la majoration "Paris-Rouen" appliquée par les loueurs franciliens qui se déplacent en région. Devis personnalisé sous 24h.`,
+PhotoRoots est l'un des rares prestataires photobooth réellement basés en Seine-Maritime à intervenir aussi régulièrement sur le bassin rouennais. Cela nous permet d'offrir des tarifs cohérents — à partir de 119€, livraison et installation incluses — sans la majoration "Paris-Rouen" appliquée par les loueurs franciliens qui se déplacent en région. Devis personnalisé sous 24h.`,
     useCases: [
       'Mariages dans les châteaux et manoirs des coteaux nord (Bois-Guillaume, Bonsecours, Mont-Saint-Aignan)',
       "Soirées d'entreprise et galas annuels pour les sièges sociaux rouennais (assurance, banque, presse)",
@@ -107,7 +107,7 @@ PhotoRoots est l'un des rares prestataires photobooth réellement basés en Sein
       },
       {
         q: "Combien coûte un photobooth pour un mariage à Rouen ?",
-        a: "Nos tarifs démarrent à 99€ pour la formule découverte 2h. Pour un mariage rouennais classique (4-5h d'animation, photos illimitées, accessoires, fond personnalisé), comptez entre 390€ et 590€ selon les options. Devis gratuit et personnalisé sous 24h.",
+        a: "Nos tarifs démarrent à 119€ pour la formule découverte 2h. Pour un mariage rouennais classique (4-5h d'animation, photos illimitées, accessoires, fond personnalisé), comptez entre 390€ et 590€ selon les options. Devis gratuit et personnalisé sous 24h.",
       },
       {
         q: 'Travaillez-vous avec les wedding planners et traiteurs rouennais ?',
@@ -132,7 +132,7 @@ Notre photobooth s'adapte parfaitement à cette ambiance bord de mer. Nous propo
 
 Intervenir à Dieppe, c'est aussi connaître les particularités logistiques d'une ville construite entre falaises et port. Les accès aux quartiers du Pollet ou aux hauteurs du Bout-du-Quai demandent une certaine anticipation, surtout les soirs de marée haute ou en période de festivals (Foire aux Harengs, Festival International de Cerfs-Volants). Nous gérons ces aspects en amont avec vous.
 
-PhotoRoots est l'un des rares photoboothes vraiment basés en Seine-Maritime à monter régulièrement à Dieppe et sur la Côte d'Albâtre. Cette proximité — environ 1h depuis nos locaux — nous permet d'inclure le déplacement gratuitement dans le 76200 et les communes voisines, là où d'autres prestataires factureraient un déplacement "longue distance". Tarifs à partir de 99€, livraison et installation incluses, devis sous 24h, sans surprise.`,
+PhotoRoots est l'un des rares photoboothes vraiment basés en Seine-Maritime à monter régulièrement à Dieppe et sur la Côte d'Albâtre. Cette proximité — environ 1h depuis nos locaux — nous permet d'inclure le déplacement gratuitement dans le 76200 et les communes voisines, là où d'autres prestataires factureraient un déplacement "longue distance". Tarifs à partir de 119€, livraison et installation incluses, devis sous 24h, sans surprise.`,
     useCases: [
       'Mariages face à la mer dans les hôtels-restaurants du front de mer dieppois et de Pourville',
       "Soirées d'entreprise et team-buildings sur le port et au Casino de Dieppe",
@@ -189,7 +189,7 @@ La ville s'étire le long de la Lézarde, petite rivière qui serpente entre le 
 
 Notre atout à Montivilliers, c'est la proximité immédiate : nous sommes sur place en quelques minutes, ce qui rend le déplacement totalement gratuit dans le 76290 et les communes limitrophes. Pas de forfait kilométrique, pas de "supplément campagne" : nous traitons Montivilliers exactement comme le centre du Havre, avec la même réactivité et le même soin d'installation.
 
-Que votre réception se tienne dans une salle des fêtes communale, un gîte de charme des coteaux ou une cour d'abbaye pour un événement d'exception, nous adaptons nos fonds et notre matériel au lieu. À partir de 99€, livraison et installation incluses, avec un devis personnalisé envoyé sous 24h.`,
+Que votre réception se tienne dans une salle des fêtes communale, un gîte de charme des coteaux ou une cour d'abbaye pour un événement d'exception, nous adaptons nos fonds et notre matériel au lieu. À partir de 119€, livraison et installation incluses, avec un devis personnalisé envoyé sous 24h.`,
     useCases: [
       "Mariages dans le cadre patrimonial de l'Abbaye de Montivilliers et de son aître restauré",
       'Réceptions familiales et anniversaires dans les salles communales d\'Épouville et Manéglise',
@@ -242,7 +242,7 @@ Mais Harfleur, c'est aussi une ville à deux visages : d'un côté la cité méd
 
 Notre connaissance fine de ce territoire nous permet d'adresser aussi bien les réceptions privées intimistes du centre ancien que les grands rassemblements corporate des sites industriels voisins. Nous savons gérer les contraintes d'accès et de sécurité propres aux zones d'activité de Rogerville et de Gonfreville-l'Orcher, où l'entrée sur site est parfois réglementée.
 
-Située à quelques minutes du Havre, Harfleur (76700) fait partie de notre zone de déplacement gratuit. Vous bénéficiez de la même réactivité que dans le centre havrais, avec des tarifs transparents à partir de 99€, livraison et installation incluses, et un devis personnalisé sous 24h.`,
+Située à quelques minutes du Havre, Harfleur (76700) fait partie de notre zone de déplacement gratuit. Vous bénéficiez de la même réactivité que dans le centre havrais, avec des tarifs transparents à partir de 119€, livraison et installation incluses, et un devis personnalisé sous 24h.`,
     useCases: [
       "Soirées de fin d'année et séminaires des entreprises de la zone industrialo-portuaire (Gonfreville-l'Orcher, Rogerville)",
       "Mariages dans le cadre médiéval du centre ancien d'Harfleur et de l'église Saint-Martin",
@@ -295,7 +295,7 @@ Le port de Fécamp, l'un des plus actifs de Normandie, rythme la vie locale et i
 
 Travailler à Fécamp suppose de connaître les particularités d'une ville encaissée entre deux falaises, où l'accès aux hauteurs et au port demande de l'anticipation, notamment lors des grands rendez-vous comme le Festival "Fécamp Grand'Escale" ou la fête du hareng. Notre équipe maîtrise ces contraintes et planifie chaque installation en amont pour un montage fluide, même dans les lieux les plus atypiques.
 
-Bien que Fécamp soit un peu plus éloignée de notre base, nous y intervenons régulièrement et incluons le déplacement dans nos tarifs pour le 76400 et les communes voisines (Saint-Léonard, Les Loges, Yport, Senneville). Photobooth premium à partir de 99€, livraison et installation incluses, devis personnalisé sous 24h.`,
+Bien que Fécamp soit un peu plus éloignée de notre base, nous y intervenons régulièrement et incluons le déplacement dans nos tarifs pour le 76400 et les communes voisines (Saint-Léonard, Les Loges, Yport, Senneville). Photobooth premium à partir de 119€, livraison et installation incluses, devis personnalisé sous 24h.`,
     useCases: [
       'Mariages dans les restaurants et hôtels du front de mer fécampois, face au port',
       "Réceptions et séminaires d'exception au Palais Bénédictine et dans ses salons",
@@ -352,7 +352,7 @@ Bien que Fécamp soit un peu plus éloignée de notre base, nous y intervenons r
 
 Travailler à Étretat exige une vraie expertise logistique. Le village est petit, très fréquenté en saison, et les accès aux points de vue ou aux domaines des hauteurs (Le Tilleul, Bénouville, Bordeaux-Saint-Clair) demandent de l'anticipation. Pour les séances photo en extérieur face mer, nous prévoyons systématiquement la protection contre le vent et l'humidité, et coordonnons notre installation avec les wedding planners qui orchestrent ces mariages d'exception.
 
-PhotoRoots accompagne régulièrement des mariages prestige à Étretat et sur les communes voisines. Malgré le standing de ces réceptions, nos tarifs restent accessibles — à partir de 99€, livraison et installation incluses — avec un service sur mesure et un devis personnalisé sous 24h. L'élégance d'un photobooth premium au pied des plus belles falaises de Normandie, sans le tarif d'un prestataire parisien.`,
+PhotoRoots accompagne régulièrement des mariages prestige à Étretat et sur les communes voisines. Malgré le standing de ces réceptions, nos tarifs restent accessibles — à partir de 119€, livraison et installation incluses — avec un service sur mesure et un devis personnalisé sous 24h. L'élégance d'un photobooth premium au pied des plus belles falaises de Normandie, sans le tarif d'un prestataire parisien.`,
     useCases: [
       "Mariages prestige avec vue sur les falaises et l'Aiguille creuse d'Étretat",
       'Cocktails et réceptions raffinées aux Jardins d\'Étretat, suspendus au-dessus de la mer',
@@ -392,7 +392,7 @@ PhotoRoots accompagne régulièrement des mariages prestige à Étretat et sur l
       },
       {
         q: 'Vos tarifs sont-ils plus élevés pour un mariage haut de gamme à Étretat ?',
-        a: "Non, notre grille reste la même : à partir de 99€, livraison et installation incluses. Le standing du lieu ne change pas nos prix. Vous bénéficiez d'un service premium et personnalisé sans la majoration appliquée par les prestataires venus de Paris ou d'ailleurs.",
+        a: "Non, notre grille reste la même : à partir de 119€, livraison et installation incluses. Le standing du lieu ne change pas nos prix. Vous bénéficiez d'un service premium et personnalisé sans la majoration appliquée par les prestataires venus de Paris ou d'ailleurs.",
       },
     ],
   },
@@ -409,7 +409,7 @@ Nichée dans la vallée du Commerce, entre plateau de Caux et boucle de Seine, B
 
 Le tissu événementiel local est avant tout familial et convivial : mariages dans les salles communales rénovées, anniversaires et noces dans les domaines de la campagne cauchoise, repas associatifs et fêtes de quartier. Nous y installons notre photobooth avec la même exigence que pour les grands événements urbains, en adaptant nos décors à l'ambiance détendue et bon enfant de la région.
 
-Bolbec (76210) et la vallée du Commerce font pleinement partie de notre zone de couverture en Seine-Maritime. Grâce à la proximité de l'autoroute, nous y intervenons sans surcoût de déplacement, avec des tarifs à partir de 99€, livraison et installation incluses, et un devis personnalisé sous 24h.`,
+Bolbec (76210) et la vallée du Commerce font pleinement partie de notre zone de couverture en Seine-Maritime. Grâce à la proximité de l'autoroute, nous y intervenons sans surcoût de déplacement, avec des tarifs à partir de 119€, livraison et installation incluses, et un devis personnalisé sous 24h.`,
     useCases: [
       'Mariages et noces dans les salles communales rénovées de la vallée du Commerce',
       "Anniversaires et fêtes de famille dans les domaines de la campagne cauchoise (Nointot, Mirville)",
@@ -462,7 +462,7 @@ La ville occupe une position stratégique au cœur du Caux maritime, à la jonct
 
 Intervenir à Lillebonne, c'est savoir naviguer entre un centre ancien riche en patrimoine et les vastes zones industrielles voisines, dont les accès sont parfois soumis à des règles de sécurité strictes. Notre équipe locale connaît bien ce territoire et adapte sa logistique à chaque contexte : installation soignée près du théâtre romain pour une réception culturelle, ou montage encadré sur un site industriel de Port-Jérôme.
 
-Lillebonne (76170) et son bassin (Bolbec, Port-Jérôme, Gruchet-le-Valasse, Saint-Antoine-la-Forêt) font partie de notre zone d'intervention en Seine-Maritime, sans surcoût de déplacement. Tarifs à partir de 99€, livraison et installation incluses, devis personnalisé envoyé sous 24h.`,
+Lillebonne (76170) et son bassin (Bolbec, Port-Jérôme, Gruchet-le-Valasse, Saint-Antoine-la-Forêt) font partie de notre zone d'intervention en Seine-Maritime, sans surcoût de déplacement. Tarifs à partir de 119€, livraison et installation incluses, devis personnalisé envoyé sous 24h.`,
     useCases: [
       "Séminaires, soirées de cohésion et arbres de Noël pour les industries de Port-Jérôme-sur-Seine",
       'Événements culturels et réceptions à proximité du théâtre romain de Juliobona',
@@ -519,7 +519,7 @@ Terre d'agriculture et de traditions, le Pays de Caux yvetotais vit au rythme de
 
 La situation d'Yvetot, à mi-chemin entre Rouen et Le Havre et bien desservie par l'A150 et la ligne ferroviaire, en fait un point de passage central que nous rejoignons aisément. Nous intervenons dans toute la couronne yvetotaise — Sainte-Marie-des-Champs, Auzebosc, Écalles-Alix, Allouville-Bellefosse — pour des événements aussi variés que les mariages champêtres, les anniversaires de ferme rénovée ou les fêtes associatives du plateau.
 
-Yvetot (76190) et le Pays de Caux font pleinement partie de notre zone d'intervention en Seine-Maritime, sans surcoût de déplacement. Vous bénéficiez d'un photobooth premium à partir de 99€, livraison et installation incluses, avec un devis personnalisé sous 24h.`,
+Yvetot (76190) et le Pays de Caux font pleinement partie de notre zone d'intervention en Seine-Maritime, sans surcoût de déplacement. Vous bénéficiez d'un photobooth premium à partir de 119€, livraison et installation incluses, avec un devis personnalisé sous 24h.`,
     useCases: [
       'Mariages champêtres dans les corps de ferme restaurés et longères du Pays de Caux',
       "Fêtes de village, comices agricoles et événements de la capitale du Caux",
@@ -576,7 +576,7 @@ Ce qui fait le charme de Saint-Romain-de-Colbosc et de ses environs, c'est la do
 
 Le territoire mêle vie rurale et activité économique : la plaine alluviale de l'estuaire, vers Sandouville et La Cerlangue, accueille de grands sites industriels et logistiques, sources d'événements professionnels ponctuels. Saint-Romain joue ainsi le rôle de trait d'union entre la campagne du plateau et l'effervescence de la zone portuaire havraise. Nous savons adapter nos prestations à ces deux mondes, du mariage à la ferme au séminaire d'entreprise.
 
-Saint-Romain-de-Colbosc (76430) et son canton font partie intégrante de notre zone d'intervention en Seine-Maritime, à quelques minutes du Havre. Le déplacement est gratuit, avec des tarifs à partir de 99€, livraison et installation incluses, et un devis personnalisé envoyé sous 24h.`,
+Saint-Romain-de-Colbosc (76430) et son canton font partie intégrante de notre zone d'intervention en Seine-Maritime, à quelques minutes du Havre. Le déplacement est gratuit, avec des tarifs à partir de 119€, livraison et installation incluses, et un devis personnalisé envoyé sous 24h.`,
     useCases: [
       'Mariages champêtres dans les fermes et domaines de la campagne cauchoise',
       "Réceptions familiales et anniversaires dans les hameaux d'Étainhus et Saint-Gilles-de-Crétot",

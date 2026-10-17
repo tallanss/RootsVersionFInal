@@ -20,7 +20,7 @@ export default function CityLanding({ cityData }) {
   } = cityData;
 
   const seoTitle = `${name} — Location Photobooth ${name} | PhotoRoots`;
-  const seoDesc = `Location de photobooth à ${name} (${postalCode}) à partir de 99€. Mariages, anniversaires, événements pro. Devis 24h, livraison & installation incluses.`;
+  const seoDesc = `Location de photobooth à ${name} (${postalCode}) à partir de 119€. Mariages, anniversaires, événements pro. Devis 24h, livraison & installation incluses.`;
   const canonical = `https://photoroots.fr/${slug}`;
   const keywords = `photobooth ${name}, location photobooth ${name}, borne photo ${name}, photobooth mariage ${name}`;
 
@@ -128,7 +128,7 @@ export default function CityLanding({ cityData }) {
         <FadeIn direction="down" duration={1}>
           <h1 className="hero-title">
             Location de Photobooth à {name}<br />
-            <span className="highlight">à partir de 99€</span>
+            <span className="highlight">à partir de 119€</span>
           </h1>
         </FadeIn>
         <FadeIn direction="up" delay={0.2}>
@@ -238,7 +238,7 @@ export default function CityLanding({ cityData }) {
           <p className="section-subtitle">Un photobooth haut de gamme à un prix juste, sans frais cachés.</p>
 
           <div className="cta-section" style={{ marginTop: '16px' }}>
-            <h2>À partir de 99€</h2>
+            <h2>À partir de 119€</h2>
             <p>Formule découverte 2h, montée en gamme jusqu'au pack premium illimité avec accessoires &amp; impressions.</p>
             <AnimatedButton to="/tarifs" className="btn-primary" style={{ background: '#ffffff', color: 'var(--primary)', width: 'auto', padding: '16px 36px', fontWeight: 800 }}>
               Voir tous les tarifs <ArrowRight size={18} />

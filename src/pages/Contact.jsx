@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -11,7 +11,6 @@ import { trackEvent } from '../utils/analytics';
 import { isConfigured } from '../config/emailjs';
 import { formatPrice, priceToNumber, formatEuro } from '../utils/galleryFormat';
 import { RENTAL_OPTIONS_ENABLED } from '../config/features';
-const Confetti = lazy(() => import('../components/Confetti'));
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
 
@@ -77,17 +76,11 @@ const Contact = () => {
   const eventTypes = content.formOptions?.eventTypes || ['Mariage', 'Anniversaire', 'Entreprise', 'Baptême', 'EVJF/EVG', 'Autre'];
 
   // Le « message rapide » a été retiré : la page ouvre toujours la demande de devis.
-  const [mode, setMode] = useState('devis'); // conservé pour compat interne — toujours 'devis'
+  const [mode] = useState('devis'); // le « message rapide » a été retiré — toujours 'devis'
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [result, setResult] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
-  const [submittedMode, setSubmittedMode] = useState('devis');
-
-  // Formulaire "message rapide" (nom, email, message uniquement)
-  const [msg, setMsg] = useState({ name: '', email: '', message: '' });
 
   const phoneRaw = (content.contact?.phone || '06 03 16 36 21').replace(/\s/g, '');
   const phoneDisplay = content.contact?.phone || '06 03 16 36 21';
@@ -124,7 +117,7 @@ const Contact = () => {
       }));
     }
     return [
-      { name: 'Starter', price: '99€', tirages: '100% digital' },
+      { name: 'Autonomie', price: '119€', tirages: '100% digital' },
       { name: 'Essentiel', price: '189€', tirages: '100% digital' },
       { name: 'Prestige', price: '249€', tirages: '200 tirages', featured: true },
       { name: 'Excellence', price: '389€', tirages: '400 tirages' },
@@ -394,115 +387,6 @@ const Contact = () => {
     }
   };
 
-  // ===== Soumission du "message rapide" =====
-  const handleMessageSubmit = async (e) => {
-    if (e) e.preventDefault();
-    setError(null);
-
-    if (!msg.name.trim()) { setError('Veuillez saisir vos nom et prénom.'); return; }
-    if (!EMAIL_REGEX.test(msg.email)) { setError('Veuillez saisir une adresse email valide.'); return; }
-    if (!msg.message.trim()) { setError('Veuillez écrire votre message.'); return; }
-
-    const lastSubmit = sessionStorage.getItem('pr_last_submit');
-    if (lastSubmit && Date.now() - Number(lastSubmit) < 30000) {
-      setError('Veuillez patienter quelques secondes avant de renvoyer.');
-      return;
-    }
-    sessionStorage.setItem('pr_last_submit', String(Date.now()));
-    setLoading(true);
-
-    const payload = {
-      type: 'message',
-      name: msg.name,
-      email: msg.email,
-      message: msg.message,
-      formula: 'Message',
-    };
-
-    const res = await processBooking(payload);
-    setLoading(false);
-
-    if (res.success) {
-      const newMessage = {
-        id: Date.now(),
-        name: msg.name,
-        email: msg.email,
-        phone: '',
-        date: '',
-        subject: 'Message',
-        formula: 'Message',
-        fullMessage: msg.message,
-        status: 'Nouveau',
-        createdAt: new Date().toISOString(),
-      };
-      updateContent({ messages: [newMessage, ...(content.messages || [])] });
-
-      setResult(res);
-      setSubmittedMode('message');
-      // Conversion GA4 : message rapide envoyé
-      trackEvent('contact_message', { method: 'formulaire' });
-      setSubmitted(true);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-      setError(res.error || 'Une erreur est survenue. Veuillez réessayer.');
-    }
-  };
-
-  // ===== SUCCESS STATE =====
-  if (submitted) {
-    return (
-      <div className="animate-in">
-        <Suspense fallback={null}><Confetti active={submitted} /></Suspense>
-        <Helmet>
-          <title>Demande envoyée | PhotoRoots</title>
-        </Helmet>
-        <section className="container" style={{ padding: '32px 24px' }}>
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            style={{ textAlign: 'center', padding: '36px 24px', background: 'var(--bg-card)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-lg)' }}
-          >
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.15, type: 'spring', stiffness: 200, damping: 14 }}
-              style={{ width: '76px', height: '76px', borderRadius: '50%', background: 'var(--bg-secondary)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', boxShadow: '0 0 0 8px var(--accent-glow)' }}
-            >
-              <CheckCircle2 size={38} />
-            </motion.div>
-            <h1 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '8px', color: 'var(--text-main)' }}>
-              {submittedMode === 'message' ? 'Merci, votre message est bien reçu !' : 'Merci, votre demande est bien reçue !'}
-            </h1>
-            <p style={{ fontSize: '15px', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '24px' }}>
-              {submittedMode === 'message' ? (
-                <>Nous revenons vers vous très vite à <strong>{msg.email}</strong>.</>
-              ) : result?.isDemo ? (
-                <>Mode démo — en production, nous reviendrons vers vous sous 24h à <strong>{formData.email}</strong>.</>
-              ) : (
-                <>Votre demande est bien enregistrée ✓ Nous revenons vers vous sous 24h — par email à <strong>{formData.email}</strong> ou par téléphone — avec votre devis personnalisé.</>
-              )}
-            </p>
-
-            {submittedMode === 'devis' && (
-              <div style={{ background: 'var(--bg-secondary)', borderRadius: 'var(--radius-lg)', padding: '20px', border: '1px solid var(--border-light)', textAlign: 'left', marginBottom: '24px' }}>
-                <SummaryRow label="Date envisagée" value={formatDateFR(formData.date)} border />
-                {formData.eventType && <SummaryRow label="Événement" value={formData.eventType} border />}
-                {formData.formula && <SummaryRow label="Formule" value={formData.formula} border={!!formData.location || !!formData.guests} />}
-                {formData.guests && <SummaryRow label="Invités" value={`${formData.guests} personnes`} border={!!formData.location} />}
-                {formData.location && <SummaryRow label="Lieu" value={formData.location} />}
-              </div>
-            )}
-
-            <Link to="/">
-              <button className="btn-primary" style={{ width: '100%' }}>Retour à l'accueil</button>
-            </Link>
-          </motion.div>
-        </section>
-      </div>
-    );
-  }
-
   // ===== Récap (pills) — rappelle les infos saisies à l'étape 1 =====
   const recapPills = [
     formData.prestation && { icon: Sparkles, text: formData.prestation },
@@ -624,67 +508,6 @@ const Contact = () => {
               );
             })}
           </div>
-        </section>
-      )}
-
-      {/* ============ FORMULAIRE MESSAGE RAPIDE ============ */}
-      {mode === 'message' && (
-        <section className="container" style={{ padding: '16px 20px 24px' }}>
-          <form
-            onSubmit={handleMessageSubmit}
-            style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', padding: '24px', border: '1px solid var(--border-light)', boxShadow: 'var(--shadow-md)' }}
-          >
-            <div style={{ marginBottom: '16px' }}>
-              <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)', margin: '0 0 4px' }}>Envoyez-nous un message</h2>
-              <p style={{ fontSize: '13px', color: 'var(--text-muted)', margin: 0 }}>Une simple question ? Écrivez-nous, on vous répond vite.</p>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0 18px' }}>
-              <div className="form-group">
-                <label className="form-label" htmlFor="msgName">Nom et prénom *</label>
-                <div style={{ position: 'relative' }}>
-                  <input className="form-input" type="text" id="msgName" placeholder="Jean Dupont" value={msg.name} onChange={(e) => setMsg({ ...msg, name: e.target.value })} required style={{ paddingRight: '38px' }} />
-                  <ValidCheck show={msg.name.trim().length >= 2} />
-                </div>
-              </div>
-              <div className="form-group">
-                <label className="form-label" htmlFor="msgEmail">Email *</label>
-                <div style={{ position: 'relative' }}>
-                  <input className="form-input" type="email" id="msgEmail" placeholder="jean@exemple.com" value={msg.email} onChange={(e) => setMsg({ ...msg, email: e.target.value })} required style={{ paddingRight: '38px' }} />
-                  <ValidCheck show={EMAIL_REGEX.test(msg.email)} />
-                </div>
-                {msg.email.length > 0 && !EMAIL_REGEX.test(msg.email) && <FieldHint>Adresse email invalide</FieldHint>}
-              </div>
-            </div>
-            <div className="form-group">
-              <label className="form-label" htmlFor="msgBody">Votre message *</label>
-              <div style={{ position: 'relative' }}>
-                <textarea className="form-textarea" id="msgBody" rows={5} placeholder="Bonjour, j'aimerais savoir..." value={msg.message} onChange={(e) => setMsg({ ...msg, message: e.target.value })} required style={{ paddingRight: '38px' }} />
-                {msg.message.trim().length >= 5 && (
-                  <CheckCircle2 size={16} style={{ position: 'absolute', right: '12px', top: '14px', color: '#22c55e', pointerEvents: 'none' }} />
-                )}
-              </div>
-            </div>
-
-            {error && (
-              <div style={{ marginTop: '4px', marginBottom: '12px', padding: '14px 18px', background: '#fef2f2', borderRadius: 'var(--radius-md)', border: '1px solid #fecaca', color: '#b91c1c', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <AlertCircle size={16} /> {error}
-              </div>
-            )}
-
-            <button type="submit" className="btn-primary" disabled={loading} style={{ width: '100%', marginTop: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-              {loading ? (
-                <><Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> Envoi en cours...</>
-              ) : (
-                <><Send size={18} /> Envoyer mon message</>
-              )}
-            </button>
-
-            <p style={{ textAlign: 'center', marginTop: '14px', fontSize: '13px', color: 'var(--text-muted)' }}>
-              Ou appelez-nous directement au{' '}
-              <a href={`tel:${phoneRaw}`} style={{ color: 'var(--primary)', fontWeight: 700, textDecoration: 'none' }}>{phoneDisplay}</a>
-            </p>
-          </form>
         </section>
       )}
 
@@ -1191,13 +1014,6 @@ const StepHeading = ({ n, title, subtitle }) => (
     </span>
     <h2 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-main)', margin: '4px 0 4px' }}>{title}</h2>
     {subtitle && <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5, margin: 0 }}>{subtitle}</p>}
-  </div>
-);
-
-const SummaryRow = ({ label, value, border }) => (
-  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', padding: '10px 0', borderBottom: border ? '1px solid var(--border-light)' : 'none' }}>
-    <span style={{ fontSize: '14px', color: 'var(--text-muted)', flexShrink: 0 }}>{label}</span>
-    <span style={{ fontSize: '14px', fontWeight: 700, textAlign: 'right' }}>{value}</span>
   </div>
 );
 

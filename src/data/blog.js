@@ -114,7 +114,7 @@ export const ARTICLES = [
       },
       {
         type: 'p',
-        text: "Sur le marché français, la location d'un photobooth pour une soirée se situe globalement entre 99€ et 700€. Cette amplitude s'explique simplement : on ne loue pas la même chose pour un anniversaire de deux heures et pour un mariage qui dure jusqu'à l'aube. Chez PhotoRoots, nos formules démarrent à partir de 99€ pour une borne digitale courte durée, et montent progressivement selon la durée, les options et le niveau de personnalisation.",
+        text: "Sur le marché français, la location d'un photobooth pour une soirée se situe globalement entre 99€ et 700€. Cette amplitude s'explique simplement : on ne loue pas la même chose pour un anniversaire de deux heures et pour un mariage qui dure jusqu'à l'aube. Chez PhotoRoots, nos formules démarrent à partir de 119€ pour une borne digitale courte durée, et montent progressivement selon la durée, les options et le niveau de personnalisation.",
       },
       {
         type: 'p',
@@ -151,7 +151,7 @@ export const ARTICLES = [
       },
       {
         type: 'p',
-        text: "C'est le facteur qui pèse le plus dans le tarif. Une formule 100% digitale est la plus économique : vos invités prennent la pose, et reçoivent leurs clichés instantanément par e-mail, SMS ou via un QR code menant à une galerie en ligne. Aucun consommable, aucune cartouche d'encre, aucun papier — d'où un prix de départ accessible, à partir de 99€.",
+        text: "C'est le facteur qui pèse le plus dans le tarif. Une formule 100% digitale est la plus économique : vos invités prennent la pose, et reçoivent leurs clichés instantanément par e-mail, SMS ou via un QR code menant à une galerie en ligne. Aucun consommable, aucune cartouche d'encre, aucun papier — d'où un prix de départ accessible, à partir de 119€.",
       },
       {
         type: 'p',
