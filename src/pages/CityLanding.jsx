@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle2, MapPin, Star, Clock, Tag, Phone, Sparkles, He
 import FadeIn from '../components/FadeIn';
 import AnimatedButton from '../components/AnimatedButton';
 import { CITIES } from '../data/cities';
+import { EVENTS } from '../data/events';
 
 export default function CityLanding({ cityData }) {
   const {
@@ -300,6 +301,24 @@ export default function CityLanding({ cityData }) {
           </section>
         </FadeIn>
       )}
+
+      {/* MAILLAGE — ANIMATIONS / OCCASIONS (#43 / #44 / #47) */}
+      <FadeIn direction="up">
+        <section className="container" style={{ padding: '0 24px 32px' }}>
+          <div className="section-tag"><Sparkles size={14} /> Nos animations</div>
+          <h2 className="section-title">Un photobooth pour chaque occasion à {name}</h2>
+          <p className="section-subtitle">Mariage, anniversaire, entreprise… découvrez l'animation adaptée à votre événement à {name}.</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '16px' }}>
+            {Object.values(EVENTS).map((e) => (
+              <Link key={e.slug} to={`/${e.slug}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: 'var(--radius-full, 999px)', border: '1px solid var(--gold, #c5a059)', color: 'var(--gold, #c5a059)', fontSize: '14px', fontWeight: 600, textDecoration: 'none', background: 'rgba(197,160,89,0.06)' }}>
+                Photobooth {e.name}
+              </Link>
+            ))}
+            <Link to="/photobooth-360" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: 'var(--radius-full, 999px)', border: '1px solid var(--gold, #c5a059)', color: 'var(--gold, #c5a059)', fontSize: '14px', fontWeight: 600, textDecoration: 'none', background: 'rgba(197,160,89,0.06)' }}>Photobooth 360</Link>
+            <Link to="/nos-bornes" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: 'var(--radius-full, 999px)', border: '1px solid var(--gold, #c5a059)', color: 'var(--gold, #c5a059)', fontSize: '14px', fontWeight: 600, textDecoration: 'none', background: 'rgba(197,160,89,0.06)' }}>Nos bornes</Link>
+          </div>
+        </section>
+      </FadeIn>
 
       {/* FINAL CTA */}
       <section className="container" style={{ padding: '32px 20px 48px' }}>
