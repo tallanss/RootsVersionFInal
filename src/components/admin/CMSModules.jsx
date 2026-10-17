@@ -302,6 +302,8 @@ export const ReviewCenter = () => {
   const { content, updateContent, saveStatus } = useContent();
   const reviews = content.testimonials || [];
   const [newReview, setNewReview] = useState({ name: '', role: '', text: '', avatar: '' });
+  const rating = content.reviewsRating || { ratingValue: '', reviewCount: '', url: '' };
+  const setRating = (patch) => updateContent({ reviewsRating: { ...rating, ...patch } });
 
   const addReview = () => {
     if (!newReview.text || !newReview.name) return;
@@ -320,6 +322,42 @@ export const ReviewCenter = () => {
         <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Témoignages Clients</h2>
         <p style={{ color: '#64748b', fontSize: '14px' }}>Gérez les avis affichés dans le carrousel de confiance.</p>
       </header>
+
+      {/* NOTE GOOGLE (schema AggregateRating) */}
+      <section className="cms-card">
+        <h3 className="cms-section-title"><Star size={18} /> Note Google (pour Google)</h3>
+        <p style={{ color: '#64748b', fontSize: '13px', marginBottom: '12px', lineHeight: 1.5 }}>
+          Renseignez ici votre <strong>vraie</strong> note Google et le <strong>nombre d'avis réels</strong>. Ces chiffres s'afficheront
+          dans les résultats de recherche Google (étoiles). Laissez vide tant que vous n'avez pas vérifié la note sur votre fiche Google :
+          une note inventée peut entraîner une pénalité Google.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+          <div>
+            <label style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8' }}>NOTE MOYENNE (ex: 4.9)</label>
+            <input
+              type="text" className="cms-input" inputMode="decimal" placeholder="Ex: 4.9"
+              value={rating.ratingValue}
+              onChange={(e) => setRating({ ratingValue: e.target.value.replace(',', '.') })}
+            />
+          </div>
+          <div>
+            <label style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8' }}>NOMBRE D'AVIS (ex: 37)</label>
+            <input
+              type="text" className="cms-input" inputMode="numeric" placeholder="Ex: 37"
+              value={rating.reviewCount}
+              onChange={(e) => setRating({ reviewCount: e.target.value.replace(/[^0-9]/g, '') })}
+            />
+          </div>
+        </div>
+        <div>
+          <label style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8' }}>LIEN FICHE GOOGLE (facultatif)</label>
+          <input
+            type="url" className="cms-input" placeholder="https://g.page/..."
+            value={rating.url || ''}
+            onChange={(e) => setRating({ url: e.target.value })}
+          />
+        </div>
+      </section>
 
       {/* ADD FORM */}
       <section className="cms-card">
@@ -532,9 +570,31 @@ export const PriceArchitect = () => {
 /* ========================================== */
 /* ➕ ADDONS MANAGER (Options à louer)        */
 /* ========================================== */
+// Catalogue d'options suggérées (#7 + #8) — proposé en 1 clic au client.
+// Prix à 0 = « Sur devis » côté public tant que le client ne l'a pas fixé ici.
+const SUGGESTED_ADDONS = [
+  { id: 'guestbook',  name: "Livre d'or Premium",             price: 39, desc: 'Album souvenir avec collages, stylos et emplacements photos.', enabled: true },
+  { id: 'usb',        name: 'Clé USB souvenirs',              price: 15, desc: 'Toutes les photos de la soirée en haute définition.', enabled: true },
+  { id: 'branding',   name: 'Branding écran',                 price: 29, desc: "Votre logo et vos couleurs sur l'interface de la borne.", enabled: true },
+  { id: 'portecles',  name: 'Porte-clés photo',               price: 0,  desc: 'Vos photos transformées en porte-clés souvenirs à offrir.', enabled: true },
+  { id: 'goodies',    name: 'Goodies personnalisés',          price: 0,  desc: 'Magnets, cartes et objets souvenirs à vos couleurs.', enabled: true },
+  { id: 'telephone-or', name: "Téléphone d'Or (audio & vidéo)", price: 0, desc: 'Un combiné vintage pour enregistrer les messages audio et vidéo de vos invités.', enabled: true },
+  { id: 'gifs',       name: 'GIFs, boomerangs & vidéos courtes', price: 0, desc: 'Animations GIF et boomerangs à partager instantanément.', enabled: true },
+  { id: 'fonds',      name: 'Fonds photo, fonds verts & IA',  price: 0,  desc: 'Décors personnalisés, fond vert et retouches par intelligence artificielle.', enabled: true },
+  { id: 'accessoires', name: 'Pack accessoires & props',      price: 0,  desc: 'Lunettes, chapeaux, pancartes et accessoires fun pour vos invités.', enabled: true },
+  { id: 'tirages',    name: 'Tirages supplémentaires',        price: 0,  desc: 'Impressions papier additionnelles pour que chacun reparte avec sa photo.', enabled: true },
+  { id: 'installation-premium', name: 'Installation premium', price: 0,  desc: 'Tapis rouge et poteaux dorés pour une entrée prestigieuse.', enabled: true },
+];
+
 export const AddonsManager = () => {
   const { content, updateContent, saveStatus } = useContent();
   const addons = content.addons || [];
+  const missingSuggested = SUGGESTED_ADDONS.filter((s) => !addons.some((a) => a.id === s.id));
+
+  const addSuggested = () => {
+    if (missingSuggested.length === 0) return;
+    updateContent({ addons: [...addons, ...missingSuggested] });
+  };
 
   const updateAddon = (idx, field, value) => {
     const next = [...addons];
@@ -562,11 +622,18 @@ export const AddonsManager = () => {
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
         <div>
           <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Options à louer</h2>
-          <p style={{ color: '#64748b', fontSize: '14px' }}>Gérez les options à la carte proposées en plus des formules (page Tarifs + formulaire de devis).</p>
+          <p style={{ color: '#64748b', fontSize: '14px' }}>Gérez les options à la carte proposées en plus des formules (page Tarifs + formulaire de devis). Un prix laissé à 0 s'affiche « Sur devis ».</p>
         </div>
-        <button onClick={addAddon} style={{ background: 'var(--primary)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-          <Plus size={16} /> Ajouter une option
-        </button>
+        <div style={{ display: 'flex', gap: '8px', flexShrink: 0, flexWrap: 'wrap' }}>
+          {missingSuggested.length > 0 && (
+            <button onClick={addSuggested} title="Ajoute les options proposées manquantes" style={{ background: 'var(--bg-secondary)', color: 'var(--primary)', border: '1px solid var(--primary)', padding: '10px 18px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Plus size={16} /> Ajouter les options suggérées ({missingSuggested.length})
+            </button>
+          )}
+          <button onClick={addAddon} style={{ background: 'var(--primary)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '12px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Plus size={16} /> Ajouter une option
+          </button>
+        </div>
       </header>
 
       {addons.length === 0 ? (

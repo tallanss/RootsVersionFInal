@@ -96,6 +96,16 @@ export const formatEuro = (value) => {
 };
 
 /**
+ * Formate le prix d'une option à la carte (add-on) pour l'affichage public.
+ * Prix numérique > 0  → "+39€"
+ * Prix 0 / vide / non numérique → "Sur devis" (le client n'a pas encore fixé le prix).
+ */
+export const formatAddonPrice = (price) => {
+  const n = priceToNumber(price);
+  return n > 0 ? `+${formatEuro(n)}€` : 'Sur devis';
+};
+
+/**
  * Transforme un texte en slug d'URL (minuscules, sans accents ni caractères
  * spéciaux). "Miroir Booth" → "miroir-booth".
  */

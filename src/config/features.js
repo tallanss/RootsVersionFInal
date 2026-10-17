@@ -15,4 +15,4 @@
 //     • src/context/ContentContext.jsx → entrée éventuelle dans le menu
 //   (Pensez aussi à réactiver la route dans scripts/prerender.mjs et
 //    vite.config.js — repérées par le commentaire RENTAL_OPTIONS.)
-export const RENTAL_OPTIONS_ENABLED = false;
+export const RENTAL_OPTIONS_ENABLED = true;

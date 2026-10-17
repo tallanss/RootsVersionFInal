@@ -37,6 +37,8 @@ const BLOG_SLUGS = [
   'photobooth-classique-miroir-360-lequel-choisir',
   'idees-themes-photobooth-anniversaire',
   'photobooth-noel-entreprise',
+  'plus-beaux-lieux-reception-seine-maritime-mariage-photobooth',
+  'photobooth-exterieur-conseils-installation-reussie',
   'combien-coute-location-photobooth',
   'photobooth-ou-photographe-mariage',
   'idees-accessoires-photobooth',
@@ -50,7 +52,7 @@ const ROUTES = [
   '/photobooth',
   '/photobooth-360',
   '/tarifs',
-  // '/options-a-louer',  // RENTAL_OPTIONS masqué — réactiver avec le drapeau (src/config/features.js)
+  '/options-a-louer',  // RENTAL_OPTIONS actif (src/config/features.js)
   '/prestations',
   '/nos-bornes',
   '/galerie',

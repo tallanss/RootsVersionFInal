@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { CheckCircle2, Tag, Star, Phone, Mail, X, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Tag, Star, Phone, Mail, X, ArrowRight, Camera } from 'lucide-react';
 import { haptic } from '../hooks/useHaptic';
 import { Helmet } from 'react-helmet-async';
 import AnimatedButton from '../components/AnimatedButton';
@@ -8,7 +8,7 @@ import FadeIn from '../components/FadeIn';
 import { useContent } from '../context/ContentContext';
 import EditableBlock from '../components/admin/EditableBlock';
 import { useAdmin } from '../context/AdminContext';
-import { formatPrice, priceToNumber } from '../utils/galleryFormat';
+import { formatPrice, priceToNumber, machinesWithSlugs, formatAddonPrice } from '../utils/galleryFormat';
 import { RENTAL_OPTIONS_ENABLED } from '../config/features';
 
 /* ── Helper : formate l'affichage du prix de façon robuste ──
@@ -278,6 +278,10 @@ const Tarifs = () => {
   ];
 
   const plans = content.pricing_plans || defaultPlans;
+
+  // Machines (bornes) avec leur slug de fiche → liens depuis l'explication
+  // « quelle machine selon la formule ». Même util que /nos-bornes pour que les URLs matchent.
+  const machineLinks = machinesWithSlugs(content.machines || []);
 
   // Prestations actives (produits visibles) → pour le filtre de la page Tarifs.
   const activeProducts = (content.products || []).filter((p) => p.visible !== false);
@@ -789,6 +793,49 @@ const Tarifs = () => {
         </div>
       </section>}
 
+      {/* QUELLE MACHINE SELON LA FORMULE ? (#9) */}
+      <section className="container" style={{ padding: '0 20px 28px' }}>
+        <div style={{ background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)', padding: '22px 20px' }}>
+          <h2 style={{ fontSize: '17px', fontWeight: 800, margin: '0 0 10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Camera size={18} color="var(--primary)" /> Quelle machine selon la formule ?
+          </h2>
+          <EditableBlock
+            label="Explication machines"
+            modalTitle="Texte « quelle machine selon la formule »"
+            fields={[{ key: 'tarifsMachinesNote', label: 'Texte', type: 'textarea', value: content.tarifsMachinesNote || "Notre formule d'entrée (autonomie) est fournie avec une borne photo classique, livrée prête à l'emploi. Les formules supérieures (Essentiel, Premium et Excellence) vous laissent choisir, selon vos envies et les disponibilités à votre date, parmi nos bornes classiques (noire, blanche ou bois) ou le Miroir Booth. Le Photobooth 360 et le Miroir Booth peuvent aussi être ajoutés en supplément." }]}
+            onSave={(vals) => updateContent({ ...content, ...vals })}
+          >
+            <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.65, margin: '0 0 16px', whiteSpace: 'pre-line' }}>
+              {content.tarifsMachinesNote || "Notre formule d'entrée (autonomie) est fournie avec une borne photo classique, livrée prête à l'emploi. Les formules supérieures (Essentiel, Premium et Excellence) vous laissent choisir, selon vos envies et les disponibilités à votre date, parmi nos bornes classiques (noire, blanche ou bois) ou le Miroir Booth. Le Photobooth 360 et le Miroir Booth peuvent aussi être ajoutés en supplément."}
+            </p>
+          </EditableBlock>
+
+          {machineLinks.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+              {machineLinks.map((m) => (
+                <Link
+                  key={m.slug}
+                  to={`/nos-bornes/${m.slug}`}
+                  style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                    background: 'var(--bg-secondary)', color: 'var(--primary)',
+                    border: '1px solid var(--border-medium)', borderRadius: 'var(--radius-full)',
+                    padding: '8px 14px', fontSize: '13px', fontWeight: 700, textDecoration: 'none',
+                  }}
+                >
+                  {m.name} <ArrowRight size={14} />
+                </Link>
+              ))}
+            </div>
+          )}
+          <div style={{ marginTop: '14px' }}>
+            <Link to="/nos-bornes" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--primary)', fontWeight: 700, fontSize: '14px', textDecoration: 'none' }}>
+              Voir toutes nos machines en détail <ArrowRight size={15} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* OPTIONS ADD-ONS */}
       {selectedPlanId !== null && options.length > 0 && !plans.find(p => p.id === selectedPlanId)?.isCustom && (
         <section className="container" style={{ padding: '0 20px 24px' }}>
@@ -834,7 +881,7 @@ const Tarifs = () => {
                       <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{opt.desc}</div>
                     </div>
                     <div style={{ fontWeight: 800, fontSize: '15px', color: active ? 'var(--primary)' : 'var(--text-main)', flexShrink: 0 }}>
-                      +{opt.price}€
+                      {formatAddonPrice(opt.price)}
                     </div>
                   </div>
                 );

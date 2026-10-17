@@ -603,6 +603,70 @@ export const ARTICLES = [
       },
     ],
   },
+  {
+    slug: 'plus-beaux-lieux-reception-seine-maritime-mariage-photobooth',
+    title: 'Les plus beaux lieux de réception en Seine-Maritime pour un mariage avec photobooth',
+    description:
+      "Châteaux, domaines, salles vue mer : notre sélection des plus beaux lieux de réception de mariage en Seine-Maritime, et comment y installer un photobooth qui sublime le décor.",
+    date: '2026-10-14',
+    category: 'Mariage',
+    readingTime: '7 min',
+    blocks: [
+      { type: 'p', text: "La Seine-Maritime regorge de lieux de réception à couper le souffle : châteaux chargés d'histoire, domaines champêtres, manoirs normands à colombages et salles ouvertes sur la Manche. Chacun impose sa propre ambiance, et un bon photobooth doit s'y fondre plutôt que de détonner. Voici notre tour d'horizon des plus beaux cadres du département, avec nos conseils pour y intégrer une borne photo qui met le lieu en valeur." },
+      { type: 'h2', text: "Les châteaux et manoirs : élégance intemporelle" },
+      { type: 'p', text: "Autour de Rouen, du Pays de Caux et de la vallée de la Seine, les châteaux et manoirs normands offrent des décors somptueux : grandes pièces lambrissées, parcs arborés, perrons en pierre. Dans ce type de lieu, on privilégie une borne sobre et un Miroir Booth qui dialogue avec l'esthétique chic des lieux. Installez la borne dans un salon attenant ou sous une tonnelle du parc : le décor fait déjà une partie du travail." },
+      { type: 'ul', items: [
+        "À privilégier : Miroir Booth ou borne classique au cadre élégant.",
+        "Emplacement : salon, orangerie, ou extérieur abrité côté parc.",
+        "Astuce : un cadre d'impression reprenant les armoiries ou le nom du domaine.",
+      ] },
+      { type: 'h2', text: "Les domaines champêtres et granges : esprit convivial" },
+      { type: 'p', text: "Granges rénovées, fermes-auberges et domaines de campagne séduisent les mariages bohèmes et champêtres. Ambiance guinguette, bottes de paille, guirlandes guinguette : ici le photobooth se veut chaleureux et accessible. Une borne classique avec un fond fleuri ou kraft s'intègre à merveille, et les impressions illimitées tournent à plein régime pendant la soirée dansante." },
+      { type: 'h2', text: "Les lieux vue mer : Le Havre, Étretat, Fécamp, Dieppe" },
+      { type: 'p', text: "La côte d'Albâtre offre des panoramas uniques : falaises d'Étretat, front de mer de Dieppe, docks du Havre. Pour un mariage face à la Manche, le Photobooth 360 fait des merveilles : la lumière du littoral et l'horizon marin donnent des vidéos spectaculaires. Prévoyez simplement un emplacement abrité du vent, fréquent sur la côte." },
+      { type: 'ul', items: [
+        "À privilégier : Photobooth 360 pour profiter du décor, borne classique à l'abri.",
+        "Point d'attention : vent et embruns — préférez une installation couverte.",
+        "Bonus : des clichés avec la mer en toile de fond, impossibles à reproduire ailleurs.",
+      ] },
+      { type: 'quote', text: "Le plus beau photobooth est celui qu'on oublie presque : il se fond dans le lieu et laisse la magie du cadre opérer." },
+      { type: 'p', text: "Quel que soit votre lieu de réception en Seine-Maritime, nous nous déplaçons pour installer votre borne et l'adapter au décor. Dites-nous où se tiendra votre mariage — au Havre, à Rouen, à Dieppe ou dans un domaine de campagne — et nous vous conseillons la machine la plus adaptée, avec un devis gratuit sous 24h." },
+      { type: 'cta', text: 'Nous indiquer notre lieu de réception', to: '/contact' },
+    ],
+  },
+  {
+    slug: 'photobooth-exterieur-conseils-installation-reussie',
+    title: 'Photobooth en extérieur : nos conseils pour une installation réussie',
+    description:
+      "Installer un photobooth en extérieur (jardin, parc, plage) : nos conseils pratiques sur la lumière, l'électricité, la météo et l'emplacement pour une animation photo réussie en plein air.",
+    date: '2026-10-13',
+    category: 'Conseils',
+    readingTime: '6 min',
+    blocks: [
+      { type: 'p', text: "Un photobooth en plein air, sous les arbres ou face au coucher de soleil, c'est une promesse de photos magnifiques. Mais l'extérieur impose quelques précautions que l'intérieur ne connaît pas : lumière changeante, météo capricieuse, accès à l'électricité… Voici nos conseils de terrain pour une installation en extérieur vraiment réussie, sans mauvaise surprise le jour J." },
+      { type: 'h2', text: "Anticiper la lumière naturelle" },
+      { type: 'p', text: "La lumière est votre meilleure alliée… et votre pire ennemie. En plein soleil, les visages sont écrasés par les ombres dures et les invités plissent les yeux. L'idéal est une zone d'ombre homogène : sous un arbre, une tonnelle, une voile d'ombrage ou le côté nord d'un bâtiment. En fin de journée, la lumière dorée est parfaite — pensez à orienter la borne pour en profiter sans contre-jour." },
+      { type: 'ul', items: [
+        "À éviter : plein soleil et contre-jour (ciel surexposé derrière les invités).",
+        "À privilégier : ombre douce et régulière, ou lumière de fin de journée.",
+        "Le soir : prévoyez un éclairage d'appoint, l'extérieur devient vite sombre.",
+      ] },
+      { type: 'h2', text: "Prévoir l'alimentation électrique" },
+      { type: 'p', text: "Une borne photo et son imprimante ont besoin d'une prise de courant stable. En extérieur, repérez à l'avance la prise la plus proche et prévoyez une rallonge adaptée à l'usage extérieur. Si le lieu n'offre aucun point électrique (plage, champ isolé), parlez-nous-en : certaines configurations peuvent être étudiées, mais mieux vaut l'anticiper plusieurs semaines avant." },
+      { type: 'h2', text: "Avoir un plan B météo" },
+      { type: 'p', text: "En Normandie, la météo peut changer vite. La règle d'or : toujours prévoir une solution de repli couverte (tente de réception, barnum, préau, salle attenante) où déplacer la borne en cas d'averse. Le matériel électronique et les tirages papier ne font pas bon ménage avec la pluie et l'humidité. Une tonnelle fermée sur trois côtés protège aussi du vent, fréquent sur la côte d'Albâtre." },
+      { type: 'ul', items: [
+        "Prévoir un abri couvert accessible rapidement en cas de pluie.",
+        "Protéger la borne du vent et des embruns près de la mer.",
+        "Garder les accessoires et tirages à l'abri de l'humidité.",
+      ] },
+      { type: 'h2', text: "Choisir le bon emplacement" },
+      { type: 'p', text: "En extérieur comme en intérieur, placez le photobooth là où ça vit : près du bar, de la piste de danse ou du passage principal. Laissez de l'espace devant la borne pour que les groupes puissent poser à l'aise, et pensez à un sol stable et plat (une plateforme 360 a besoin d'un terrain bien horizontal pour tourner correctement)." },
+      { type: 'quote', text: "L'extérieur offre les plus beaux décors, à condition d'anticiper trois choses : la lumière, l'électricité et la pluie." },
+      { type: 'p', text: "Chez PhotoRoots, nous avons l'habitude des installations en extérieur partout en Seine-Maritime : jardins, domaines, plages et parcs. Décrivez-nous votre lieu et nous validerons ensemble la faisabilité technique, bien avant le jour J, pour une animation photo sereine et réussie." },
+      { type: 'cta', text: 'Préparer mon installation extérieure', to: '/contact' },
+    ],
+  },
 ];
 
 export default ARTICLES;

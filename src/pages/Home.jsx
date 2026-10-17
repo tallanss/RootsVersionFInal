@@ -59,13 +59,13 @@ const Home = () => {
   return (
     <div>
       <Helmet>
-        <title>PhotoRoots | Location Photobooth à partir de 119€ — Le Havre, Rouen, Dieppe</title>
+        <title>PhotoRoots | Location Photobooth en Seine-Maritime — à partir de 119€</title>
         <meta name="description" content="Location photobooth à partir de 119€ — Bornes photo pour mariages, anniversaires et événements d'entreprise en Seine-Maritime. Devis gratuit en 24h." />
         <meta name="keywords" content="location photobooth le havre, photobooth rouen, borne photo dieppe, photobooth mariage normandie, seine-maritime, 76" />
         <link rel="canonical" href="https://photoroots.fr/" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://photoroots.fr/" />
-        <meta property="og:title" content="PhotoRoots | Location Photobooth à partir de 119€ — Le Havre, Rouen, Dieppe" />
+        <meta property="og:title" content="PhotoRoots | Location Photobooth en Seine-Maritime — à partir de 119€" />
         <meta property="og:description" content="Location photobooth à partir de 119€ — Bornes photo pour mariages, anniversaires et événements d'entreprise en Seine-Maritime. Devis gratuit en 24h." />
         <meta property="og:image" content="https://photoroots.fr/photobooth-hero.png" />
         <meta property="og:locale" content="fr_FR" />
@@ -87,6 +87,23 @@ const Home = () => {
                   "text": faq.a || faq.answer
                 }
               }))
+            })}
+          </script>
+        )}
+        {content.reviewsRating?.ratingValue && content.reviewsRating?.reviewCount && (
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              "@id": "https://photoroots.fr/#business",
+              "name": "PhotoRoots",
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": String(content.reviewsRating.ratingValue),
+                "reviewCount": String(content.reviewsRating.reviewCount),
+                "bestRating": "5",
+                "worstRating": "1"
+              }
             })}
           </script>
         )}

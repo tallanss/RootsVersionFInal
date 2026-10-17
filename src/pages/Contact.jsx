@@ -9,7 +9,7 @@ import {
 import { processBooking, formatDateFR, invalidateBusySlotsCache } from '../services/emailService';
 import { trackEvent } from '../utils/analytics';
 import { isConfigured } from '../config/emailjs';
-import { formatPrice, priceToNumber, formatEuro } from '../utils/galleryFormat';
+import { formatPrice, priceToNumber, formatEuro, formatAddonPrice } from '../utils/galleryFormat';
 import { RENTAL_OPTIONS_ENABLED } from '../config/features';
 import { Helmet } from 'react-helmet-async';
 import EditableBlock from '../components/admin/EditableBlock';
@@ -103,6 +103,7 @@ const Contact = () => {
     referralSource: '',
     addons: [],
     machine: '', // id de la machine choisie
+    add360: false, // ajout du Photobooth 360 en supplément (borne classique + pack)
     prestation: '', // nom de la prestation pré-remplie depuis une page produit (?prestation=slug)
   });
 
@@ -136,6 +137,15 @@ const Contact = () => {
   );
   const machineSupplement = selectedMachine ? (Number(selectedMachine.supplement) || 0) : 0;
 
+  // ── Logique Photobooth 360 (#6) ──
+  // Si la machine choisie EST le 360 → on masque les packs (le 360 est une
+  // prestation vidéo autonome, sans formule d'impression).
+  // Si une borne CLASSIQUE + un pack sont choisis → on propose d'ajouter le 360
+  // en supplément (+100€).
+  const ADD_360_PRICE = 100;
+  const is360 = (m) => /360/.test(String(m?.name || ''));
+  const selectedIs360 = !!selectedMachine && is360(selectedMachine);
+
   // Formule choisie (objet complet) + son prix de base numérique. Une formule
   // « Sur devis » ou l'option « Je ne sais pas encore » n'a pas de prix
   // chiffrable → base 0 (et donc aucune estimation trompeuse, voir showEstimate).
@@ -158,12 +168,25 @@ const Contact = () => {
       .filter((a) => a.enabled !== false && formData.addons.includes(a.id))
       .reduce((sum, a) => sum + (Number(a.price) || 0), 0);
   }, [content.addons, formData.addons]);
-  const estimatedTotal = formulaBase + machineSupplement + addonsTotal;
+  // Le 360 en supplément n'est proposé que si une borne classique ET un vrai pack
+  // sont choisis. add360Active = l'ajout est à la fois demandé ET applicable.
+  const canAdd360 = !!selectedMachine && !selectedIs360 && !!formData.formula && formData.formula !== 'Je ne sais pas encore';
+  const add360Active = canAdd360 && formData.add360;
+  const add360Total = add360Active ? ADD_360_PRICE : 0;
+  const estimatedTotal = formulaBase + machineSupplement + addonsTotal + add360Total;
   // On n'affiche / n'envoie une estimation chiffrée QUE si la formule a un vrai
   // prix numérique (> 0). Évite un faux « 0€ » ou un total trompeur (« Sur devis »).
   const showEstimate = Boolean(formData.formula && formulaBase > 0);
 
-  const selectMachine = (id) => setFormData((prev) => ({ ...prev, machine: prev.machine === id ? '' : id }));
+  const selectMachine = (id) => setFormData((prev) => {
+    const nextId = prev.machine === id ? '' : id;
+    const nextMachine = machineOptions.find((m) => m.id === nextId) || null;
+    // Choisir le 360 → on vide le pack (packs masqués) et l'ajout 360 (redondant).
+    if (nextMachine && is360(nextMachine)) {
+      return { ...prev, machine: nextId, formula: '', add360: false };
+    }
+    return { ...prev, machine: nextId };
+  });
 
   // Pré-sélectionner la machine depuis l'URL (?machine=<id>), une seule fois.
   // Alimenté par la section « Nos machines » de l'accueil (« Réserver ce modèle »).
@@ -310,13 +333,13 @@ const Contact = () => {
     setLoading(true);
 
     const selectedAddons = (content.addons || []).filter(a => formData.addons.includes(a.id));
-    const addonsText = selectedAddons.map(a => `${a.name} (${a.price}€)`).join(', ');
+    const addonsText = selectedAddons.map(a => `${a.name} (${priceToNumber(a.price) > 0 ? `${formatEuro(priceToNumber(a.price))}€` : 'sur devis'})`).join(', ');
 
     const machineText = selectedMachine
-      ? `${selectedMachine.name}${machineSupplement > 0 ? ` (+${formatEuro(machineSupplement)}€)` : ''}`
+      ? `${selectedMachine.name}${machineSupplement > 0 ? ` (+${formatEuro(machineSupplement)}€)` : ''}${add360Active ? ` + Photobooth 360 (+${formatEuro(ADD_360_PRICE)}€)` : ''}`
       : '';
     const estimationText = showEstimate
-      ? `Estimation : ${fromPrefix}${formatEuro(estimatedTotal)}€ (${formData.formula} ${formatEuro(formulaBase)}€${machineSupplement > 0 ? ` + ${selectedMachine.name} ${formatEuro(machineSupplement)}€` : ''}${addonsTotal > 0 ? ` + options ${formatEuro(addonsTotal)}€` : ''})`
+      ? `Estimation : ${fromPrefix}${formatEuro(estimatedTotal)}€ (${formData.formula} ${formatEuro(formulaBase)}€${machineSupplement > 0 ? ` + ${selectedMachine.name} ${formatEuro(machineSupplement)}€` : ''}${add360Total > 0 ? ` + Photobooth 360 ${formatEuro(add360Total)}€` : ''}${addonsTotal > 0 ? ` + options ${formatEuro(addonsTotal)}€` : ''})`
       : '';
 
     const autoMessage = [
@@ -325,6 +348,7 @@ const Contact = () => {
       estimationText || null,
       formData.guests ? `Nombre d'invités : ${formData.guests}` : null,
       formData.formula ? `Pack souhaité : ${formData.formula}` : null,
+      add360Active ? `Supplément : Photobooth 360 (+${formatEuro(ADD_360_PRICE)}€)` : null,
       addonsText ? `Options souhaitées : ${addonsText}` : null,
       formData.contactPreference ? `Contact préféré : ${formData.contactPreference}` : null,
       formData.referralSource ? `Connu via : ${formData.referralSource}` : null,
@@ -776,7 +800,17 @@ const Contact = () => {
                   </div>
                 )}
 
-                {/* Formule souhaitée — nom + nombre de tirages */}
+                {/* Photobooth 360 choisi → pas de packs (prestation vidéo autonome) */}
+                {selectedIs360 && (
+                  <div className="form-group">
+                    <div style={{ padding: '14px 16px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                      Le <strong>Photobooth 360</strong> est une prestation vidéo autonome : aucune formule d'impression à choisir. Indiquez simplement votre événement, nous vous envoyons un devis personnalisé sous 24h.
+                    </div>
+                  </div>
+                )}
+
+                {/* Formule souhaitée — nom + nombre de tirages (masquée si 360) */}
+                {!selectedIs360 && (
                 <div className="form-group">
                   <label className="form-label">Formule souhaitée <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
                   <div style={{ display: 'grid', gap: '8px', marginTop: '4px' }}>
@@ -834,6 +868,42 @@ const Contact = () => {
                     </button>
                   </div>
                 </div>
+                )}
+
+                {/* Ajouter le Photobooth 360 en supplément (#6) — borne classique + pack */}
+                {canAdd360 && (
+                  <div className="form-group">
+                    <button
+                      type="button"
+                      onClick={() => setField('add360', !formData.add360)}
+                      style={{
+                        width: '100%',
+                        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+                        padding: '14px 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left',
+                        background: add360Active ? 'var(--bg-secondary)' : 'var(--bg-app)',
+                        border: add360Active ? '2px solid var(--primary)' : '2px solid var(--border-light)',
+                        boxShadow: add360Active ? '0 0 0 3px var(--accent-glow)' : 'none',
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <span style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                        <span style={{ fontWeight: 800, fontSize: '15px', color: 'var(--text-main)' }}>Ajouter le Photobooth 360</span>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Des vidéos 360° spectaculaires en plus de votre borne classique</span>
+                      </span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
+                        <span style={{ fontSize: '14px', fontWeight: 800, color: add360Active ? 'var(--primary)' : 'var(--text-muted)' }}>+{formatEuro(ADD_360_PRICE)}€</span>
+                        <span style={{
+                          width: '22px', height: '22px', borderRadius: '6px', flexShrink: 0,
+                          border: add360Active ? 'none' : '2px solid var(--border-medium)',
+                          background: add360Active ? 'var(--primary)' : 'transparent',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          {add360Active && <CheckCircle2 size={16} color="#fff" />}
+                        </span>
+                      </span>
+                    </button>
+                  </div>
+                )}
 
                 {/* Estimation de prix : formule (+ supplément machine si choisie).
                     Masquée si la formule n'a pas de prix chiffrable (« Sur devis »). */}
@@ -842,7 +912,7 @@ const Contact = () => {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '14px 16px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--primary)' }}>
                       <div>
                         <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)' }}>
-                          {formData.formula} ({formatEuro(formulaBase)}€){machineSupplement > 0 ? ` + ${selectedMachine.name} (+${formatEuro(machineSupplement)}€)` : ''}{addonsTotal > 0 ? ` + options (+${formatEuro(addonsTotal)}€)` : ''}
+                          {formData.formula} ({formatEuro(formulaBase)}€){machineSupplement > 0 ? ` + ${selectedMachine.name} (+${formatEuro(machineSupplement)}€)` : ''}{add360Total > 0 ? ` + Photobooth 360 (+${formatEuro(add360Total)}€)` : ''}{addonsTotal > 0 ? ` + options (+${formatEuro(addonsTotal)}€)` : ''}
                         </div>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>Estimation indicative — devis personnalisé sous 24h</div>
                       </div>
@@ -877,7 +947,7 @@ const Contact = () => {
                               {a.desc && <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{a.desc}</span>}
                             </span>
                             <span style={{ display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
-                              <span style={{ fontSize: '14px', fontWeight: 800, color: active ? 'var(--primary)' : 'var(--text-muted)' }}>+{a.price}€</span>
+                              <span style={{ fontSize: '14px', fontWeight: 800, color: active ? 'var(--primary)' : 'var(--text-muted)' }}>{formatAddonPrice(a.price)}</span>
                               <span style={{
                                 width: '22px', height: '22px', borderRadius: '6px', flexShrink: 0,
                                 border: active ? 'none' : '2px solid var(--border-medium)',

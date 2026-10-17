@@ -23,7 +23,7 @@ export default defineConfig({
         '/photobooth',
         '/photobooth-360',
         '/tarifs',
-        // '/options-a-louer',  // RENTAL_OPTIONS masqué — réactiver avec le drapeau
+        '/options-a-louer',  // RENTAL_OPTIONS actif
         '/prestations',
         '/nos-bornes',
         '/galerie',
@@ -38,6 +38,8 @@ export default defineConfig({
         '/blog/photobooth-classique-miroir-360-lequel-choisir',
         '/blog/idees-themes-photobooth-anniversaire',
         '/blog/photobooth-noel-entreprise',
+        '/blog/plus-beaux-lieux-reception-seine-maritime-mariage-photobooth',
+        '/blog/photobooth-exterieur-conseils-installation-reussie',
         '/blog/combien-coute-location-photobooth',
         '/blog/photobooth-ou-photographe-mariage',
         '/blog/idees-accessoires-photobooth',

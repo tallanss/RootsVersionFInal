@@ -5,6 +5,7 @@ import FadeIn from '../components/FadeIn';
 import AnimatedButton from '../components/AnimatedButton';
 import { useContent } from '../context/ContentContext';
 import EditableBlock from '../components/admin/EditableBlock';
+import { formatAddonPrice } from '../utils/galleryFormat';
 
 export default function RentalOptions() {
   const { content, updateContent } = useContent();
@@ -123,7 +124,7 @@ export default function RentalOptions() {
                         flexShrink: 0,
                       }}
                     >
-                      +{opt.price}€
+                      {formatAddonPrice(opt.price)}
                     </span>
                   </div>
 
