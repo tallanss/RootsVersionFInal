@@ -1,5 +1,6 @@
 {
   "redirects": [
+    { "source": "/:path*", "has": [{ "type": "host", "value": "www.photoroots.fr" }], "destination": "https://photoroots.fr/:path*", "permanent": true },
     { "source": "/contactez-nous", "destination": "/contact", "permanent": true },
     { "source": "/contactez-nous/", "destination": "/contact", "permanent": true },
     { "source": "/le-havre", "destination": "/location-photobooth-le-havre", "permanent": true },
