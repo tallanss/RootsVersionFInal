@@ -18,7 +18,10 @@ import EditableBlock from '../components/admin/EditableBlock';
 import { useContent } from '../context/ContentContext';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_REGEX = /^[+\d\s()./-]{7,20}$/;
+// Téléphone français : 10 chiffres commençant par 0 (ou +33 suivi de 9 chiffres).
+// Séparateurs espaces / points / tirets tolérés (ex : 06 12 34 56 78, +33 6 12 34 56 78).
+const normalizePhoneFR = (v) => String(v || '').replace(/[\s.\-()]/g, '').replace(/^\+33/, '0');
+const isValidPhoneFR = (v) => /^0[1-9]\d{8}$/.test(normalizePhoneFR(v));
 
 const CONTACT_PREFERENCES = ['Par email', 'Par téléphone', 'Par SMS', 'WhatsApp', 'Peu importe'];
 const REFERRAL_SOURCES = ['Google', 'Bouche à oreille', 'Réseaux sociaux (Instagram, Facebook…)', 'Salle de réception', 'Wedding planner', 'Autre'];
@@ -72,9 +75,8 @@ const Contact = () => {
 
   const eventTypes = content.formOptions?.eventTypes || ['Mariage', 'Anniversaire', 'Entreprise', 'Baptême', 'EVJF/EVG', 'Autre'];
 
-  // Mode initial depuis l'URL : /contact?mode=message ouvre le message rapide
-  const initialMode = new URLSearchParams(location.search).get('mode') === 'message' ? 'message' : 'devis';
-  const [mode, setMode] = useState(initialMode); // 'devis' | 'message'
+  // Le « message rapide » a été retiré : la page ouvre toujours la demande de devis.
+  const [mode, setMode] = useState('devis'); // conservé pour compat interne — toujours 'devis'
   const [step, setStep] = useState(1);
   const [direction, setDirection] = useState(1); // 1 = forward, -1 = backward
   const [loading, setLoading] = useState(false);
@@ -168,13 +170,6 @@ const Contact = () => {
   const showEstimate = Boolean(formData.formula && formulaBase > 0);
 
   const selectMachine = (id) => setFormData((prev) => ({ ...prev, machine: prev.machine === id ? '' : id }));
-
-  // Synchroniser le mode avec le paramètre d'URL (?mode=message)
-  useEffect(() => {
-    const m = new URLSearchParams(location.search).get('mode');
-    if (m === 'message') setMode('message');
-    else if (m === 'devis') setMode('devis');
-  }, [location.search]);
 
   // Pré-sélectionner la machine depuis l'URL (?machine=<id>), une seule fois.
   // Alimenté par la section « Nos machines » de l'accueil (« Réserver ce modèle »).
@@ -293,7 +288,7 @@ const Contact = () => {
     if (step === 1) {
       if (!formData.name.trim()) { setError('Veuillez saisir vos nom et prénom.'); return; }
       if (!EMAIL_REGEX.test(formData.email)) { setError('Veuillez saisir une adresse email valide.'); return; }
-      if (formData.phone && !PHONE_REGEX.test(formData.phone)) { setError('Numéro de téléphone invalide.'); return; }
+      if (formData.phone && !isValidPhoneFR(formData.phone)) { setError('Numéro invalide : indiquez un numéro français à 10 chiffres.'); return; }
     }
     goTo(Math.min(2, step + 1), 1);
   };
@@ -306,9 +301,10 @@ const Contact = () => {
 
     if (!formData.name.trim()) { setError('Veuillez saisir vos nom et prénom.'); return; }
     if (!EMAIL_REGEX.test(formData.email)) { setError('Veuillez saisir une adresse email valide.'); return; }
-    if (formData.phone && !PHONE_REGEX.test(formData.phone)) { setError('Numéro de téléphone invalide.'); return; }
+    if (formData.phone && !isValidPhoneFR(formData.phone)) { setError('Numéro invalide : indiquez un numéro français à 10 chiffres.'); return; }
     if (!formData.date) { setError('Veuillez sélectionner une date pour votre événement.'); return; }
     if (!formData.location.trim()) { setError('Veuillez indiquer le lieu de votre événement.'); return; }
+    if (!formData.referralSource) { setError('Veuillez indiquer comment vous nous avez connu.'); return; }
 
     // Rate limiting: 1 soumission par 30s
     const lastSubmit = sessionStorage.getItem('pr_last_submit');
@@ -552,33 +548,8 @@ const Contact = () => {
           </p>
         </EditableBlock>
 
-        {/* Sélecteur de mode + appel direct */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-          <div style={{ display: 'inline-flex', background: 'var(--bg-secondary)', borderRadius: '999px', padding: '4px', border: '1px solid var(--border-light)' }}>
-            {[
-              { id: 'devis', label: 'Demande de devis' },
-              { id: 'message', label: 'Message rapide' },
-            ].map(opt => {
-              const active = mode === opt.id;
-              return (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => { setMode(opt.id); setError(null); }}
-                  style={{
-                    border: 'none', cursor: 'pointer', borderRadius: '999px',
-                    padding: '8px 16px', fontSize: '13px', fontWeight: active ? 700 : 600,
-                    background: active ? 'var(--primary)' : 'transparent',
-                    color: active ? '#fff' : 'var(--text-muted)',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  {opt.label}
-                </button>
-              );
-            })}
-          </div>
-
+        {/* Appel direct (le « message rapide » a été retiré) */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', alignItems: 'center', justifyContent: 'flex-end', marginBottom: '8px' }}>
           <a
             href={`tel:${phoneRaw}`}
             aria-label="Nous appeler"
@@ -766,9 +737,9 @@ const Contact = () => {
                     <label className="form-label" htmlFor="phone">Numéro de téléphone <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
                     <div style={{ position: 'relative' }}>
                       <input className="form-input" type="tel" id="phone" name="phone" placeholder="06 12 34 56 78" value={formData.phone} onChange={handleChange} style={{ paddingRight: '38px' }} />
-                      <ValidCheck show={formData.phone.length > 0 && PHONE_REGEX.test(formData.phone)} />
+                      <ValidCheck show={formData.phone.length > 0 && isValidPhoneFR(formData.phone)} />
                     </div>
-                    {formData.phone.length > 0 && !PHONE_REGEX.test(formData.phone) && <FieldHint>Numéro invalide</FieldHint>}
+                    {formData.phone.length > 0 && !isValidPhoneFR(formData.phone) && <FieldHint>Numéro invalide</FieldHint>}
                   </div>
                 </div>
 
@@ -942,7 +913,7 @@ const Contact = () => {
                 {/* Choix de la machine (borne) — une seule ; le prix s'adapte */}
                 {machineOptions.length > 0 && (
                   <div className="form-group">
-                    <label className="form-label">Quelle machine ? <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(le prix s'adapte)</span></label>
+                    <label className="form-label">Quelle PhotoBooth désirez-vous ? <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(le prix s'adapte)</span></label>
                     <div style={{ display: 'grid', gap: '8px', marginTop: '4px' }}>
                       {machineOptions.map((m) => {
                         const active = formData.machine === m.id;
@@ -1102,7 +1073,7 @@ const Contact = () => {
 
                 {/* Source */}
                 <div className="form-group">
-                  <label className="form-label" htmlFor="referralSource">Comment nous avez-vous connu ? <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
+                  <label className="form-label" htmlFor="referralSource">Comment nous avez-vous connu ? <span style={{ color: 'var(--primary)', fontWeight: 700 }}>*</span></label>
                   <select className="form-select" id="referralSource" name="referralSource" value={formData.referralSource} onChange={handleChange}>
                     <option value="">Sélectionnez...</option>
                     {REFERRAL_SOURCES.map(s => <option key={s} value={s}>{s}</option>)}

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { CheckCircle2, Tag, Star, Phone, X, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Tag, Star, Phone, Mail, X, ArrowRight } from 'lucide-react';
 import { haptic } from '../hooks/useHaptic';
 import { Helmet } from 'react-helmet-async';
 import AnimatedButton from '../components/AnimatedButton';
@@ -955,10 +955,22 @@ const Tarifs = () => {
             <p>{content.tarifsCtaDesc || 'Décrivez votre événement et recevez une proposition adaptée sous 24h.'}</p>
           </EditableBlock>
 
-          <AnimatedButton to="/contact" className="btn-primary" style={{ background: '#fff', color: 'var(--bg-dark)', width: 'auto', padding: '16px 36px', fontWeight: 800 }}>
-            <Phone size={18} />
-            Contactez-nous
-          </AnimatedButton>
+          {/* Devis personnalisé = contact direct (appel ou e-mail), pas le formulaire */}
+          {(() => {
+            const tel = (content.contact?.phone || '06 03 16 36 21').replace(/\s/g, '');
+            const email = content.contact?.email || 'serviceclient@photoroots.fr';
+            const base = { width: 'auto', padding: '16px 30px', fontWeight: 800, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '8px', borderRadius: 'var(--radius-full)' };
+            return (
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <a href={`tel:${tel}`} style={{ ...base, background: '#fff', color: 'var(--bg-dark)' }}>
+                  <Phone size={18} /> Appelez-nous
+                </a>
+                <a href={`mailto:${email}`} style={{ ...base, background: 'transparent', color: '#fff', border: '2px solid rgba(255,255,255,0.8)' }}>
+                  <Mail size={18} /> Écrivez-nous
+                </a>
+              </div>
+            );
+          })()}
         </div>
       </section>
       </FadeIn>
