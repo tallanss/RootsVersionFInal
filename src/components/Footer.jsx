@@ -17,6 +17,11 @@ const NewsletterForm = () => {
   const submit = async (e) => {
     e.preventDefault();
     if (!EMAIL_RE.test(email)) { setStatus('error'); return; }
+    // Anti-abus : 1 inscription max / 60s par session (évite le spam de l'e-mail
+    // propriétaire et l'envoi de confirmations à des adresses arbitraires).
+    const last = sessionStorage.getItem('pr_newsletter_last');
+    if (last && Date.now() - Number(last) < 60000) { setStatus('done'); return; }
+    sessionStorage.setItem('pr_newsletter_last', String(Date.now()));
     setStatus('loading');
     try {
       await processBooking({ type: 'message', name: 'Inscription newsletter', email, message: `Nouvelle inscription à la newsletter (pied de page) : ${email}` });
