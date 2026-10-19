@@ -369,13 +369,13 @@ const Home = () => {
             background: 'var(--bg-card)'
           }}>
             <div style={{ position: 'absolute', inset: 0, opacity: activeStep === 0 ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-              <PremiumImage src={content.scrolly?.step1?.image || '/step-booking.png'} alt={content.scrolly?.step1?.title || 'Demandez votre devis'} />
+              <PremiumImage src={content.scrolly?.step1?.image || '/step-booking.png'} alt={content.scrolly?.step1?.title || 'Demandez votre devis'} style={{ width: '100%', height: '100%' }} />
             </div>
             <div style={{ position: 'absolute', inset: 0, opacity: activeStep === 1 ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-              <PremiumImage src={content.scrolly?.step2?.image || '/step-setup.png'} alt={content.scrolly?.step2?.title || "On s'occupe de tout"} />
+              <PremiumImage src={content.scrolly?.step2?.image || '/step-setup.png'} alt={content.scrolly?.step2?.title || "On s'occupe de tout"} style={{ width: '100%', height: '100%' }} />
             </div>
             <div style={{ position: 'absolute', inset: 0, opacity: activeStep === 2 ? 1 : 0, transition: 'opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1)' }}>
-              <PremiumImage src={content.scrolly?.step3?.image || '/step-results.png'} alt={content.scrolly?.step3?.title || 'Profitez de la fête'} />
+              <PremiumImage src={content.scrolly?.step3?.image || '/step-results.png'} alt={content.scrolly?.step3?.title || 'Profitez de la fête'} style={{ width: '100%', height: '100%' }} />
             </div>
             <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '6px', zIndex: 20 }}>
               {[0, 1, 2].map((i) => (

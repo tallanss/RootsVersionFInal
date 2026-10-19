@@ -5,6 +5,7 @@ import {
   Mail, Phone, MapPin, CheckCircle2, Send, ChevronRight, ChevronLeft,
   Calendar, CalendarCheck, Loader2, AlertCircle, Users, Heart, Cake,
   Briefcase, Sparkles, Gift, PartyPopper, MoreHorizontal, MessageCircle,
+  ChevronDown, Plus,
 } from 'lucide-react';
 import { processBooking, formatDateFR, invalidateBusySlotsCache } from '../services/emailService';
 import { trackEvent } from '../utils/analytics';
@@ -87,6 +88,7 @@ const Contact = () => {
 
   // Calendar dropdown state
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [addonsOpen, setAddonsOpen] = useState(false); // menu déroulant des options (#27)
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const dateFieldRef = useRef(null);
 
@@ -921,11 +923,40 @@ const Contact = () => {
                   </div>
                 )}
 
-                {/* Options à louer (add-ons) — masquées via RENTAL_OPTIONS_ENABLED */}
+                {/* Options à louer (add-ons) — menu déroulant (#27). Masquées via RENTAL_OPTIONS_ENABLED */}
                 {RENTAL_OPTIONS_ENABLED && (content.addons || []).filter(a => a.enabled !== false).length > 0 && (
                   <div className="form-group">
-                    <label className="form-label">Options souhaitées <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(optionnel)</span></label>
-                    <div style={{ display: 'grid', gap: '8px', marginTop: '4px' }}>
+                    {/* En-tête cliquable qui déroule / replie la liste des options */}
+                    <button
+                      type="button"
+                      onClick={() => setAddonsOpen((o) => !o)}
+                      aria-expanded={addonsOpen}
+                      style={{
+                        width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px',
+                        padding: '14px 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer', textAlign: 'left',
+                        background: 'var(--bg-app)',
+                        border: `2px solid ${addonsOpen || formData.addons.length > 0 ? 'var(--primary)' : 'var(--border-light)'}`,
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <Plus size={18} color="var(--primary)" />
+                        <span style={{ fontWeight: 800, fontSize: '15px', color: 'var(--text-main)' }}>
+                          Ajouter des options
+                          <span style={{ color: 'var(--text-light)', fontWeight: 400 }}> (optionnel)</span>
+                        </span>
+                      </span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
+                        {formData.addons.length > 0 && (
+                          <span style={{ fontSize: '12px', fontWeight: 800, color: '#fff', background: 'var(--primary)', borderRadius: '999px', padding: '2px 9px' }}>
+                            {formData.addons.length} sélectionnée{formData.addons.length > 1 ? 's' : ''}
+                          </span>
+                        )}
+                        <ChevronDown size={18} color="var(--text-muted)" style={{ transform: addonsOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+                      </span>
+                    </button>
+                    {addonsOpen && (
+                    <div style={{ display: 'grid', gap: '8px', marginTop: '8px' }}>
                       {(content.addons || []).filter(a => a.enabled !== false).map((a) => {
                         const active = formData.addons.includes(a.id);
                         return (
@@ -961,6 +992,7 @@ const Contact = () => {
                         );
                       })}
                     </div>
+                    )}
                   </div>
                 )}
 
