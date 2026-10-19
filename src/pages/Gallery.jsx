@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Camera, ArrowRight, Lock, Search, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import PremiumImage from '../components/PremiumImage';
@@ -17,7 +17,15 @@ const Gallery = () => {
   const { content, updateContent } = useContent();
   const { isAdminMode } = useAdmin();
 
-  const [query, setQuery] = useState('');
+  // La recherche est stockée dans l'URL (?q=...) : ainsi, quand on ouvre un
+  // album puis qu'on revient en arrière, le filtre saisi est conservé (#26).
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get('q') || '';
+  const setQuery = (v) => {
+    const next = new URLSearchParams(searchParams);
+    if (v) next.set('q', v); else next.delete('q');
+    setSearchParams(next, { replace: true });
+  };
 
   const albums = (content.customPages || [])
     .filter((p) => p.kind === 'gallery')
