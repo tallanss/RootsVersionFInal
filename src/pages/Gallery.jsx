@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Camera, ArrowRight, Lock, Search, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
@@ -17,11 +17,31 @@ const Gallery = () => {
   const { content, updateContent } = useContent();
   const { isAdminMode } = useAdmin();
 
-  // La recherche est stockée dans l'URL (?q=...) : ainsi, quand on ouvre un
-  // album puis qu'on revient en arrière, le filtre saisi est conservé (#26).
+  // La recherche est conservée quand on revient sur la galerie (#26), par
+  // n'importe quel moyen (bouton retour du navigateur OU menu). On la mémorise
+  // à la fois dans l'URL (?q=...) et en session (sessionStorage), et on la
+  // restaure au montage depuis l'URL en priorité, sinon depuis la session.
+  const SS_KEY = 'pr_gallery_q';
   const [searchParams, setSearchParams] = useSearchParams();
-  const query = searchParams.get('q') || '';
+  const readSession = () => {
+    try { return sessionStorage.getItem(SS_KEY) || ''; } catch { return ''; }
+  };
+  const [query, setQueryState] = useState(() => searchParams.get('q') || readSession());
+
+  // Au montage : si on est revenu via le menu (URL sans ?q) mais qu'une
+  // recherche est mémorisée en session, on réaligne l'URL dessus.
+  useEffect(() => {
+    if (!searchParams.get('q') && query) {
+      const next = new URLSearchParams(searchParams);
+      next.set('q', query);
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const setQuery = (v) => {
+    setQueryState(v);
+    try { if (v) sessionStorage.setItem(SS_KEY, v); else sessionStorage.removeItem(SS_KEY); } catch { /* ignore */ }
     const next = new URLSearchParams(searchParams);
     if (v) next.set('q', v); else next.delete('q');
     setSearchParams(next, { replace: true });
