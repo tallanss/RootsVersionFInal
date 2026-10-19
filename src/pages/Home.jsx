@@ -56,6 +56,20 @@ const Home = () => {
   // Data now comes from ContentContext
   const faqs = content.faqs || [];
 
+  // Note Google (schema AggregateRating) — on ne l'émet QUE si les valeurs sont
+  // réellement valides : note ∈ [1..5] et nombre d'avis entier > 0. Évite un
+  // schéma invalide (ex. "4,9,9", "5.", reviewCount "0") qui serait rejeté par
+  // Google et pourrait déclencher une pénalité.
+  const aggregateRating = (() => {
+    const rr = content.reviewsRating || {};
+    const rating = parseFloat(String(rr.ratingValue).replace(',', '.'));
+    const count = parseInt(String(rr.reviewCount).replace(/[^0-9]/g, ''), 10);
+    if (!Number.isFinite(rating) || rating < 1 || rating > 5) return null;
+    if (!Number.isInteger(count) || count < 1) return null;
+    // Arrondi à une décimale, format point décimal (requis par schema.org).
+    return { ratingValue: String(Math.round(rating * 10) / 10), reviewCount: String(count) };
+  })();
+
   return (
     <div>
       <Helmet>
@@ -90,7 +104,7 @@ const Home = () => {
             })}
           </script>
         )}
-        {content.reviewsRating?.ratingValue && content.reviewsRating?.reviewCount && (
+        {aggregateRating && (
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
@@ -99,8 +113,8 @@ const Home = () => {
               "name": "PhotoRoots",
               "aggregateRating": {
                 "@type": "AggregateRating",
-                "ratingValue": String(content.reviewsRating.ratingValue),
-                "reviewCount": String(content.reviewsRating.reviewCount),
+                "ratingValue": aggregateRating.ratingValue,
+                "reviewCount": aggregateRating.reviewCount,
                 "bestRating": "5",
                 "worstRating": "1"
               }

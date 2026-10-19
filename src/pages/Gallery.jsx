@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Camera, ArrowRight, Lock, Search, X } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
@@ -18,29 +18,30 @@ const Gallery = () => {
   const { isAdminMode } = useAdmin();
 
   // La recherche est conservée quand on revient sur la galerie (#26), par
-  // n'importe quel moyen (bouton retour du navigateur OU menu). On la mémorise
-  // à la fois dans l'URL (?q=...) et en session (sessionStorage), et on la
-  // restaure au montage depuis l'URL en priorité, sinon depuis la session.
+  // n'importe quel moyen (bouton retour du navigateur OU menu). Elle vit dans
+  // l'URL (?q=...) — source de vérité, donc URL et filtre affiché sont toujours
+  // cohérents — et est aussi mémorisée en session pour être restaurée au retour
+  // via le menu (URL sans ?q).
   const SS_KEY = 'pr_gallery_q';
   const [searchParams, setSearchParams] = useSearchParams();
-  const readSession = () => {
-    try { return sessionStorage.getItem(SS_KEY) || ''; } catch { return ''; }
-  };
-  const [query, setQueryState] = useState(() => searchParams.get('q') || readSession());
+  const query = searchParams.get('q') || '';
 
-  // Au montage : si on est revenu via le menu (URL sans ?q) mais qu'une
-  // recherche est mémorisée en session, on réaligne l'URL dessus.
+  // Au montage uniquement : si on arrive sans ?q (ex. retour via le menu) mais
+  // qu'une recherche est mémorisée en session, on réaligne l'URL dessus.
   useEffect(() => {
-    if (!searchParams.get('q') && query) {
-      const next = new URLSearchParams(searchParams);
-      next.set('q', query);
-      setSearchParams(next, { replace: true });
+    if (!searchParams.get('q')) {
+      let saved = '';
+      try { saved = sessionStorage.getItem(SS_KEY) || ''; } catch { /* ignore */ }
+      if (saved) {
+        const next = new URLSearchParams(searchParams);
+        next.set('q', saved);
+        setSearchParams(next, { replace: true });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setQuery = (v) => {
-    setQueryState(v);
     try { if (v) sessionStorage.setItem(SS_KEY, v); else sessionStorage.removeItem(SS_KEY); } catch { /* ignore */ }
     const next = new URLSearchParams(searchParams);
     if (v) next.set('q', v); else next.delete('q');

@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../../context/ContentContext';
+import { ADDONS_CATALOG } from '../../data/addonsCatalog';
 import EditModal from './EditModal';
 import { showToast } from '../Toast';
 
@@ -337,7 +338,13 @@ export const ReviewCenter = () => {
             <input
               type="text" className="cms-input" inputMode="decimal" placeholder="Ex: 4.9"
               value={rating.ratingValue}
-              onChange={(e) => setRating({ ratingValue: e.target.value.replace(',', '.') })}
+              onChange={(e) => {
+                // chiffres + un seul point décimal (ex. "4.9")
+                let v = e.target.value.replace(',', '.').replace(/[^0-9.]/g, '');
+                const i = v.indexOf('.');
+                if (i !== -1) v = v.slice(0, i + 1) + v.slice(i + 1).replace(/\./g, '');
+                setRating({ ratingValue: v });
+              }}
             />
           </div>
           <div>
@@ -570,26 +577,11 @@ export const PriceArchitect = () => {
 /* ========================================== */
 /* ➕ ADDONS MANAGER (Options à louer)        */
 /* ========================================== */
-// Catalogue d'options suggérées (#7 + #8) — proposé en 1 clic au client.
-// Prix à 0 = « Sur devis » côté public tant que le client ne l'a pas fixé ici.
-const SUGGESTED_ADDONS = [
-  { id: 'guestbook',  name: "Livre d'or Premium",             price: 39, desc: 'Album souvenir avec collages, stylos et emplacements photos.', enabled: true },
-  { id: 'usb',        name: 'Clé USB souvenirs',              price: 15, desc: 'Toutes les photos de la soirée en haute définition.', enabled: true },
-  { id: 'branding',   name: 'Branding écran',                 price: 29, desc: "Votre logo et vos couleurs sur l'interface de la borne.", enabled: true },
-  { id: 'portecles',  name: 'Porte-clés photo',               price: 0,  desc: 'Vos photos transformées en porte-clés souvenirs à offrir.', enabled: true },
-  { id: 'goodies',    name: 'Goodies personnalisés',          price: 0,  desc: 'Magnets, cartes et objets souvenirs à vos couleurs.', enabled: true },
-  { id: 'telephone-or', name: "Téléphone d'Or (audio & vidéo)", price: 0, desc: 'Un combiné vintage pour enregistrer les messages audio et vidéo de vos invités.', enabled: true },
-  { id: 'gifs',       name: 'GIFs, boomerangs & vidéos courtes', price: 0, desc: 'Animations GIF et boomerangs à partager instantanément.', enabled: true },
-  { id: 'fonds',      name: 'Fonds photo, fonds verts & IA',  price: 0,  desc: 'Décors personnalisés, fond vert et retouches par intelligence artificielle.', enabled: true },
-  { id: 'accessoires', name: 'Pack accessoires & props',      price: 0,  desc: 'Lunettes, chapeaux, pancartes et accessoires fun pour vos invités.', enabled: true },
-  { id: 'tirages',    name: 'Tirages supplémentaires',        price: 0,  desc: 'Impressions papier additionnelles pour que chacun reparte avec sa photo.', enabled: true },
-  { id: 'installation-premium', name: 'Installation premium', price: 0,  desc: 'Tapis rouge et poteaux dorés pour une entrée prestigieuse.', enabled: true },
-];
-
 export const AddonsManager = () => {
   const { content, updateContent, saveStatus } = useContent();
   const addons = content.addons || [];
-  const missingSuggested = SUGGESTED_ADDONS.filter((s) => !addons.some((a) => a.id === s.id));
+  // Catalogue suggéré (#7 + #8) — source unique partagée avec les défauts.
+  const missingSuggested = ADDONS_CATALOG.filter((s) => !addons.some((a) => a.id === s.id));
 
   const addSuggested = () => {
     if (missingSuggested.length === 0) return;

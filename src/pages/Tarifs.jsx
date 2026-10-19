@@ -280,8 +280,11 @@ const Tarifs = () => {
   const plans = content.pricing_plans || defaultPlans;
 
   // Machines (bornes) avec leur slug de fiche → liens depuis l'explication
-  // « quelle machine selon la formule ». Même util que /nos-bornes pour que les URLs matchent.
-  const machineLinks = machinesWithSlugs(content.machines || []);
+  // « quelle machine selon la formule ». On applique le MÊME filtre de visibilité
+  // que /nos-bornes (Bornes.jsx / BorneDetail.jsx) AVANT machinesWithSlugs, sinon
+  // les slugs (et les suffixes -2/-3 en cas de doublon) divergeraient et les liens
+  // pointeraient vers des fiches absentes/masquées.
+  const machineLinks = machinesWithSlugs((content.machines || []).filter((m) => m.visible !== false));
 
   // Prestations actives (produits visibles) → pour le filtre de la page Tarifs.
   const activeProducts = (content.products || []).filter((p) => p.visible !== false);

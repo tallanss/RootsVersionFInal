@@ -176,6 +176,14 @@ const Contact = () => {
   const add360Active = canAdd360 && formData.add360;
   const add360Total = add360Active ? ADD_360_PRICE : 0;
   const estimatedTotal = formulaBase + machineSupplement + addonsTotal + add360Total;
+
+  // Si l'ajout du 360 n'est plus proposable (machine/formule modifiée), on
+  // réinitialise la case : elle ne doit pas réapparaître pré-cochée plus tard.
+  useEffect(() => {
+    if (!canAdd360 && formData.add360) {
+      setFormData((prev) => ({ ...prev, add360: false }));
+    }
+  }, [canAdd360, formData.add360]);
   // On n'affiche / n'envoie une estimation chiffrée QUE si la formule a un vrai
   // prix numérique (> 0). Évite un faux « 0€ » ou un total trompeur (« Sur devis »).
   const showEstimate = Boolean(formData.formula && formulaBase > 0);
