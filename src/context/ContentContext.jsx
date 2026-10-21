@@ -29,7 +29,7 @@ const DEFAULT_CONTENT = {
   ],
   hero: {
     title: "Vivez l'instant",
-    subtitle: "Location Photobooth à partir de 189 euros",
+    subtitle: "Location Photobooth à partir de 119 euros",
     desc: "Sublimez vos événements au Havre, Rouen et Dieppe avec notre borne photo miroir haut de gamme."
   },
   scrolly: {
@@ -314,9 +314,13 @@ const buildMergedContent = (parsed = {}) => {
     saveTheDate: { ...DEFAULT_CONTENT.saveTheDate, ...(parsed.saveTheDate || {}) },
   };
 
+  // Migration du sous-titre du hero : on réaligne les anciennes valeurs sur le
+  // défaut courant (119€). Inclut l'ancien défaut "189 euros" pour que le site
+  // en ligne se corrige automatiquement au chargement (pas d'accès Supabase ici).
   if (
     merged.hero.subtitle === "Location Photobooth Premium" ||
-    merged.hero.subtitle === "location photobooth, a partir de 189 euros"
+    merged.hero.subtitle === "location photobooth, a partir de 189 euros" ||
+    merged.hero.subtitle === "Location Photobooth à partir de 189 euros"
   ) {
     merged.hero.subtitle = DEFAULT_CONTENT.hero.subtitle;
   }
