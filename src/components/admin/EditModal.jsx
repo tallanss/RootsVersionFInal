@@ -7,6 +7,47 @@ import { supabase } from '../../config/supabase';
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
 
+// Compresse + redimensionne une image AVANT l'upload, pour réduire l'egress
+// Supabase (plan gratuit = 5 Go/mois). Convertit en WebP, limite la largeur à
+// MAX_DIM px et la qualité à ~0.82. SVG/GIF sont laissés intacts (vecteur /
+// animation). Si la compression échoue ou n'allège pas le fichier, on garde
+// l'original.
+const MAX_DIM = 1920;
+const WEBP_QUALITY = 0.82;
+
+const compressImage = (file) =>
+  new Promise((resolve) => {
+    if (file.type === 'image/svg+xml' || file.type === 'image/gif') { resolve(file); return; }
+    if (typeof document === 'undefined' || !window.createImageBitmap && !window.Image) { resolve(file); return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      try {
+        const scale = Math.min(1, MAX_DIM / Math.max(img.naturalWidth, img.naturalHeight));
+        const w = Math.round(img.naturalWidth * scale);
+        const h = Math.round(img.naturalHeight * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob((blob) => {
+          URL.revokeObjectURL(url);
+          if (blob && blob.size < file.size) {
+            const base = (file.name.replace(/\.[^.]+$/, '') || 'image');
+            resolve(new File([blob], `${base}.webp`, { type: 'image/webp' }));
+          } else {
+            resolve(file); // la compression n'aide pas → on garde l'original
+          }
+        }, 'image/webp', WEBP_QUALITY);
+      } catch (_) {
+        URL.revokeObjectURL(url);
+        resolve(file);
+      }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+
 export const uploadImageToSupabase = async (file) => {
   if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
     throw new Error('Type de fichier non supporté. Utilisez JPG, PNG, WebP, GIF ou SVG.');
@@ -14,9 +55,12 @@ export const uploadImageToSupabase = async (file) => {
   if (file.size > MAX_FILE_SIZE) {
     throw new Error('Fichier trop volumineux (max 5 MB).');
   }
-  const ext = file.name.split('.').pop().toLowerCase();
+  // Compression/redimensionnement côté client avant l'envoi (réduit l'egress).
+  const optimized = await compressImage(file);
+  const ext = optimized.name.split('.').pop().toLowerCase();
   const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const { data, error } = await supabase.storage.from('gallery').upload(path, file, { cacheControl: '3600', upsert: false });
+  // Cache 1 an : moins de re-téléchargements → moins d'egress sur les visites répétées.
+  const { data, error } = await supabase.storage.from('gallery').upload(path, optimized, { cacheControl: '31536000', upsert: false });
   if (error) throw error;
   const { data: { publicUrl } } = supabase.storage.from('gallery').getPublicUrl(data.path);
   return publicUrl;

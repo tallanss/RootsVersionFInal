@@ -1,23 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { optimizedSrc } from '../utils/imageUrl';
 
 const prefersReducedMotion =
   typeof window !== 'undefined' &&
   typeof window.matchMedia === 'function' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// Pour une image locale (PNG/JPG du dossier public), on tente d'abord la
-// version .webp (beaucoup plus légère), avec repli automatique sur l'original.
-const getWebp = (src) => {
+// Source optimisée :
+// - image locale (PNG/JPG du dossier public) → version .webp (servie par Vercel) ;
+// - image distante (ex. Supabase Storage) → proxy weserv (WebP + redim. + cache),
+//   ce qui réduit fortement l'egress Supabase.
+// En cas d'échec, PremiumImage retombe sur l'URL d'origine (voir onError).
+const getOptimized = (src, width, quality) => {
   if (typeof src === 'string' && src.startsWith('/') && /\.(png|jpe?g)$/i.test(src)) {
     return src.replace(/\.(png|jpe?g)$/i, '.webp');
   }
-  return src;
+  return optimizedSrc(src, { w: width, q: quality });
 };
 
-const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '', imgStyle = {} }) => {
+const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '', imgStyle = {}, width = 1280, quality = 72 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const [currentSrc, setCurrentSrc] = useState(() => getWebp(src));
+  const [currentSrc, setCurrentSrc] = useState(() => getOptimized(src, width, quality));
   const imgRef = useRef(null);
   const isFirstRender = useRef(true);
 
@@ -27,10 +31,10 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '', img
   // l'image resterait invisible (carré blanc).
   useEffect(() => {
     if (isFirstRender.current) { isFirstRender.current = false; return; }
-    setCurrentSrc(getWebp(src));
+    setCurrentSrc(getOptimized(src, width, quality));
     setIsLoaded(false);
     setHasError(false);
-  }, [src]);
+  }, [src, width, quality]);
 
   // L'événement React `onLoad` n'est pas fiable : il ne se déclenche pas si
   // l'image est déjà en cache (navigation SPA de retour) NI si la même URL est

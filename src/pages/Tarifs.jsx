@@ -9,6 +9,7 @@ import { useContent } from '../context/ContentContext';
 import EditableBlock from '../components/admin/EditableBlock';
 import { useAdmin } from '../context/AdminContext';
 import { formatPrice, priceToNumber, machinesWithSlugs, formatAddonPrice } from '../utils/galleryFormat';
+import { optimizedSrc } from '../utils/imageUrl';
 import { RENTAL_OPTIONS_ENABLED } from '../config/features';
 
 /* ── Helper : formate l'affichage du prix de façon robuste ──
@@ -929,7 +930,7 @@ const Tarifs = () => {
             <div style={{ borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-light)', background: 'var(--bg-card)', boxShadow: 'var(--shadow-md)', overflow: 'hidden' }}>
               {prod.image && (
                 <div style={{ aspectRatio: '16 / 9', overflow: 'hidden', background: 'var(--bg-secondary)' }}>
-                  <img src={prod.image} alt={prod.name} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  <img src={optimizedSrc(prod.image, { w: 900 })} alt={prod.name} onError={(e) => { if (e.currentTarget.src !== prod.image) e.currentTarget.src = prod.image; }} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                 </div>
               )}
               <div style={{ padding: '24px' }}>
