@@ -64,6 +64,7 @@ import Footer from './components/Footer';
 import Header from './components/Header';
 import ContactButton from './components/WhatsAppButton';
 import CookieBanner from './components/CookieBanner';
+import HalloweenOverlay from './components/HalloweenOverlay';
 import AdminToolbar from './components/admin/AdminToolbar';
 import GoogleAnalytics from './components/GoogleAnalytics';
 
@@ -177,6 +178,7 @@ function PageContent() {
         </Suspense>
       )}
       
+      {!isStandalonePage && !isAdminMode && <HalloweenOverlay />}
       <CookieBanner />
       <ToastContainer />
     </div>

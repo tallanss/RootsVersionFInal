@@ -46,6 +46,8 @@ const DEFAULT_CONTENT = {
   // Note Google réelle (saisie par le client dans l'admin « Avis clients »).
   // Vide par défaut : aucun schéma AggregateRating n'est émis tant que la note n'est pas vérifiée.
   reviewsRating: { ratingValue: '', reviewCount: '', url: '' },
+  // Habillage saisonnier Halloween : 'auto' (actif 25 oct.–1 nov.), 'on', 'off'.
+  halloween: 'auto',
   faqs: [
     { q: "Comment réserver le photobooth ?", a: "C'est très simple ! Remplissez notre formulaire de contact avec la date et le type de votre événement. Nous vous répondons sous 24h avec un devis personnalisé gratuit." },
     { q: "Quelle est la zone d'intervention ?", a: "Nous intervenons principalement en Seine-Maritime : Le Havre, Rouen, Dieppe et leurs alentours. Pour les événements plus éloignés, contactez-nous pour un devis." },
@@ -307,6 +309,7 @@ const buildMergedContent = (parsed = {}) => {
     })(),
     testimonials: parsed.testimonials || DEFAULT_CONTENT.testimonials,
     reviewsRating: { ...DEFAULT_CONTENT.reviewsRating, ...(parsed.reviewsRating || {}) },
+    halloween: parsed.halloween || DEFAULT_CONTENT.halloween,
     faqs: parsed.faqs || DEFAULT_CONTENT.faqs,
     saveTheDateEvents: parsed.saveTheDateEvents || DEFAULT_CONTENT.saveTheDateEvents,
     blockedDates: parsed.blockedDates || DEFAULT_CONTENT.blockedDates,

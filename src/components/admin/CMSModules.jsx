@@ -34,6 +34,7 @@ import {
   Pencil,
   Tag,
   Package,
+  Sparkles,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../../context/ContentContext';
@@ -1051,12 +1052,46 @@ export const SystemTools = () => {
     reader.readAsText(file);
   };
 
+  const halloween = content.halloween || 'auto';
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
       <header>
         <h2 style={{ fontSize: '24px', fontWeight: 800, marginBottom: '8px' }}>Outils Système</h2>
         <p style={{ color: '#64748b', fontSize: '14px' }}>Maintenance et configuration avancée du CMS.</p>
       </header>
+
+      {/* Habillage saisonnier Halloween */}
+      <section className="cms-card">
+        <h3 className="cms-section-title"><Sparkles size={18} /> Animation Halloween</h3>
+        <p style={{ color: '#64748b', fontSize: '13px', marginBottom: '12px', lineHeight: 1.5 }}>
+          Fine toile d'araignée dorée dans le coin du site (avec une petite araignée). En mode
+          « Automatique », elle s'affiche seule du 25 octobre au 1er novembre, puis disparaît.
+        </p>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {[
+            { v: 'auto', label: 'Automatique (25 oct.–1 nov.)' },
+            { v: 'on', label: 'Toujours activée' },
+            { v: 'off', label: 'Désactivée' },
+          ].map((opt) => {
+            const on = halloween === opt.v;
+            return (
+              <button
+                key={opt.v}
+                onClick={() => updateContent({ halloween: opt.v })}
+                style={{
+                  padding: '10px 16px', borderRadius: '10px', fontWeight: 700, fontSize: '13px', cursor: 'pointer',
+                  background: on ? 'var(--primary)' : 'var(--bg-secondary)',
+                  color: on ? '#fff' : '#cbd5e1',
+                  border: `1px solid ${on ? 'var(--primary)' : 'rgba(255,255,255,0.12)'}`,
+                }}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+      </section>
 
       <section className="cms-card">
         <h3 className="cms-section-title"><Download size={18} /> Sauvegarde du site</h3>
