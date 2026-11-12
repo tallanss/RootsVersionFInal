@@ -14,9 +14,11 @@
 // d'origine (voir PremiumImage.jsx, onError).
 // ============================================================
 
-// true = on passe par le proxy weserv pour les images distantes. Mettre false
-// pour revenir au comportement d'origine (images servies directement).
-export const IMAGE_PROXY_ENABLED = true;
+// false = images Supabase servies EN DIRECT (plan Pro : egress 250 Go + Smart CDN,
+//   plus besoin du proxy tiers, et plus de cache d'erreur pendant une coupure).
+// true = passe par le proxy weserv (utile uniquement si on repasse en plan gratuit).
+// La compression à l'upload (EditModal) reste active quel que soit ce réglage.
+export const IMAGE_PROXY_ENABLED = false;
 
 const isRemote = (src) => typeof src === 'string' && /^https?:\/\//i.test(src);
 

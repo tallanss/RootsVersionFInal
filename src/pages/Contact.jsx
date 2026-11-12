@@ -120,7 +120,7 @@ const Contact = () => {
       }));
     }
     return [
-      { name: 'Autonomie', price: '119€', tirages: '100% digital' },
+      { name: 'Autonomie', price: '209€', tirages: '100% digital' },
       { name: 'Essentiel', price: '189€', tirages: '100% digital' },
       { name: 'Prestige', price: '249€', tirages: '200 tirages', featured: true },
       { name: 'Excellence', price: '389€', tirages: '400 tirages' },
