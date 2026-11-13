@@ -107,7 +107,7 @@ PhotoRoots est l'un des rares prestataires photobooth réellement basés en Sein
       },
       {
         q: "Combien coûte un photobooth pour un mariage à Rouen ?",
-        a: "Nos tarifs démarrent à 209€ pour la formule découverte 2h. Pour un mariage rouennais classique (4-5h d'animation, photos illimitées, accessoires, fond personnalisé), comptez entre 390€ et 590€ selon les options. Devis gratuit et personnalisé sous 24h.",
+        a: "Nos tarifs démarrent à 209€ pour la formule 100% numérique (livrée et installée). Pour un mariage rouennais classique (photos illimitées, accessoires, fond personnalisé), l'offre illimitée est à 369€ en borne classique et 419€ avec le miroir ; le Photobooth 360 est une prestation vidéo distincte. Devis gratuit et personnalisé sous 24h.",
       },
       {
         q: 'Travaillez-vous avec les wedding planners et traiteurs rouennais ?',

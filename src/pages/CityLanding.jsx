@@ -224,7 +224,7 @@ export default function CityLanding({ cityData }) {
               ))}
             </ul>
             <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginTop: '16px', fontStyle: 'italic' }}>
-              Votre lieu n'est pas listé ? Aucun souci, nous nous déplaçons partout autour de {name} dans un rayon de 50 km sans frais.
+              Votre lieu n'est pas listé ? Aucun souci : livraison, installation et reprise incluses dans un rayon de 10 km routiers au départ du Havre ou de Lillebonne. Au-delà, un forfait déplacement vous est précisé dans votre devis.
             </p>
           </div>
         </section>
@@ -239,7 +239,7 @@ export default function CityLanding({ cityData }) {
 
           <div className="cta-section" style={{ marginTop: '16px' }}>
             <h2>À partir de 209€</h2>
-            <p>Formule découverte 2h, montée en gamme jusqu'au pack premium illimité avec accessoires &amp; impressions.</p>
+            <p>Des formules 100% numériques jusqu'aux offres avec impressions illimitées, accessoires &amp; personnalisation. Devis clair sous 24h.</p>
             <AnimatedButton to="/tarifs" className="btn-primary" style={{ background: '#ffffff', color: 'var(--primary)', width: 'auto', padding: '16px 36px', fontWeight: 800 }}>
               Voir tous les tarifs <ArrowRight size={18} />
             </AnimatedButton>
