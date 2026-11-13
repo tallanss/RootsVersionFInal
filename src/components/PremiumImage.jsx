@@ -107,7 +107,7 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '', img
             ...imgStyle,
           }}
           loading={priority ? 'eager' : 'lazy'}
-          fetchpriority={priority ? 'high' : undefined}
+          fetchPriority={priority ? 'high' : undefined}
           decoding={priority ? 'async' : undefined}
         />
       )}

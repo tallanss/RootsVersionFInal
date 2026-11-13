@@ -194,6 +194,31 @@ const Contact = () => {
       setFormData((prev) => ({ ...prev, add360: false }));
     }
   }, [canAdd360, formData.add360]);
+
+  // ── Isolement de l'offre Autonomie (#7) ──
+  // L'Autonomie n'existe qu'avec L'Authentique (borne bois) : on verrouille la
+  // borne (sélecteur masqué) et aucun supplément machine ne s'applique.
+  const isAutonomie = /autonomie/i.test(formData.formula || '');
+  const authentiqueMachine = useMemo(
+    () => machineOptions.find((m) => /authentique/i.test(m.name) || m.id === 'm-bois') || null,
+    [machineOptions]
+  );
+  useEffect(() => {
+    if (isAutonomie && authentiqueMachine && formData.machine !== authentiqueMachine.id) {
+      setFormData((prev) => ({ ...prev, machine: authentiqueMachine.id }));
+    }
+  }, [isAutonomie, authentiqueMachine, formData.machine]);
+
+  // Options réservées à l'Autonomie (ex. Personnalisation, Impressions) : visibles
+  // uniquement avec l'offre Autonomie, masquées (et désélectionnées) ailleurs (#7).
+  const isAddonVisible = (a) => a.enabled !== false && (isAutonomie || !a.autonomieOnly);
+  useEffect(() => {
+    if (isAutonomie) return;
+    const autoOnlyIds = (content.addons || []).filter((a) => a.autonomieOnly).map((a) => a.id);
+    if (autoOnlyIds.length && formData.addons.some((id) => autoOnlyIds.includes(id))) {
+      setFormData((prev) => ({ ...prev, addons: prev.addons.filter((id) => !autoOnlyIds.includes(id)) }));
+    }
+  }, [isAutonomie, content.addons, formData.addons]);
   // On n'affiche / n'envoie une estimation chiffrée QUE si la formule a un vrai
   // prix numérique (> 0). Évite un faux « 0€ » ou un total trompeur (« Sur devis »).
   const showEstimate = selectedIs360 || Boolean(formData.formula && formulaBase > 0);
@@ -352,7 +377,7 @@ const Contact = () => {
     sessionStorage.setItem('pr_last_submit', String(Date.now()));
     setLoading(true);
 
-    const selectedAddons = (content.addons || []).filter(a => formData.addons.includes(a.id));
+    const selectedAddons = (content.addons || []).filter(a => formData.addons.includes(a.id) && isAddonVisible(a));
     const addonsText = selectedAddons.map(a => `${a.name} (${priceToNumber(a.price) > 0 ? `${formatEuro(priceToNumber(a.price))}€` : 'sur devis'})`).join(', ');
 
     const machineText = selectedMachine
@@ -781,8 +806,17 @@ const Contact = () => {
                   </div>
                 </div>
 
-                {/* Choix de la machine (borne) — une seule ; le prix s'adapte */}
-                {machineOptions.length > 0 && (
+                {/* Offre Autonomie : borne verrouillée sur L'Authentique (#7) */}
+                {isAutonomie && (
+                  <div className="form-group">
+                    <div style={{ padding: '14px 16px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                      Offre <strong>Autonomie</strong> : fournie avec <strong>L'Authentique</strong> (borne bois), 24 h. Retrait et retour à Lillebonne par vos soins. Une <strong>caution de 1 500 €</strong> est demandée (restituée après l'événement, elle ne s'ajoute pas au total).
+                    </div>
+                  </div>
+                )}
+
+                {/* Choix de la machine (borne) — une seule ; le prix s'adapte. Masqué en Autonomie. */}
+                {!isAutonomie && machineOptions.length > 0 && (
                   <div className="form-group">
                     <label className="form-label">Quelle PhotoBooth désirez-vous ? <span style={{ color: 'var(--text-light)', fontWeight: 400 }}>(le prix s'adapte)</span></label>
                     <div style={{ display: 'grid', gap: '8px', marginTop: '4px' }}>
@@ -948,7 +982,7 @@ const Contact = () => {
                 )}
 
                 {/* Options à louer (add-ons) — menu déroulant (#27). Masquées via RENTAL_OPTIONS_ENABLED */}
-                {RENTAL_OPTIONS_ENABLED && (content.addons || []).filter(a => a.enabled !== false).length > 0 && (
+                {RENTAL_OPTIONS_ENABLED && (content.addons || []).filter(isAddonVisible).length > 0 && (
                   <div className="form-group">
                     {/* En-tête cliquable qui déroule / replie la liste des options */}
                     <button
@@ -981,7 +1015,7 @@ const Contact = () => {
                     </button>
                     {addonsOpen && (
                     <div style={{ display: 'grid', gap: '8px', marginTop: '8px' }}>
-                      {(content.addons || []).filter(a => a.enabled !== false).map((a) => {
+                      {(content.addons || []).filter(isAddonVisible).map((a) => {
                         const active = formData.addons.includes(a.id);
                         return (
                           <button

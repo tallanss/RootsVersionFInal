@@ -657,6 +657,10 @@ export const AddonsManager = () => {
                     <input type="checkbox" checked={opt.enabled !== false} onChange={() => toggleEnabled(i)} />
                     Option active (visible sur le site)
                   </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', fontWeight: 600, color: '#cbd5e1', cursor: 'pointer' }}>
+                    <input type="checkbox" checked={!!opt.autonomieOnly} onChange={() => updateAddon(i, 'autonomieOnly', !opt.autonomieOnly)} />
+                    Réservée à l'offre Autonomie (masquée sur les autres formules)
+                  </label>
                 </div>
                 <button onClick={() => deleteAddon(i)} title="Supprimer" style={{ background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: 'none', padding: '10px', borderRadius: '8px', cursor: 'pointer', flexShrink: 0 }}>
                   <Trash2 size={16} />

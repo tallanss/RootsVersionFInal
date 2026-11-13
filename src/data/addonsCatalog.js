@@ -17,4 +17,10 @@ export const ADDONS_CATALOG = [
   { id: 'accessoires', name: 'Pack accessoires & props',      price: 0,  desc: 'Lunettes, chapeaux, pancartes et accessoires fun pour vos invités.', enabled: true },
   { id: 'tirages',    name: 'Tirages supplémentaires',        price: 0,  desc: 'Impressions papier additionnelles pour que chacun reparte avec sa photo.', enabled: true },
   { id: 'installation-premium', name: 'Installation premium', price: 0,  desc: 'Tapis rouge et poteaux dorés pour une entrée prestigieuse.', enabled: true },
+  // Options réservées à l'offre AUTONOMIE (incluses/forfaitées sur les formules
+  // clé en main → elles ne s'affichent que dans le devis Autonomie). autonomieOnly:true
+  { id: 'perso-autonomie', name: 'Personnalisation',        price: 30,  desc: 'Cadre, fond et couleurs personnalisés (déjà incluse dans les formules clé en main).', enabled: true, autonomieOnly: true },
+  { id: 'impr-200',  name: '200 impressions papier',        price: 60,  desc: 'Ajoute 200 tirages papier sur place (choix unique).', enabled: true, autonomieOnly: true },
+  { id: 'impr-300',  name: '300 impressions papier',        price: 90,  desc: 'Ajoute 300 tirages papier sur place (choix unique).', enabled: true, autonomieOnly: true },
+  { id: 'impr-400',  name: '400 impressions papier',        price: 120, desc: 'Ajoute 400 tirages papier sur place (choix unique).', enabled: true, autonomieOnly: true },
 ];
