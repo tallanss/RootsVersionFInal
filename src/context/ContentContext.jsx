@@ -55,41 +55,49 @@ const DEFAULT_CONTENT = {
     { q: "Peut-on personnaliser les photos ?", a: "Absolument ! Le format, le fond, les cadres et les textes sont entièrement personnalisables. L'écran de diffusion intégré dans le pied permet aussi d'afficher vos propres contenus." },
     { q: "Les photos sont-elles imprimées sur place ?", a: "Oui, grâce à notre imprimante professionnelle ultra-rapide. Chaque invité repart avec un souvenir physique de qualité en quelques secondes." },
   ],
+  // Les 6 offres photo validées par Jimmy (12/11). Prix affichés = borne classique ;
+  // le miroir « Le Majestueux » ajoute +50€ via son supplément machine. Le Spectaculaire
+  // (360) est une prestation vidéo distincte (gérée dans le devis, 250€ seule / +150€).
   pricing_plans: [
     {
-      id: 'essentiel',
-      name: 'Essentiel',
-      price: '189',
-      desc: 'Parfait pour les petits événements et les fêtes entre amis.',
-      features: ['Photos illimitées', 'Accessoires & props fun', 'Livraison & installation', 'Galerie en ligne'],
-      excluded: ['Impressions sur place', 'Personnalisation complète', 'Écran de diffusion'],
+      id: 'autonomie', name: 'Autonomie', price: '119', autonomie: true,
+      desc: "L'Authentique (borne bois) en autonomie, 24 h. Retrait et retour à Lillebonne par vos soins.",
+      features: ["Borne L'Authentique (bois)", 'Location 24 h', 'Photos 100% numériques', 'Galerie en ligne', 'Retrait & retour à Lillebonne'],
+      excluded: ['Livraison / installation', 'Caution 1 500€ (restituée)'],
       featured: false
     },
     {
-      id: 'premium',
-      name: 'Premium',
-      price: '289',
-      desc: 'Notre formule la plus populaire pour les mariages et grands événements.',
-      features: ['Photos illimitées', 'Impressions illimitées sur place', 'Personnalisation totale (cadres, fonds)', 'Accessoires premium', 'Écran de diffusion', 'Livraison & installation', 'Galerie en ligne HD'],
+      id: 'numerique', name: '100% numérique', price: '209',
+      desc: 'Photos numériques, borne livrée et installée. Pour partager sans attendre.',
+      features: ['Photos 100% numériques', 'Personnalisation incluse', 'Galerie en ligne', 'Livraison, installation & reprise (10 km)'],
+      excluded: ['Impressions papier'],
+      featured: false
+    },
+    {
+      id: 'impressions-200', name: '200 impressions', price: '269',
+      desc: 'Photos numériques + 200 tirages papier sur place.',
+      features: ['Photos numériques', '200 tirages papier', 'Personnalisation incluse', 'Livraison & installation'],
+      excluded: [],
+      featured: false
+    },
+    {
+      id: 'impressions-300', name: '300 impressions', price: '299',
+      desc: 'Photos numériques + 300 tirages papier sur place.',
+      features: ['Photos numériques', '300 tirages papier', 'Personnalisation incluse', 'Livraison & installation'],
       excluded: [],
       featured: true
     },
     {
-      id: 'excellence',
-      name: 'Excellence',
-      price: '389',
-      desc: 'La formule complète pour les mariages et événements d\'entreprise haut de gamme.',
-      features: ['Photos illimitées', 'Impressions illimitées sur place', 'Personnalisation totale (cadres, fonds)', 'Accessoires premium', 'Écran de diffusion', 'Livre d\'or Premium offert', 'Branding personnalisé complet', 'Technicien dédié', 'Livraison & installation', 'Galerie en ligne HD'],
+      id: 'impressions-400', name: '400 impressions', price: '329',
+      desc: 'Photos numériques + 400 tirages papier sur place.',
+      features: ['Photos numériques', '400 tirages papier', 'Personnalisation incluse', 'Livraison & installation'],
       excluded: [],
       featured: false
     },
     {
-      id: 'custom',
-      name: 'Sur-Mesure',
-      price: 'Sur devis',
-      isCustom: true,
-      desc: 'Pour les événements d\'exception qui méritent une prestation unique.',
-      features: ['Tout le Premium inclus', 'Branding personnalisé complet', 'Animations vidéo sur mesure', 'Technicien dédié', 'Multi-impressions (formats spéciaux)', 'Livraison France entière'],
+      id: 'illimite', name: 'Tirages illimités', price: '369',
+      desc: "Pour un événement complet, sans plafond de tirages.",
+      features: ['Photos numériques', 'Tirages illimités', 'Personnalisation incluse', 'Galerie HD', 'Livraison, installation & reprise'],
       excluded: [],
       featured: false
     }
@@ -108,11 +116,11 @@ const DEFAULT_CONTENT = {
   // supplément (€) qui s'ajoute au prix de la formule choisie. Éditables en
   // self-service via le dashboard → « Machines » (nom, description, photo, prix).
   machines: [
-    { id: 'm-noir',   name: 'Classique Noir',  description: 'Notre borne photo, finition noire élégante.',           details: 'Impressions illimitées sur place, accessoires fun, galerie en ligne et installation comprise. La valeur sûre pour tous vos événements.', image: '', supplement: 0,  visible: true },
-    { id: 'm-blanc',  name: 'Classique Blanc', description: 'Notre borne photo, finition blanche épurée.',            details: 'Même expérience que la Classique Noir, dans une finition blanche qui s’intègre parfaitement aux décors clairs et mariages.', image: '', supplement: 0,  visible: true },
-    { id: 'm-bois',   name: 'Classique Bois',  description: 'Notre borne photo, habillage bois chaleureux.',          details: 'Un habillage bois chaleureux pour une ambiance bohème ou champêtre. Impressions et galerie en ligne incluses.', image: '', supplement: 0,  visible: true },
-    { id: 'm-miroir', name: 'Miroir Booth',    description: 'Le miroir photo interactif grand format, effet waouh.',  details: 'Un miroir tactile grand format qui guide vos invités avec animations et signatures à l’écran. L’effet “waouh” garanti pour les grands événements.', image: '', supplement: 50, visible: true },
-    { id: 'm-360',    name: 'Photobooth 360',  description: 'La plateforme vidéo 360° pour des clips spectaculaires.', details: 'Vos invités montent sur la plateforme, une caméra tourne à 360° et génère des clips vidéo dynamiques à partager immédiatement.', image: '', supplement: 0,  visible: true },
+    { id: 'm-noir',   name: 'La Distinguée', description: 'Notre borne photo, finition noire élégante.',           details: 'Impressions sur place, accessoires fun, galerie en ligne et installation comprise. La valeur sûre pour tous vos événements.', image: '', supplement: 0,  visible: true },
+    { id: 'm-blanc',  name: "L'Élégante",    description: 'Notre borne photo, finition blanche épurée.',            details: 'Même expérience que La Distinguée, dans une finition blanche qui s’intègre parfaitement aux décors clairs et mariages.', image: '', supplement: 0,  visible: true },
+    { id: 'm-bois',   name: "L'Authentique", description: 'Notre borne photo, habillage bois chaleureux — aussi proposée en formule Autonomie.', details: 'Un habillage bois chaleureux pour une ambiance bohème ou champêtre. C’est la borne de la formule Autonomie (retrait à Lillebonne).', image: '', supplement: 0,  visible: true },
+    { id: 'm-miroir', name: 'Le Majestueux', description: 'Le miroir photo interactif grand format, effet waouh.',  details: 'Un miroir tactile grand format qui guide vos invités avec animations et signatures à l’écran. L’effet “waouh” garanti pour les grands événements (+50€).', image: '', supplement: 50, visible: true },
+    { id: 'm-360',    name: 'Le Spectaculaire', description: 'La plateforme vidéo 360° pour des clips spectaculaires.', details: 'Vos invités montent sur la plateforme, une caméra tourne à 360° et génère des clips vidéo dynamiques à partager immédiatement. Prestation vidéo distincte (250€ seule, +150€ avec une borne photo).', image: '', supplement: 0,  visible: true },
   ],
   // Bannière « Nos bornes » de la page d'accueil (image pleine largeur + CTA
   // vers /nos-bornes). Entièrement éditable via le CMS (bloc « Bannière bornes »).
@@ -302,9 +310,13 @@ const buildMergedContent = (parsed = {}) => {
     machines: Array.isArray(parsed.machines) ? parsed.machines : DEFAULT_CONTENT.machines,
     pricing_plans: (() => {
       const stored = parsed.pricing_plans;
-      if (!stored) return DEFAULT_CONTENT.pricing_plans;
-      const storedIds = new Set(stored.map(p => p.id));
-      const missing = DEFAULT_CONTENT.pricing_plans.filter(p => !storedIds.has(p.id));
+      if (!stored || stored.length === 0) return DEFAULT_CONTENT.pricing_plans;
+      // Migration (grille Jimmy 12/11) : si le catalogue en base est encore l'ancien
+      // (Essentiel / Premium / Excellence / Sur-Mesure), on le remplace par les 6 offres.
+      const OLD_IDS = ['essentiel', 'premium', 'excellence', 'custom'];
+      if (stored.some((p) => OLD_IDS.includes(p.id))) return DEFAULT_CONTENT.pricing_plans;
+      const storedIds = new Set(stored.map((p) => p.id));
+      const missing = DEFAULT_CONTENT.pricing_plans.filter((p) => !storedIds.has(p.id));
       return [...stored, ...missing];
     })(),
     testimonials: parsed.testimonials || DEFAULT_CONTENT.testimonials,
@@ -327,6 +339,22 @@ const buildMergedContent = (parsed = {}) => {
     merged.hero.subtitle === "Location Photobooth à partir de 119 euros"
   ) {
     merged.hero.subtitle = DEFAULT_CONTENT.hero.subtitle;
+  }
+
+  // Migration des noms de bornes (grille Jimmy 12/11) : on renomme les anciens
+  // noms par défaut, sans écraser un nom déjà personnalisé par le client.
+  const MACHINE_RENAME = {
+    'classique noir': 'La Distinguée',
+    'classique blanc': "L'Élégante",
+    'classique bois': "L'Authentique",
+    'miroir booth': 'Le Majestueux',
+    'photobooth 360': 'Le Spectaculaire',
+  };
+  if (Array.isArray(merged.machines)) {
+    merged.machines = merged.machines.map((m) => {
+      const key = String(m?.name || '').toLowerCase().trim();
+      return MACHINE_RENAME[key] ? { ...m, name: MACHINE_RENAME[key] } : m;
+    });
   }
 
   return merged;

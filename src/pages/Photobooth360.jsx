@@ -16,14 +16,14 @@ const BENEFITS = [
   'Idéal pour les mariages, soirées d\'entreprise et événements premium.',
   'Plateau stable et sécurisé, jusqu\'à 2-3 personnes à la fois.',
   'Habillage et écran d\'accueil personnalisables à votre thème ou à votre marque.',
-  'Livraison, installation et technicien dédié inclus en Seine-Maritime.',
+  'Livraison et installation incluses en Seine-Maritime.',
 ];
 
 const FAQS = [
   { q: "Qu'est-ce qu'un photobooth 360 ?", a: "Le photobooth 360 (ou vidéobooth) est une plateforme sur laquelle montent vos invités ; un bras motorisé équipé d'une caméra tourne autour d'eux à 360° et génère une courte vidéo dynamique, souvent en slow-motion, prête à partager immédiatement. C'est l'animation la plus spectaculaire du moment." },
   { q: "Le photobooth 360 convient-il à un mariage ?", a: "Parfaitement. Les clips 360° font sensation lors des mariages : les invités adorent se filmer et partager leurs vidéos sur les réseaux. Nous personnalisons l'habillage et l'écran d'accueil aux couleurs de votre mariage." },
   { q: "Combien de personnes peuvent monter sur la plateforme 360 ?", a: "La plateforme accueille généralement 2 à 3 personnes à la fois en toute sécurité. Elle est stable et antidérapante, adaptée aussi bien aux adultes qu'aux adolescents." },
-  { q: "Intervenez-vous avec le 360 autour du Havre et de Rouen ?", a: "Oui, nous nous déplaçons avec le photobooth 360 dans toute la Seine-Maritime — Le Havre, Rouen, Dieppe et environs — livraison, installation et technicien inclus." },
+  { q: "Intervenez-vous avec le 360 autour du Havre et de Rouen ?", a: "Oui, nous nous déplaçons avec le photobooth 360 dans toute la Seine-Maritime — Le Havre, Rouen, Dieppe et environs — livraison et installation incluses." },
 ];
 
 export default function Photobooth360() {
@@ -115,7 +115,7 @@ export default function Photobooth360() {
               Chez PhotoRoots, nous personnalisons l'habillage de la plateforme et l'écran d'accueil aux couleurs de votre mariage ou de votre entreprise. La plateforme est stable, sécurisée et antidérapante, et accueille 2 à 3 personnes à la fois pour des clips à plusieurs.
             </p>
             <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, margin: 0 }}>
-              Nous intervenons dans toute la Seine-Maritime — Le Havre, Rouen, Dieppe et environs — livraison, installation et technicien dédié inclus pour que tout soit parfait le jour J.
+              Nous intervenons dans toute la Seine-Maritime — Le Havre, Rouen, Dieppe et environs — livraison et installation incluses pour que tout soit parfait le jour J.
             </p>
           </div>
         </section>
@@ -147,7 +147,7 @@ export default function Photobooth360() {
             <p>Dites-nous la date et le lieu, nous vous faisons une proposition personnalisée sous 24h.</p>
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
               <AnimatedButton to="/contact" className="btn-primary" style={{ background: '#fff', color: 'var(--primary)', width: 'auto', padding: '16px 30px', fontWeight: 800 }}>Obtenir mon devis <ArrowRight size={18} /></AnimatedButton>
-              <AnimatedButton to="/nos-bornes/photobooth-360" className="btn-secondary" style={{ width: 'auto', padding: '16px 30px', fontWeight: 800 }}>Voir la fiche</AnimatedButton>
+              <AnimatedButton to="/nos-bornes/le-spectaculaire" className="btn-secondary" style={{ width: 'auto', padding: '16px 30px', fontWeight: 800 }}>Voir la fiche</AnimatedButton>
             </div>
           </div>
         </section>

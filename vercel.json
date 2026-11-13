@@ -8,7 +8,12 @@
     { "source": "/rouen", "destination": "/location-photobooth-rouen", "permanent": true },
     { "source": "/dieppe", "destination": "/location-photobooth-dieppe", "permanent": true },
     { "source": "/louer-une-borne", "destination": "/nos-bornes", "permanent": true },
-    { "source": "/notre-photobooth", "destination": "/photobooth", "permanent": true }
+    { "source": "/notre-photobooth", "destination": "/photobooth", "permanent": true },
+    { "source": "/nos-bornes/classique-noir", "destination": "/nos-bornes/la-distinguee", "permanent": true },
+    { "source": "/nos-bornes/classique-blanc", "destination": "/nos-bornes/l-elegante", "permanent": true },
+    { "source": "/nos-bornes/classique-bois", "destination": "/nos-bornes/l-authentique", "permanent": true },
+    { "source": "/nos-bornes/miroir-booth", "destination": "/nos-bornes/le-majestueux", "permanent": true },
+    { "source": "/nos-bornes/photobooth-360", "destination": "/nos-bornes/le-spectaculaire", "permanent": true }
   ],
   "headers": [
     { "source": "/demande-recue", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }] }

@@ -60,13 +60,18 @@ const extractTirages = (plan) => {
   // 1) Correspondance explicite par nom
   const override = TIRAGES_BY_NAME[normalizeName(plan?.name)];
   if (override) return override;
-  // 2) Repli : extraction depuis les fonctionnalités
+  // 2) Repli : extraction depuis les fonctionnalités.
+  // On regarde d'abord les tirages/impressions (en évitant « Photos 100% numériques »
+  // qui ferait croire à « 100 tirages »), puis on détecte le 100% numérique.
   const feats = plan?.features || [];
-  const f = feats.find((x) => /impression|tirage|photo/i.test(String(x)));
-  if (!f) return null;
-  if (/illimit/i.test(f)) return 'Tirages illimités';
-  const m = String(f).match(/\d+/);
-  return m ? `${m[0]} tirages` : null;
+  const printFeat = feats.find((x) => /impression|tirage/i.test(String(x)));
+  if (printFeat) {
+    if (/illimit/i.test(printFeat)) return 'Tirages illimités';
+    const m = String(printFeat).match(/\d+/);
+    if (m) return `${m[0]} tirages`;
+  }
+  if (feats.some((x) => /num[ée]rique|digital/i.test(String(x)))) return '100% numérique';
+  return null;
 };
 
 const Contact = () => {
@@ -120,10 +125,12 @@ const Contact = () => {
       }));
     }
     return [
-      { name: 'Autonomie', price: '209€', tirages: '100% digital' },
-      { name: 'Essentiel', price: '189€', tirages: '100% digital' },
-      { name: 'Prestige', price: '249€', tirages: '200 tirages', featured: true },
-      { name: 'Excellence', price: '389€', tirages: '400 tirages' },
+      { name: 'Autonomie', price: '119€', tirages: 'L\'Authentique · 24 h' },
+      { name: '100% numérique', price: '209€', tirages: '100% numérique' },
+      { name: '200 impressions', price: '269€', tirages: '200 tirages' },
+      { name: '300 impressions', price: '299€', tirages: '300 tirages', featured: true },
+      { name: '400 impressions', price: '329€', tirages: '400 tirages' },
+      { name: 'Tirages illimités', price: '369€', tirages: 'Tirages illimités' },
     ];
   }, [content.pricing_plans]);
 

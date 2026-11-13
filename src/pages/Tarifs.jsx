@@ -806,11 +806,11 @@ const Tarifs = () => {
           <EditableBlock
             label="Explication machines"
             modalTitle="Texte « quelle machine selon la formule »"
-            fields={[{ key: 'tarifsMachinesNote', label: 'Texte', type: 'textarea', value: content.tarifsMachinesNote || "Notre formule d'entrée (autonomie) est fournie avec une borne photo classique, livrée prête à l'emploi. Les formules supérieures (Essentiel, Premium et Excellence) vous laissent choisir, selon vos envies et les disponibilités à votre date, parmi nos bornes classiques (noire, blanche ou bois) ou le Miroir Booth. Le Photobooth 360 et le Miroir Booth peuvent aussi être ajoutés en supplément." }]}
+            fields={[{ key: 'tarifsMachinesNote', label: 'Texte', type: 'textarea', value: content.tarifsMachinesNote || "La formule Autonomie (24 h, retrait à Lillebonne) est proposée avec L'Authentique, notre borne en bois. Les formules clé en main, livrées et installées, vous laissent choisir — selon les disponibilités à votre date — parmi nos bornes photo : La Distinguée (noire), L'Élégante (blanche) ou L'Authentique (bois), ou Le Majestueux, notre miroir grand format (+50 €). Le Spectaculaire (Photobooth 360) est une prestation vidéo distincte (250 € seule, +150 € avec une borne photo)." }]}
             onSave={(vals) => updateContent({ ...content, ...vals })}
           >
             <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.65, margin: '0 0 16px', whiteSpace: 'pre-line' }}>
-              {content.tarifsMachinesNote || "Notre formule d'entrée (autonomie) est fournie avec une borne photo classique, livrée prête à l'emploi. Les formules supérieures (Essentiel, Premium et Excellence) vous laissent choisir, selon vos envies et les disponibilités à votre date, parmi nos bornes classiques (noire, blanche ou bois) ou le Miroir Booth. Le Photobooth 360 et le Miroir Booth peuvent aussi être ajoutés en supplément."}
+              {content.tarifsMachinesNote || "La formule Autonomie (24 h, retrait à Lillebonne) est proposée avec L'Authentique, notre borne en bois. Les formules clé en main, livrées et installées, vous laissent choisir — selon les disponibilités à votre date — parmi nos bornes photo : La Distinguée (noire), L'Élégante (blanche) ou L'Authentique (bois), ou Le Majestueux, notre miroir grand format (+50 €). Le Spectaculaire (Photobooth 360) est une prestation vidéo distincte (250 € seule, +150 € avec une borne photo)."}
             </p>
           </EditableBlock>
 

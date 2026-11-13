@@ -66,7 +66,7 @@ const MachinesManager = () => {
   };
 
   const machineFields = (m) => ([
-    { key: 'name', label: 'Nom de la machine (ex : Miroir Booth)', type: 'text', value: m?.name || '' },
+    { key: 'name', label: 'Nom de la machine (ex : Le Majestueux)', type: 'text', value: m?.name || '' },
     { key: 'description', label: 'Description courte (cartes + début de la fiche)', type: 'textarea', value: m?.description || '' },
     { key: 'details', label: 'Détails (fiche « Nos bornes ») — points forts, infos complémentaires', type: 'textarea', value: m?.details || '' },
     { key: 'image', label: 'Photo de la machine', type: 'image', value: m?.image || '' },
