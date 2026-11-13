@@ -18,7 +18,7 @@ const getOptimized = (src, width, quality) => {
   return optimizedSrc(src, { w: width, q: quality });
 };
 
-const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '', imgStyle = {}, width = 1280, quality = 72 }) => {
+const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '', imgStyle = {}, width = 1280, quality = 72, priority = false }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(() => getOptimized(src, width, quality));
@@ -106,7 +106,9 @@ const PremiumImage = ({ src, alt, className = '', style = {}, imgClass = '', img
             display: 'block',
             ...imgStyle,
           }}
-          loading="lazy"
+          loading={priority ? 'eager' : 'lazy'}
+          fetchpriority={priority ? 'high' : undefined}
+          decoding={priority ? 'async' : undefined}
         />
       )}
     </div>

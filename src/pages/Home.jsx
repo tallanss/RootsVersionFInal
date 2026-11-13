@@ -205,6 +205,7 @@ const Home = () => {
                 <PremiumImage
                   src={content.heroImg || "/hero-premium.png"}
                   alt="Location Photobooth premium"
+                  priority
                 />
               </div>
             </EditableBlock>
@@ -511,6 +512,27 @@ const Home = () => {
             </EditableBlock>
           ))}
         </SwipeCarousel>
+
+        {/* Lien vers la fiche Google vérifiée (#14) — avis réels, note 4,9/5 */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+          <a
+            href="https://www.google.com/maps?cid=15197239924565627186"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '10px',
+              background: 'var(--bg-card)', border: '1px solid var(--border-medium)',
+              borderRadius: 'var(--radius-full)', padding: '12px 22px',
+              textDecoration: 'none', color: 'var(--text-main)', fontWeight: 700, fontSize: '14px',
+              boxShadow: 'var(--shadow-sm)',
+            }}
+          >
+            <span style={{ display: 'inline-flex', gap: '1px' }}>
+              {[0,1,2,3,4].map((i) => <Star key={i} size={15} fill="#fbbf24" color="#fbbf24" />)}
+            </span>
+            Lire nos avis Google
+          </a>
+        </div>
       </section>
       </FadeIn>
 

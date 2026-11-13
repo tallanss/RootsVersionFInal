@@ -159,14 +159,14 @@ const Footer = () => {
             modalTitle="Informations de Contact"
             fields={[
               { key: 'phone', label: 'Téléphone', type: 'text', value: content.contact?.phone || "06 03 16 36 21" },
-              { key: 'email', label: 'Email', type: 'text', value: content.contact?.email || "contact@photoroots.fr" },
+              { key: 'email', label: 'Email', type: 'text', value: content.contact?.email || "serviceclient@photoroots.fr" },
               { key: 'location', label: 'Zone', type: 'text', value: content.contact?.location || "Normandie : Le Havre, Rouen, Dieppe" },
             ]}
             onSave={(vals) => updateContent({ contact: { ...content.contact, ...vals } })}
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <a href={`tel:${(content.contact?.phone || "06 03 16 36 21").replace(/\s/g, '')}`} style={{ ...infoStyle, color: 'inherit', textDecoration: 'none' }}><Phone size={16} /> {content.contact?.phone || "06 03 16 36 21"}</a>
-              <a href={`mailto:${content.contact?.email || "contact@photoroots.fr"}`} style={{ ...infoStyle, color: 'inherit', textDecoration: 'none' }}><Mail size={16} /> {content.contact?.email || "contact@photoroots.fr"}</a>
+              <a href={`mailto:${content.contact?.email || "serviceclient@photoroots.fr"}`} style={{ ...infoStyle, color: 'inherit', textDecoration: 'none' }}><Mail size={16} /> {content.contact?.email || "serviceclient@photoroots.fr"}</a>
               <a href="https://www.google.com/search?q=photoroots" target="_blank" rel="noopener noreferrer" style={{ ...infoStyle, color: 'inherit', textDecoration: 'none' }}><MapPin size={16} /> {content.contact?.zone || content.contact?.location || "Normandie : Le Havre, Rouen, Dieppe"}</a>
             </div>
           </EditableBlock>

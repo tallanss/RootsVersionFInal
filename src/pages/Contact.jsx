@@ -139,13 +139,13 @@ const Contact = () => {
   );
   const machineSupplement = selectedMachine ? (Number(selectedMachine.supplement) || 0) : 0;
 
-  // ── Logique Photobooth 360 (#6) ──
-  // Si la machine choisie EST le 360 → on masque les packs (le 360 est une
-  // prestation vidéo autonome, sans formule d'impression).
-  // Si une borne CLASSIQUE + un pack sont choisis → on propose d'ajouter le 360
-  // en supplément (+100€).
-  const ADD_360_PRICE = 100;
-  const is360 = (m) => /360/.test(String(m?.name || ''));
+  // ── Logique Photobooth 360 (#6, grille Jimmy 12/11) ──
+  // Le 360 (« Le Spectaculaire ») est une prestation vidéo distincte des offres photo.
+  //   • Choisi SEUL → 250€, packs d'impression masqués (jamais de quota de tirages).
+  //   • Ajouté à une borne photo → +150€ (et non plus +100€).
+  const ADD_360_PRICE = 150;   // supplément quand le 360 est ajouté à une borne photo
+  const PRICE_360_ALONE = 250; // le 360 choisi seul
+  const is360 = (m) => /360|spectaculaire/i.test(String(m?.name || ''));
   const selectedIs360 = !!selectedMachine && is360(selectedMachine);
 
   // Formule choisie (objet complet) + son prix de base numérique. Une formule
@@ -175,7 +175,10 @@ const Contact = () => {
   const canAdd360 = !!selectedMachine && !selectedIs360 && !!formData.formula && formData.formula !== 'Je ne sais pas encore';
   const add360Active = canAdd360 && formData.add360;
   const add360Total = add360Active ? ADD_360_PRICE : 0;
-  const estimatedTotal = formulaBase + machineSupplement + addonsTotal + add360Total;
+  // Le 360 seul a son propre prix fixe (250€) ; sinon formule + supplément machine + 360 ajouté + options.
+  const estimatedTotal = selectedIs360
+    ? PRICE_360_ALONE + addonsTotal
+    : formulaBase + machineSupplement + add360Total + addonsTotal;
 
   // Si l'ajout du 360 n'est plus proposable (machine/formule modifiée), on
   // réinitialise la case : elle ne doit pas réapparaître pré-cochée plus tard.
@@ -186,7 +189,7 @@ const Contact = () => {
   }, [canAdd360, formData.add360]);
   // On n'affiche / n'envoie une estimation chiffrée QUE si la formule a un vrai
   // prix numérique (> 0). Évite un faux « 0€ » ou un total trompeur (« Sur devis »).
-  const showEstimate = Boolean(formData.formula && formulaBase > 0);
+  const showEstimate = selectedIs360 || Boolean(formData.formula && formulaBase > 0);
 
   const selectMachine = (id) => setFormData((prev) => {
     const nextId = prev.machine === id ? '' : id;
@@ -346,10 +349,14 @@ const Contact = () => {
     const addonsText = selectedAddons.map(a => `${a.name} (${priceToNumber(a.price) > 0 ? `${formatEuro(priceToNumber(a.price))}€` : 'sur devis'})`).join(', ');
 
     const machineText = selectedMachine
-      ? `${selectedMachine.name}${machineSupplement > 0 ? ` (+${formatEuro(machineSupplement)}€)` : ''}${add360Active ? ` + Photobooth 360 (+${formatEuro(ADD_360_PRICE)}€)` : ''}`
+      ? (selectedIs360
+          ? `${selectedMachine.name} (${formatEuro(PRICE_360_ALONE)}€, prestation vidéo seule)`
+          : `${selectedMachine.name}${machineSupplement > 0 ? ` (+${formatEuro(machineSupplement)}€)` : ''}${add360Active ? ` + Photobooth 360 (+${formatEuro(ADD_360_PRICE)}€)` : ''}`)
       : '';
     const estimationText = showEstimate
-      ? `Estimation : ${fromPrefix}${formatEuro(estimatedTotal)}€ (${formData.formula} ${formatEuro(formulaBase)}€${machineSupplement > 0 ? ` + ${selectedMachine.name} ${formatEuro(machineSupplement)}€` : ''}${add360Total > 0 ? ` + Photobooth 360 ${formatEuro(add360Total)}€` : ''}${addonsTotal > 0 ? ` + options ${formatEuro(addonsTotal)}€` : ''})`
+      ? (selectedIs360
+          ? `Estimation : ${formatEuro(estimatedTotal)}€ (Photobooth 360 ${formatEuro(PRICE_360_ALONE)}€${addonsTotal > 0 ? ` + options ${formatEuro(addonsTotal)}€` : ''})`
+          : `Estimation : ${fromPrefix}${formatEuro(estimatedTotal)}€ (${formData.formula} ${formatEuro(formulaBase)}€${machineSupplement > 0 ? ` + ${selectedMachine.name} ${formatEuro(machineSupplement)}€` : ''}${add360Total > 0 ? ` + Photobooth 360 ${formatEuro(add360Total)}€` : ''}${addonsTotal > 0 ? ` + options ${formatEuro(addonsTotal)}€` : ''})`)
       : '';
 
     const autoMessage = [
@@ -814,7 +821,7 @@ const Contact = () => {
                 {selectedIs360 && (
                   <div className="form-group">
                     <div style={{ padding: '14px 16px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--border-light)', fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                      Le <strong>Photobooth 360</strong> est une prestation vidéo autonome : aucune formule d'impression à choisir. Indiquez simplement votre événement, nous vous envoyons un devis personnalisé sous 24h.
+                      Le <strong>Photobooth 360</strong> est une prestation vidéo autonome à <strong>250€</strong> : aucune formule d'impression à choisir. Indiquez simplement votre événement, nous vous envoyons un devis personnalisé sous 24h.
                     </div>
                   </div>
                 )}
@@ -922,7 +929,9 @@ const Contact = () => {
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', padding: '14px 16px', borderRadius: 'var(--radius-md)', background: 'var(--bg-secondary)', border: '1px solid var(--primary)' }}>
                       <div>
                         <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-muted)' }}>
-                          {formData.formula} ({formatEuro(formulaBase)}€){machineSupplement > 0 ? ` + ${selectedMachine.name} (+${formatEuro(machineSupplement)}€)` : ''}{add360Total > 0 ? ` + Photobooth 360 (+${formatEuro(add360Total)}€)` : ''}{addonsTotal > 0 ? ` + options (+${formatEuro(addonsTotal)}€)` : ''}
+                          {selectedIs360
+                            ? `${selectedMachine.name} (${formatEuro(PRICE_360_ALONE)}€)`
+                            : `${formData.formula} (${formatEuro(formulaBase)}€)`}{!selectedIs360 && machineSupplement > 0 ? ` + ${selectedMachine.name} (+${formatEuro(machineSupplement)}€)` : ''}{add360Total > 0 ? ` + Photobooth 360 (+${formatEuro(add360Total)}€)` : ''}{addonsTotal > 0 ? ` + options (+${formatEuro(addonsTotal)}€)` : ''}
                         </div>
                         <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '2px' }}>Estimation indicative — devis personnalisé sous 24h</div>
                       </div>
@@ -1075,12 +1084,12 @@ const Contact = () => {
           <EditableBlock
             label="Contact Email"
             modalTitle="Modifier l'Email"
-            fields={[{ key: 'email', label: 'Email', type: 'text', value: content.contact?.email || 'contact@photoroots.fr' }]}
+            fields={[{ key: 'email', label: 'Email', type: 'text', value: content.contact?.email || 'serviceclient@photoroots.fr' }]}
             onSave={(vals) => updateContent({ ...content, contact: { ...content.contact, ...vals } })}
           >
             <div className="contact-info-card">
               <div className="contact-info-icon"><Mail size={20} /></div>
-              <div><h3>Email</h3><p><a href={`mailto:${content.contact?.email || 'contact@photoroots.fr'}`} style={{ color: 'inherit', textDecoration: 'none' }}>{content.contact?.email || 'contact@photoroots.fr'}</a></p></div>
+              <div><h3>Email</h3><p><a href={`mailto:${content.contact?.email || 'serviceclient@photoroots.fr'}`} style={{ color: 'inherit', textDecoration: 'none' }}>{content.contact?.email || 'serviceclient@photoroots.fr'}</a></p></div>
             </div>
           </EditableBlock>
 

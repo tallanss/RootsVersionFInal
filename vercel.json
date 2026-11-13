@@ -1,11 +1,17 @@
 {
   "redirects": [
+    { "source": "/", "has": [{ "type": "host", "value": "www.photoroots.fr" }], "destination": "https://photoroots.fr/", "permanent": true },
     { "source": "/:path*", "has": [{ "type": "host", "value": "www.photoroots.fr" }], "destination": "https://photoroots.fr/:path*", "permanent": true },
     { "source": "/contactez-nous", "destination": "/contact", "permanent": true },
     { "source": "/contactez-nous/", "destination": "/contact", "permanent": true },
     { "source": "/le-havre", "destination": "/location-photobooth-le-havre", "permanent": true },
     { "source": "/rouen", "destination": "/location-photobooth-rouen", "permanent": true },
-    { "source": "/dieppe", "destination": "/location-photobooth-dieppe", "permanent": true }
+    { "source": "/dieppe", "destination": "/location-photobooth-dieppe", "permanent": true },
+    { "source": "/louer-une-borne", "destination": "/nos-bornes", "permanent": true },
+    { "source": "/notre-photobooth", "destination": "/photobooth", "permanent": true }
+  ],
+  "headers": [
+    { "source": "/demande-recue", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }] }
   ],
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }

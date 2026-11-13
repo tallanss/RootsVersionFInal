@@ -140,7 +140,7 @@ const DEFAULT_CONTENT = {
   ],
   contact: {
     phone: '06 03 16 36 21',
-    email: 'contact@photoroots.fr',
+    email: 'serviceclient@photoroots.fr',
     zone: 'Le Havre, Rouen, Dieppe — Seine-Maritime'
   },
   socials: {
@@ -195,10 +195,10 @@ const DEFAULT_CONTENT = {
     cgvTitle: 'Conditions Générales de Vente',
     lastUpdated: 'Mars 2026',
     mentions: [
-      { title: '1. Éditeur du site', body: "PhotoRoots\nMicro-entreprise — SIRET : [À compléter]\nSiège social : Le Havre, Seine-Maritime (76)\nEmail : contact@photoroots.fr\nTéléphone : 06 03 16 36 21" },
+      { title: '1. Éditeur du site', body: "PhotoRoots\nMicro-entreprise — SIRET : [À compléter]\nSiège social : Le Havre, Seine-Maritime (76)\nEmail : serviceclient@photoroots.fr\nTéléphone : 06 03 16 36 21" },
       { title: '2. Hébergement', body: 'Ce site est hébergé par Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis.' },
       { title: '3. Propriété intellectuelle', body: "L'ensemble des contenus (textes, images, photos, vidéos, logos) présents sur ce site sont protégés par le droit d'auteur. Toute reproduction, même partielle, est interdite sans autorisation préalable." },
-      { title: '4. Données personnelles (RGPD)', body: "Les informations collectées via le formulaire de réservation sont destinées exclusivement à PhotoRoots pour le traitement de votre demande. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ce droit, contactez-nous à : contact@photoroots.fr\nAucune donnée n'est transmise à des tiers. Les données sont conservées pendant une durée maximale de 36 mois après votre dernière interaction." },
+      { title: '4. Données personnelles (RGPD)', body: "Les informations collectées via le formulaire de réservation sont destinées exclusivement à PhotoRoots pour le traitement de votre demande. Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données. Pour exercer ce droit, contactez-nous à : serviceclient@photoroots.fr\nAucune donnée n'est transmise à des tiers. Les données sont conservées pendant une durée maximale de 36 mois après votre dernière interaction." },
       { title: '5. Cookies', body: "Ce site utilise des cookies strictement nécessaires au fonctionnement (mémorisation des préférences). Aucun cookie publicitaire ou de tracking n'est utilisé sans votre consentement explicite." },
     ],
     cgv: [
