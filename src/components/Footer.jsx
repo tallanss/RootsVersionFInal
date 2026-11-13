@@ -129,6 +129,7 @@ const Footer = () => {
             {/* Liens fixes — masqués si le client les a déjà ajoutés à son menu (anti-doublon) */}
             {!content.navigation?.some(i => i.path === '/photobooth') && <Link to="/photobooth" style={linkStyle}>Photobooth</Link>}
             {!content.navigation?.some(i => i.path === '/blog') && <Link to="/blog" style={linkStyle}>Blog &amp; conseils</Link>}
+            {!content.navigation?.some(i => i.path === '/a-propos') && <Link to="/a-propos" style={linkStyle}>À propos</Link>}
             {RENTAL_OPTIONS_ENABLED && !content.navigation?.some(i => i.path === '/options-a-louer') && <Link to="/options-a-louer" style={linkStyle}>Options à louer</Link>}
           </div>
         </div>

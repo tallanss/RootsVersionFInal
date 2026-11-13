@@ -37,6 +37,7 @@ import { ToastContainer } from './components/Toast';
 import Home from './pages/Home';
 import Photobooth from './pages/Photobooth';
 import Photobooth360 from './pages/Photobooth360';
+import APropos from './pages/APropos';
 import Tarifs from './pages/Tarifs';
 import RentalOptions from './pages/RentalOptions';
 import { RENTAL_OPTIONS_ENABLED } from './config/features';
@@ -129,6 +130,7 @@ function PageContent() {
               <Route path="/" element={<Home />} />
               <Route path="/photobooth" element={<Photobooth />} />
               <Route path="/photobooth-360" element={<Photobooth360 />} />
+              <Route path="/a-propos" element={<APropos />} />
               <Route path="/tarifs" element={<Tarifs />} />
               {/* Options à louer masquées : la page redirige vers /tarifs (évite un 404
                   sur d'anciens liens / résultats Google) tant que le drapeau est off. */}

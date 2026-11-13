@@ -22,6 +22,7 @@ export default defineConfig({
       dynamicRoutes: [
         '/photobooth',
         '/photobooth-360',
+        '/a-propos',
         '/tarifs',
         '/options-a-louer',  // RENTAL_OPTIONS actif
         '/prestations',

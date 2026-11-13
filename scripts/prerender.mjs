@@ -51,6 +51,7 @@ const ROUTES = [
   '/',
   '/photobooth',
   '/photobooth-360',
+  '/a-propos',
   '/tarifs',
   '/options-a-louer',  // RENTAL_OPTIONS actif (src/config/features.js)
   '/prestations',

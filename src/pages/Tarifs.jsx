@@ -315,12 +315,18 @@ const Tarifs = () => {
 
   const isSelected = (id) => selectedPlanId === id;
 
-  // Schéma Service + Offres construit à partir des VRAIES formules du CMS
-  // (prix, devise, description exacts de chaque formule actuelle — #53).
+  // Schéma Service + Offres construit à partir des VRAIES formules du CMS, en
+  // incluant les variantes miroir (+50€, hors Autonomie) et le 360 distinct (#53).
   const pricedPlans = plans
-    .map((p) => ({ name: p.name, price: priceToNumber(p.price), desc: p.desc }))
+    .map((p) => ({ name: p.name, price: priceToNumber(p.price), desc: p.desc, autonomie: !!p.autonomie }))
     .filter((p) => p.price > 0);
-  const planPrices = pricedPlans.map((p) => p.price);
+  const miroirSupp = Number((content.machines || []).find((m) => /majestueux|miroir/i.test(m.name))?.supplement) || 50;
+  const allOffers = [
+    ...pricedPlans.map((p) => ({ name: p.name, price: p.price, desc: p.desc })),
+    ...pricedPlans.filter((p) => !p.autonomie).map((p) => ({ name: `${p.name} — Miroir (Le Majestueux)`, price: p.price + miroirSupp })),
+    { name: 'Photobooth 360 (Le Spectaculaire)', price: 250, desc: 'Prestation vidéo 360° : 250€ seule, +150€ avec une borne photo.' },
+  ];
+  const planPrices = allOffers.map((p) => p.price);
   const offerSchema = {
     '@context': 'https://schema.org',
     '@type': 'Service',
@@ -343,8 +349,8 @@ const Tarifs = () => {
         lowPrice: Math.min(...planPrices),
         highPrice: Math.max(...planPrices),
         priceCurrency: 'EUR',
-        offerCount: pricedPlans.length,
-        offers: pricedPlans.map((p) => ({
+        offerCount: allOffers.length,
+        offers: allOffers.map((p) => ({
           '@type': 'Offer',
           name: p.name,
           price: p.price,

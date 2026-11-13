@@ -103,7 +103,7 @@ PhotoRoots est l'un des rares prestataires photobooth réellement basés en Sein
       },
       {
         q: 'Intervenez-vous dans les châteaux des coteaux nord (Mont-Saint-Aignan, Bois-Guillaume) ?',
-        a: "Régulièrement. Ces communes sont à 15 minutes seulement de notre base et font partie de notre zone de déplacement gratuit. Nous connaissons la plupart des domaines de la région et sommes habitués aux installations dans des salles avec parquet ancien, hauteurs sous plafond particulières ou accès par cour pavée.",
+        a: "Régulièrement. Ces communes sont à 15 minutes seulement de notre base et font partie de notre zone de déplacement inclus dans un rayon de 10 km routiers du Havre ou de Lillebonne (au-delà, sur devis). Nous connaissons la plupart des domaines de la région et sommes habitués aux installations dans des salles avec parquet ancien, hauteurs sous plafond particulières ou accès par cour pavée.",
       },
       {
         q: "Combien coûte un photobooth pour un mariage à Rouen ?",
@@ -132,7 +132,7 @@ Notre photobooth s'adapte parfaitement à cette ambiance bord de mer. Nous propo
 
 Intervenir à Dieppe, c'est aussi connaître les particularités logistiques d'une ville construite entre falaises et port. Les accès aux quartiers du Pollet ou aux hauteurs du Bout-du-Quai demandent une certaine anticipation, surtout les soirs de marée haute ou en période de festivals (Foire aux Harengs, Festival International de Cerfs-Volants). Nous gérons ces aspects en amont avec vous.
 
-PhotoRoots est l'un des rares photoboothes vraiment basés en Seine-Maritime à monter régulièrement à Dieppe et sur la Côte d'Albâtre. Cette proximité — environ 1h depuis nos locaux — nous permet d'inclure le déplacement gratuitement dans le 76200 et les communes voisines, là où d'autres prestataires factureraient un déplacement "longue distance". Tarifs à partir de 119€, devis sous 24h, sans surprise.`,
+PhotoRoots est l'un des rares photoboothes vraiment basés en Seine-Maritime à monter régulièrement à Dieppe et sur la Côte d'Albâtre. Nous intervenons régulièrement dans le 76200 et les communes voisines ; comme Dieppe est au-delà de notre rayon de déplacement inclus (10 km routiers du Havre ou de Lillebonne), le forfait déplacement vous est indiqué clairement dans votre devis, sans mauvaise surprise. Tarifs à partir de 119€, devis sous 24h.`,
     useCases: [
       'Mariages face à la mer dans les hôtels-restaurants du front de mer dieppois et de Pourville',
       "Soirées d'entreprise et team-buildings sur le port et au Casino de Dieppe",
@@ -242,7 +242,7 @@ Mais Harfleur, c'est aussi une ville à deux visages : d'un côté la cité méd
 
 Notre connaissance fine de ce territoire nous permet d'adresser aussi bien les réceptions privées intimistes du centre ancien que les grands rassemblements corporate des sites industriels voisins. Nous savons gérer les contraintes d'accès et de sécurité propres aux zones d'activité de Rogerville et de Gonfreville-l'Orcher, où l'entrée sur site est parfois réglementée.
 
-Située à quelques minutes du Havre, Harfleur (76700) fait partie de notre zone de déplacement gratuit. Vous bénéficiez de la même réactivité que dans le centre havrais, avec des tarifs transparents à partir de 119€, et un devis personnalisé sous 24h.`,
+Située à quelques minutes du Havre, Harfleur (76700) fait partie de notre zone de déplacement inclus dans un rayon de 10 km routiers du Havre ou de Lillebonne (au-delà, sur devis). Vous bénéficiez de la même réactivité que dans le centre havrais, avec des tarifs transparents à partir de 119€, et un devis personnalisé sous 24h.`,
     useCases: [
       "Soirées de fin d'année et séminaires des entreprises de la zone industrialo-portuaire (Gonfreville-l'Orcher, Rogerville)",
       "Mariages dans le cadre médiéval du centre ancien d'Harfleur et de l'église Saint-Martin",
@@ -409,7 +409,7 @@ Nichée dans la vallée du Commerce, entre plateau de Caux et boucle de Seine, B
 
 Le tissu événementiel local est avant tout familial et convivial : mariages dans les salles communales rénovées, anniversaires et noces dans les domaines de la campagne cauchoise, repas associatifs et fêtes de quartier. Nous y installons notre photobooth avec la même exigence que pour les grands événements urbains, en adaptant nos décors à l'ambiance détendue et bon enfant de la région.
 
-Bolbec (76210) et la vallée du Commerce font pleinement partie de notre zone de couverture en Seine-Maritime. Grâce à la proximité de l'autoroute, nous y intervenons sans surcoût de déplacement, avec des tarifs à partir de 119€, et un devis personnalisé sous 24h.`,
+Bolbec (76210) et la vallée du Commerce font pleinement partie de notre zone de couverture en Seine-Maritime. Grâce à la proximité de l'autoroute, nous y intervenons sans surcoût de déplacement dans un rayon de 10 km routiers (au-delà, sur devis), avec des tarifs à partir de 119€, et un devis personnalisé sous 24h.`,
     useCases: [
       'Mariages et noces dans les salles communales rénovées de la vallée du Commerce',
       "Anniversaires et fêtes de famille dans les domaines de la campagne cauchoise (Nointot, Mirville)",
@@ -432,7 +432,7 @@ Bolbec (76210) et la vallée du Commerce font pleinement partie de notre zone de
     ],
     localFaqs: [
       {
-        q: 'Bolbec fait-elle partie de votre zone de déplacement gratuit ?',
+        q: 'Bolbec fait-elle partie de votre zone de déplacement inclus dans un rayon de 10 km routiers du Havre ou de Lillebonne (au-delà, sur devis) ?',
         a: "Oui. Grâce à sa position le long de l'A29, Bolbec (76210) et la vallée du Commerce sont facilement accessibles depuis notre base. Le déplacement, l'installation et le démontage sont inclus dans le tarif, sans supplément kilométrique pour Bolbec, Gruchet-le-Valasse, Nointot et Mirville.",
       },
       {
@@ -462,7 +462,7 @@ La ville occupe une position stratégique au cœur du Caux maritime, à la jonct
 
 Intervenir à Lillebonne, c'est savoir naviguer entre un centre ancien riche en patrimoine et les vastes zones industrielles voisines, dont les accès sont parfois soumis à des règles de sécurité strictes. Notre équipe locale connaît bien ce territoire et adapte sa logistique à chaque contexte : installation soignée près du théâtre romain pour une réception culturelle, ou montage encadré sur un site industriel de Port-Jérôme.
 
-Lillebonne (76170) et son bassin (Bolbec, Port-Jérôme, Gruchet-le-Valasse, Saint-Antoine-la-Forêt) font partie de notre zone d'intervention en Seine-Maritime, sans surcoût de déplacement. Tarifs à partir de 119€, devis personnalisé envoyé sous 24h.`,
+Lillebonne (76170) et son bassin (Bolbec, Port-Jérôme, Gruchet-le-Valasse, Saint-Antoine-la-Forêt) font partie de notre zone d'intervention en Seine-Maritime, sans surcoût de déplacement dans un rayon de 10 km routiers (au-delà, sur devis). Tarifs à partir de 119€, devis personnalisé envoyé sous 24h.`,
     useCases: [
       "Séminaires, soirées de cohésion et arbres de Noël pour les industries de Port-Jérôme-sur-Seine",
       'Événements culturels et réceptions à proximité du théâtre romain de Juliobona',
@@ -519,7 +519,7 @@ Terre d'agriculture et de traditions, le Pays de Caux yvetotais vit au rythme de
 
 La situation d'Yvetot, à mi-chemin entre Rouen et Le Havre et bien desservie par l'A150 et la ligne ferroviaire, en fait un point de passage central que nous rejoignons aisément. Nous intervenons dans toute la couronne yvetotaise — Sainte-Marie-des-Champs, Auzebosc, Écalles-Alix, Allouville-Bellefosse — pour des événements aussi variés que les mariages champêtres, les anniversaires de ferme rénovée ou les fêtes associatives du plateau.
 
-Yvetot (76190) et le Pays de Caux font pleinement partie de notre zone d'intervention en Seine-Maritime, sans surcoût de déplacement. Vous bénéficiez d'un photobooth premium à partir de 119€, avec un devis personnalisé sous 24h.`,
+Yvetot (76190) et le Pays de Caux font pleinement partie de notre zone d'intervention en Seine-Maritime, sans surcoût de déplacement dans un rayon de 10 km routiers (au-delà, sur devis). Vous bénéficiez d'un photobooth premium à partir de 119€, avec un devis personnalisé sous 24h.`,
     useCases: [
       'Mariages champêtres dans les corps de ferme restaurés et longères du Pays de Caux',
       "Fêtes de village, comices agricoles et événements de la capitale du Caux",
@@ -576,7 +576,7 @@ Ce qui fait le charme de Saint-Romain-de-Colbosc et de ses environs, c'est la do
 
 Le territoire mêle vie rurale et activité économique : la plaine alluviale de l'estuaire, vers Sandouville et La Cerlangue, accueille de grands sites industriels et logistiques, sources d'événements professionnels ponctuels. Saint-Romain joue ainsi le rôle de trait d'union entre la campagne du plateau et l'effervescence de la zone portuaire havraise. Nous savons adapter nos prestations à ces deux mondes, du mariage à la ferme au séminaire d'entreprise.
 
-Saint-Romain-de-Colbosc (76430) et son canton font partie intégrante de notre zone d'intervention en Seine-Maritime, à quelques minutes du Havre. Le déplacement est gratuit, avec des tarifs à partir de 119€, et un devis personnalisé envoyé sous 24h.`,
+Saint-Romain-de-Colbosc (76430) et son canton font partie intégrante de notre zone d'intervention en Seine-Maritime, à quelques minutes du Havre. Le déplacement est inclus dans un rayon de 10 km routiers du Havre ou de Lillebonne (au-delà, précisé dans votre devis), avec des tarifs à partir de 119€, et un devis personnalisé envoyé sous 24h.`,
     useCases: [
       'Mariages champêtres dans les fermes et domaines de la campagne cauchoise',
       "Réceptions familiales et anniversaires dans les hameaux d'Étainhus et Saint-Gilles-de-Crétot",

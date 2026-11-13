@@ -308,7 +308,8 @@ const Home = () => {
             _default: '/events/party-1.webp',
           };
           // Chaque occasion pointe vers sa page événementielle dédiée (#40).
-          // Fallback /tarifs pour les occasions sans page dédiée (ex : bal de promo).
+          // Chaque occasion pointe vers sa page dédiée. « Bal de promo » n'a pas de
+          // page (choix assumé) → devis direct (préqualifié) plutôt que /tarifs (#40).
           const SERVICE_LINKS = {
             wedding: '/photobooth-mariage',
             corporate: '/photobooth-entreprise',
@@ -317,6 +318,7 @@ const Home = () => {
             birthday: '/photobooth-anniversaire',
             baptism: '/photobooth-bapteme',
             hen: '/photobooth-evjf-evg',
+            prom: '/contact',
           };
           // Services gérés via le CMS (dashboard → « Services »). ICON_MAP ci-dessus
           // reste la source de vérité des clés d'icônes disponibles.
